@@ -10,6 +10,9 @@ class AppBar extends React.Component {
                     <Icon iconStyle={styles.icon} name='arrow-back'/>
                 </TouchableOpacity>
                 <Text style={styles.title}>{this.props.title}</Text>
+                <TouchableOpacity style={styles.additionButton}>
+                    <Text style={styles.content}>{this.props.content}</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -19,22 +22,30 @@ const styles = StyleSheet.create({
     container: {
         width: 'auto',
         height: 56,
-        paddingTop: 16,
-        paddingBottom: 16,
         flexDirection: 'row',
-        backgroundColor: 'teal'
+        backgroundColor: 'teal',
     },
     icon: {
-        marginLeft: 16,
-        width: 24,
-        height: 24,
+        width: 56,
+        height: 56,
+        padding: 16,
         color: '#fff'
     },
     title: {
-        marginLeft: 32,
+        padding: 16,
         color: '#fff',
         fontSize: 20,
         fontWeight: 'bold',
+        includeFontPadding: false
+    },
+    additionButton: {
+        position: 'absolute',
+        right: 0,
+        padding: 16,
+    },
+    content: {
+        fontSize: 20,
+        color: '#fff',
         includeFontPadding: false
     }
 });
