@@ -4,9 +4,10 @@ const express = require('express');
 
 let router = express.Router();
 
-//router.get('/', eventController.functionName)
-
-//module.exports
-router.get('/', eventController.findAllUsers);
+router.post('/addOneEvent', eventController.addOneEvent);
+router.get('/findAllEvent', eventController.findAllEvent);
+router.get('/:eventId', eventController.findById);
+router.put('/updateEvent', eventController.updateEvent);
+router.delete('/:eventId', eventController.deleteEvent);
 
 module.exports = router;

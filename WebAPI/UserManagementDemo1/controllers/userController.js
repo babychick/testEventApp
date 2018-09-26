@@ -1,113 +1,44 @@
 let userModel = require('../models/userModel');
+let baseController = require('./baseController');
 
 // add one user
 addOneUser = (req, res) => {
-  let obj = {
-    name,
-    birthday,
-    job,
-    address,
-    isBanned,
-    rateStar,
-    dateAdd
-  } = req.body;
+    let obj = req.body;
 
-  userModel.create(obj, (err, data) => {
-    if (err) {
-      res.send();
-      console.log("[" + err.magenta + "]");
-    } else {
-      res.send(data);
-      console.log("user " + name.brown + " is added.");
-    }
-  });
-}
-
-// add many user
-addManyUsers = (req, res) => {
-  let usersArray = req.body;
-
-  userModel.insertMany(usersArray)
-    .then(data => {
-      res.send(data),
-      console.log("done")
-    })
-    .catch(err => {
-      res.send("failed!"),
-      console.log("Error: " + err)
-    });
+    baseController.addOne(res, userModel, obj);
 }
 
 // find all user
-findAll = (req, res) => {
+findAllUser = (req, res) => {
 
-  userModel.find({})
-    .then(data => {
-        res.send(data),
-        console.log(data)
-    })
-    .catch(err => {
-      res.send("failed!"),
-      console.log("Error: " + err)
-    });
-}
-
-// find by name
-findByName = (req, res) => {
-  let userName = req.params.userName;
-
-  userModel.find({name:userName}).limit(1)
-    .then(data => {
-      if (data.toString()) {
-    res.send(data);
-    console.log(data);
-      } else {
-        res.send("record not found");
-        console.log("failed");
-      }
-    })
-    .catch(err => {
-      res.send("failed!"),
-      console.log("Error: " + err)
-    });
+    baseController.findAll(res, userModel);
 }
 
 // find by id
-// findById = (req, res) => {
-//   let userId = req.params.userId;
+findById = (req, res) => {
+  let userId = req.params.userId;
 
-//   userModel.find({_id:userId}).limit(1)
-//     .then(data => {
-
-//     })
-// }
+  baseController.findById(res, userModel, userId);
+}
 
 // update user info
 updateUser = (req, res) => {
   let obj = req.body;
 
-  userModel.updateOne()
+  baseController.updateOne(res, userModel, obj);
 }
 
 //delete a user
 deleteUser = (req, res) => {
-  let userID = req.params.userID;
+  let userId = req.params.userId;
 
-  userModel.deleteOne({name:userID})
-    .then(data => {
-      res.send("User " + userID + " is deleted."),
-      console.log(userID + " is deleted.");
-    })
-    .catch(err => {
-      res.send("failed"),
-      console.log("Error: " + err);
-    });
+  baseController.deleteOne(res, userModel, userId);
 }
 
 module.exports = {
-  addOneUser,
-  addManyUsers,
-  findAll,
-  findByName,
-  deleteUser
+    addOneUser,
+    findAllUser,
+    findById,
+    updateUser,
+    deleteUser
 }

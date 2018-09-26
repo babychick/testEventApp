@@ -16,7 +16,7 @@ let eventSchema = new Schema({
 
     status: {type: String, default: ""},
 
-    description: {type: String}
+    description: {type: String, default: ""}
 });
 
 let event = mongoose.model('event', eventSchema);

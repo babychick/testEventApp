@@ -14,11 +14,13 @@ app.use(bodyParser.json());
 // routes
 const userRoute = require('./routes/userRoute');
 const eventRoute = require('./routes/eventRoute');
+const accountRoute = require('./routes/accountRoute');
 
 connectDB.connect();
 
 app.use('/user', userRoute);
 app.use('/event', eventRoute);
+app.use('/account', accountRoute);
 
 // localhost:port/api/v1/user/ ->
 

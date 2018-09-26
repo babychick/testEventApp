@@ -1,20 +1,38 @@
-const accountModel = require('../models/accountModel');
+let accountModel = require('../models/accountModel');
+let baseController = require('./baseController');
 
-// add new account
-addNewAccount = (req, res) => {
-    let account = {
-        email,
-        password,
-        addInfo
-    } = req.body;
+// add an account
+addOneAccount = (req, res) => {
+    let obj = req.body;
 
-    accountModel.create(account, (err, data) => {
-        if (err) {
-            res.send();
-            console.log("[" + err.magenta + "]");
-        } else {
+    baseController.addOne(res, accountModel, obj);
+}
+
+// find account by id
+findAccountById = (req, res) => {
+    let accountId = req.params.accountId;
+  
+    baseController.findById(res, accountModel, accountId);
+  }
+
+// find account by email
+findAccountByEmail = (req, res) => {
+    let email = req.params.email;
+    console.log(email);
+
+    accountModel.find({email: email}).limit(1)
+        .then(data => {
             res.send(data);
-            console.log("Account " + email.brown + " is added!");
-        }
-    });
+            console.log(data);
+        })
+        .catch(err => {
+            res.send("failed!");
+            console.log("Error: " + err);
+        });
+}
+
+module.exports = {
+    addOneAccount,
+    findAccountById,
+    findAccountByEmail
 }

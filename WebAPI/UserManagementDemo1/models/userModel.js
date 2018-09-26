@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
 
+    accountId: {type: String, require: true},
+
     name: {type: String, require: true},
 
     birthday: {type: Date, require: true},

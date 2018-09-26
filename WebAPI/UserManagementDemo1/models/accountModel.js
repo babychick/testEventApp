@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 
-const accountSchema = new Schema({
+let accountSchema = new Schema({
     
     email: {type: String, require: true},
     
@@ -11,6 +11,6 @@ const accountSchema = new Schema({
     addInfo: {type: Boolean, default: false}
 });
 
-const account = mongoose.model('account', accountSchema);
+let account = mongoose.model('account', accountSchema);
 
 module.exports = account;
