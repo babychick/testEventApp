@@ -12,6 +12,8 @@ import { StyleSheet,
 import {Icon} from 'native-base';
 import QRCode from 'react-native-qrcode';
 
+// import {connect} from 'react-redux';
+// import {fecthData} from '../action'
 import AppStyle from '../theme';
 const styles = AppStyle.StyleCaNhanQR;
 
@@ -19,7 +21,7 @@ export default class CaNhanQR extends Component {
     constructor(props){
         super(props)
         this.state = {
-        // a : this.props.navigation.state.params.test
+        data : this.props.navigation.state.params.data
         };
     }
     render() {
@@ -37,7 +39,7 @@ export default class CaNhanQR extends Component {
                 <View style={styles.duoi}>
                     <View style={styles.QRcode}>
                         <QRCode
-                            value={'http://facebook.github.io/react-native/'}
+                            value={this.state.data._id}
                             size={250}
                             // bgColor='purple'
                             fgColor='white'/>
@@ -45,9 +47,18 @@ export default class CaNhanQR extends Component {
                     <View style={styles.huongdan}>
                         <Text style={styles.texthuongdan}>Mã QR dùng để điểm danh </Text>
                         <Text style={styles.texthuongdan}>khi tham gia sự kiện</Text>
+                        {/* <Text style={styles.texthuongdan}>{this.state.data._id}</Text> */}
                     </View>
                 </View>
             </View>
         )
     }
 }
+
+// const mapStateToProps = (state) =>{
+//     return{
+//         data.state.fetchUserReducer
+//     }
+// }
+
+// export default connect(mapStateToProps,{fetchUserReducer})(CaNhanQR)

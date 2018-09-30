@@ -13,7 +13,7 @@ findAccountById = (req, res) => {
     let accountId = req.params.accountId;
   
     baseController.findById(res, accountModel, accountId);
-  }
+}
 
 // find account by email
 findAccountByEmail = (req, res) => {

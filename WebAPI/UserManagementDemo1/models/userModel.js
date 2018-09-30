@@ -6,17 +6,25 @@ const userSchema = new Schema({
 
     accountId: {type: String, require: true},
 
-    name: {type: String, require: true},
+    name: {type: String},
 
-    birthday: {type: Date, require: true},
+    birthday: {type: Date},
 
     job: {type: String},
+
+    gender: {type: String},
+
+    phone : {type: String},
 
     address: {type: String},
 
     isBanned: {type: Boolean},
 
     rateStar: {type: Number, max: 5},
+    
+    nation: {type: String},
+
+    linkImage: {type: String},
 });
 
 const user = mongoose.model('user', userSchema);

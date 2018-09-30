@@ -8,6 +8,7 @@ import { StyleSheet,
     TouchableOpacity,
     Keyboard,
     Image,
+    AsyncStorage,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
 
@@ -15,7 +16,37 @@ import AppStyle from '../theme';
 const styles = AppStyle.StyleCaNhan;
     
 export default class CaNhan extends Component {
-    state = {  }
+    constructor(props){
+        super(props)
+        this.state = {
+            data:{
+                _id: '',
+                email:''
+            }
+        };
+        }
+
+        QRComponent = async()=>{
+            try {
+                const data = await AsyncStorage.getItem('data');
+                this.setState({data:JSON.parse(data)})
+                this.props.navigation.navigate('CaNhanQR',{data:this.state.data})
+            } catch (error) {
+                
+            }
+        }
+
+        TTComponent = async()=>{
+            try {
+                const data = await AsyncStorage.getItem('data');
+                this.setState({data:JSON.parse(data)})
+                this.props.navigation.navigate('CaNhanTT',{data:this.state.data})
+            } catch (error) {
+                
+            }
+        }
+
+        
     render() {
         return (
             <View style={styles.container}>
@@ -30,8 +61,9 @@ export default class CaNhan extends Component {
                 <ScrollView>
                 {/* Thông tin cá nhân */}
                     <TouchableOpacity onPress={() => {
-                                this.props.navigation.navigate('CaNhanTT')
-                            }}>
+                        // this.props.navigation.navigate('CaNhanTT')
+                        this.TTComponent()
+                    }}>
                         <View style={styles.item}>
                             <Icon type='Feather' name='user' style={styles.iconLeft}/>
                             <View style={styles.viewText}>
@@ -42,8 +74,8 @@ export default class CaNhan extends Component {
                     </TouchableOpacity>  
                     {/* Mã QR của tôi */}
                     <TouchableOpacity onPress={() => {
-                                this.props.navigation.navigate('CaNhanQR')
-                            }}>
+                        this.QRComponent();
+                    }}>
                         <View style={styles.item}>
                             <Icon type='MaterialCommunityIcons' name='qrcode' style={styles.iconLeft}/>
                             <View style={styles.viewText}>
@@ -53,7 +85,9 @@ export default class CaNhan extends Component {
                         </View>
                     </TouchableOpacity> 
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        this.props.navigation.navigate('DangNhap')
+                    }}>
                         <View style={styles.loutitem}>
                             <Icon type='Feather' name='log-out' style={styles.iconLeft}/>
                             <View style={styles.viewText}>
