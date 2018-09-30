@@ -1,5 +1,4 @@
 let userController = require('../controllers/userController');
-
 let express = require('express');
 
 let router = express.Router();

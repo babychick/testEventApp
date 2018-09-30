@@ -40,6 +40,20 @@ findById = (res, model, id) => {
     });
 }
 
+// find by key-value
+findByKeyValue = (res, model, object) => {
+
+    model.find(object)
+        .then(data => {
+            res.send(data);
+            console.log(data);
+        })
+        .catch(err => {
+            res.send("failed");
+            console.log("Error: " + err);
+        })
+} 
+
 // update user info
 updateOne = (res, model, object) => {
 
@@ -72,6 +86,7 @@ module.exports = {
   addOne,
   findAll,
   findById,
+  findByKeyValue,
   updateOne,
   deleteOne
 }
