@@ -86,7 +86,7 @@ module.exports = {
   addOne,
   findAll,
   findById,
-  findByKeyValue,
   updateOne,
-  deleteOne
+  deleteOne,
+  findByKeyValue
 }

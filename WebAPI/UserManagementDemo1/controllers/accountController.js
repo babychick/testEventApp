@@ -13,14 +13,22 @@ findAccountById = (req, res) => {
     let accountId = req.params.accountId;
   
     baseController.findById(res, accountModel, accountId);
-  }
+}
 
 // find account by email
 findAccountByEmail = (req, res) => {
+    let email = req.params.email;
+    console.log(email);
 
-    let obj = {email: req.params.email};
-
-    baseController.findByKeyValue(res, accountModel, obj);
+    accountModel.find({email: email}).limit(1)
+        .then(data => {
+            res.send(data);
+            console.log(data);
+        })
+        .catch(err => {
+            res.send("failed!");
+            console.log("Error: " + err);
+        });
 }
 
 module.exports = {

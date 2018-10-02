@@ -1,6 +1,6 @@
 let eventController = require('../controllers/eventController');
 
-const express = require('express');
+let express = require('express');
 
 let router = express.Router();
 
