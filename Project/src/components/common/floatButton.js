@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Icon } from 'native-base';
 
 class FloatButton extends React.Component {
     render() {
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
         paddingRight: 16,
         borderRadius: 28,
         justifyContent: 'center',
-        backgroundColor: 'teal'
+        backgroundColor: 'teal' 
     },
     icon: {
         width: 24,

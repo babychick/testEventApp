@@ -1,12 +1,12 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Icon } from 'native-base';
 
 class TextBox extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <Icon iconStyle={styles.icon} type={this.props.type} name={this.props.name}></Icon>
+                <Icon style={styles.icon} size={24} type={this.props.type} name={this.props.name}></Icon>
                 <TextInput underlineColorAndroid='rgba(0,0,0,0)' style={styles.text} value={this.props.value} placeholder={this.props.placeholder}></TextInput>
             </View>
         );
@@ -22,8 +22,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     icon: {
-        width: 24,
-        height: 24,
         color: 'teal',
         justifyContent: 'center'
     },
