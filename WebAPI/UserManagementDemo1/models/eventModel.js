@@ -8,9 +8,13 @@ let eventSchema = new Schema({
 
     eventName: {type: String, require: true},
 
+    eventType: {type: String, require: true},
+
     location: {type: String, require: true},
 
-    eventType: {type: String, require: true},
+    date: {type: Date, require: Date.now},
+
+    time: {type: String, require: true},
 
     member: {type: Number, require: true},
 

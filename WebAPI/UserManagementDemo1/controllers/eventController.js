@@ -15,8 +15,8 @@ findAllEvent = (req, res) => {
 }
 
 // find event by Id
-findById = (req, res) => {
-    let eventId = req.param.eventId;
+findEventById = (req, res) => {
+    let eventId = req.params.eventId;
 
     baseController.findById(res, eventModel, eventId);
 }
@@ -30,7 +30,7 @@ updateEvent = (req, res) => {
 
 // delete event
 deleteEvent = (req, res) => {
-    let eventId = req.param.eventId;
+    let eventId = req.params.eventId;
 
     baseController.deleteOne(res, eventModel, eventId);
 }
@@ -38,7 +38,7 @@ deleteEvent = (req, res) => {
 module.exports = {
     addOneEvent,
     findAllEvent,
-    findById,
+    findEventById,
     updateEvent,
     deleteEvent
 }
