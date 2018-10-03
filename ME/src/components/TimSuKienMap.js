@@ -74,7 +74,6 @@ export default class TimSuKienMap extends Component {
                         strokeWidth={5}
                         strokeColor="#0066b0"
                     />
-                    
                 </MapView>
             </View>
         );

@@ -20,7 +20,9 @@ let eventSchema = new Schema({
 
     status: {type: String, default: ""},
 
-    description: {type: String, default: ""}
+    description: {type: String, default: ""},
+
+    linkImage: {type: String, require: true},
 });
 
 let event = mongoose.model('event', eventSchema);

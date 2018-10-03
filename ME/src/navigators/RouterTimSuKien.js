@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation';
 import TimSuKienChiTietChuDe from '../components/TimSuKienChiTietChuDe';
 import TimSuKien from '../components/TimSuKien';
 import TimSuKienMap from '../components/TimSuKienMap';
+import TimSuKienNguoiDung from '../components/TimSuKienNguoiDung';
 import RouterTabTimSuKien from '../navigators/RouterTabTimSuKien';
 import {
     Dimensions
@@ -24,6 +25,11 @@ export default RouterTimSuKien = createStackNavigator(
             }
         },TimSuKienMap: {
             screen: TimSuKienMap,
+            navigationOptions : {
+                header: null
+            }
+        }, TimSuKienNguoiDung: {
+            screen: TimSuKienNguoiDung,
             navigationOptions : {
                 header: null
             }
