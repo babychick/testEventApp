@@ -130,6 +130,20 @@ const StyleTimSuKienChiTietChuDe = StyleSheet.create({
         textAlign: 'center',
         alignItems: 'center',
         // marginVertical: 10
+    },maplocation:{
+        width:WIDTH,
+        height: 100,
+        // marginVertical: 50,
+    }, subContainerlocation: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#cfcfcf',
+        paddingVertical: 16,
+        flexDirection: 'column'
+    }, subHeadinglocation: {
+        height: 32,
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlignVertical: 'center'
     }
 });
 export default StyleTimSuKienChiTietChuDe;

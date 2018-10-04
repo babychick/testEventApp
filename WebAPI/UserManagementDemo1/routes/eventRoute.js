@@ -9,5 +9,6 @@ router.get('/findAllEvent', eventController.findAllEvent);
 router.get('/:eventId', eventController.findEventById);
 router.put('/updateEvent', eventController.updateEvent);
 router.delete('/:eventId', eventController.deleteEvent);
+router.post('/findByKeyValue', eventController.findByKeyValue);
 
 module.exports = router;

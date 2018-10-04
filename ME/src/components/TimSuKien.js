@@ -28,11 +28,15 @@ export default class TimSuKien extends Component {
                     'Biểu diễn',
                     'Sách',
                     'Thời trang',
-                    'Triễn lãm'];
+                    'Triễn lãm',
+                    'Huong Nghiep',
+                    'Giai tri',
+                    'Van hoa, Giao duc'];
         this.state = {
             selected: 'Ẩm thực',
             isVisible: false,
-            eventList: []
+            eventList: [],
+            eventList1: []
         };
     }
 
@@ -56,6 +60,27 @@ export default class TimSuKien extends Component {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    async findEvent(){
+        try {
+            await fetch(url+'event/findByKeyValue', {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({eventType: this.state.selected}),
+			})
+            .then( data => data.json())
+                .then( dataJson => {
+                    this.setState({
+                        eventList: dataJson
+                    });
+                })
+		} catch (error) {
+            alert(error);
+		}
     }
     render() {
         return (
@@ -81,7 +106,10 @@ export default class TimSuKien extends Component {
                             {this.renderchude()}
                         </Picker>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                            this.findEvent()
+                            // alert(JSON.stringify(this.state.eventList))
+                        }}>
                         <View style={styles.viewtext}>
                             <Text style={styles.textcombo}>Tìm sự kiện</Text>
                         </View> 

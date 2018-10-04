@@ -47,6 +47,18 @@ export default class TimSuKienMap extends Component {
                     >
                     <MapView.Marker 
                         coordinate={{
+                            latitude: 9.969066,
+                            longitude: 105.690211
+                        }}
+                        title={'Đại học Cần Thơ'}
+                        description={"3/2 Xuân Khánh - Ninh Kiều - Cần Thơ"}
+                        onPress={() => {
+                            this.props.navigation.navigate('TimSuKienChiTietChuDe');
+                        }}
+                    />
+
+                    <MapView.Marker 
+                        coordinate={{
                             latitude: 10.031114,
                             longitude: 105.771645,
                         }}
@@ -60,8 +72,8 @@ export default class TimSuKienMap extends Component {
                     <MapViewDirections
                         origin={
                             {
-                                latitude: 9.969066,
-                            longitude: 105.690211
+                            latitude: 10.031114,
+                            longitude: 105.771645,
                             }
                         }
                         destination={

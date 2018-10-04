@@ -26,7 +26,15 @@ export default class TimSuKienChiTietChuDe extends Component {
         super(props)
         this.state = {
             data : this.props.navigation.state.params.data,
-            name: ''
+            name: '',
+            originCoords: {
+                latitude: 0,
+                longitude: 0
+            },
+            destinationCoords: {
+                latitude: 0,
+                longitude: 0
+            }
         };
     }
 
@@ -104,15 +112,6 @@ export default class TimSuKienChiTietChuDe extends Component {
 
                         </View>
 
-                        <View style={styles.subContainer}>
-                            <Text style={styles.subHeading}>Địa điểm</Text>
-                            <TouchableOpacity onPress={() => {
-                                this.refs.showMap.open()
-                            }}>
-                                <Text style={{fontSize: 14, marginLeft: 16, textAlignVertical: 'bottom', }}>{this.state.data.location}</Text>
-                            </TouchableOpacity>
-                        </View>
-
                         <View style={[styles.subContainer, { flexDirection: 'row' }]}>
                             <Text style={styles.subHeading}>Thành viên</Text>
                             <Text style={[styles.content, {marginTop: 5}]}>40</Text>
@@ -126,6 +125,33 @@ export default class TimSuKienChiTietChuDe extends Component {
                         <View style={styles.subContainer}>
                             <Text style={styles.subHeading}>Mô tả</Text>
                             <Text style={{fontSize: 14, marginLeft: 16, textAlignVertical: 'bottom', }}>{this.state.data.description}</Text>
+                        </View>
+
+                        <View style={styles.subContainerlocation}>
+                            <Text style={styles.subHeadinglocation}>Địa điểm</Text>
+                            <TouchableOpacity onPress={() => {
+                                    this.refs.showMap.open()
+                                }}>
+                            <View  style={styles.maplocation} >
+                                    <MapView 
+                                        liteMode={true}
+                                        style={{ flex: 1 }}
+                                        initialRegion={{
+                                        latitude: 10.031114,
+                                        longitude: 105.771645,
+                                        latitudeDelta: 0.01,
+                                        longitudeDelta: 0.01,
+                                    }}
+                                    >
+                                        <MapView.Marker 
+                                            coordinate={{
+                                                latitude: 10.032422,
+                                                longitude: 105.781578,
+                                            }}
+                                        />
+                                    </MapView>
+                                </View>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </ScrollView>
@@ -149,10 +175,11 @@ export default class TimSuKienChiTietChuDe extends Component {
                                 longitudeDelta: 0.01,
                             }}
                             >
+                            
                             <MapView.Marker 
                                 coordinate={{
-                                    latitude: 10.031114,
-                                    longitude: 105.771645,
+                                    latitude: 10.032422,
+                                    longitude: 105.781578,
                                 }}
                                 title={this.state.data.eventName}
                                 description={this.state.data.location}
@@ -160,28 +187,33 @@ export default class TimSuKienChiTietChuDe extends Component {
                                     this.props.navigation.navigate('TimSuKienChiTietChuDe');
                                 }}
                             />
-
                             <MapViewDirections
                                 origin={
-                                    {
-                                        latitude: 9.969066,
-                                    longitude: 105.690211
-                                    }
+                                    this.state.originCoords
                                 }
                                 destination={
-                                    {
-                                        latitude: 9.969066,
-                                    longitude: 105.690211
-                                    }
+                                    this.state.destinationCoords
                                 }
                                 apikey={GOOGLE_MAPS_APIKEY}
                                 strokeWidth={5}
                                 strokeColor="#0066b0"
                             />
+
                         </MapView>
                     </View>
                     <View style={styles.modalButton}>
-                        <TouchableOpacity style={styles.modalButtonChiDuong}>
+                        <TouchableOpacity style={styles.modalButtonChiDuong} onPress={() => {
+                                this.setState({
+                                    originCoords: {
+                                        latitude: 10.031114,
+                                        longitude: 105.771645
+                                    },
+                                    destinationCoords: {
+                                        latitude: 10.032422,
+                                        longitude: 105.781578
+                                    }
+                                });
+                            }}>
                             <Text style={styles.modalTextChiDuong}>Chỉ đường</Text>
                             <Icon type='MaterialCommunityIcons' style={styles.modalIconChiDuong} name='directions-fork'/>
                         </TouchableOpacity>
