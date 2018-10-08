@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     subtitle_2: {
         fontSize: 13,
         marginTop: 16,
-        color: '#BDBDBD',
+        color: 'black',
         includeFontPadding: false
     },
     leftSubContainerContent: {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 16,
         fontSize: 12,
-        color: '#bdbdbd'
+        color: 'black'
     }
 });
 

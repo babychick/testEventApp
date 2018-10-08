@@ -1,9 +1,9 @@
 import { createStackNavigator } from 'react-navigation';
 
-import CaNhanTT from '../components/CaNhanTT';
-import CaNhanCapNhat from '../components/CaNhanCapNhat';
-import CaNhan from '../components/CaNhan';
-import CaNhanQR from '../components/CaNhanQR';
+import CaNhanTT from '../components/CaNhan/CaNhanTT';
+import CaNhanCapNhat from '../components/CaNhan/CaNhanCapNhat';
+import CaNhan from '../components/CaNhan/CaNhan';
+import CaNhanQR from '../components/CaNhan/CaNhanQR';
 
 import {
     Dimensions

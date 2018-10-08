@@ -9,6 +9,7 @@ export default class App extends React.Component {
   render() {
     return (
         <View style={styles.container}>
+          <View style={{height:24, backgroundColor:'teal'}}></View>
           <RouterDangNhap/>
         </View>
     );

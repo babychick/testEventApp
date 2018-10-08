@@ -18,11 +18,11 @@ const StyleTimSuKienNguoiDung = StyleSheet.create({
     },
      header :{
         width : WIDTH,
-        height:  HEIGHT*0.12,
+        height: 56,
         backgroundColor: '#00796B',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop: 24
+        // paddingTop: 24
     },iconheader1 :{
         fontSize: 35,
         color: '#FFFFFF', 

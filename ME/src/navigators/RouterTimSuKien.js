@@ -1,10 +1,10 @@
 import { createStackNavigator } from 'react-navigation';
 
 // import RouterTabTimSuKien from '../navigators/RouterTabTimSuKien';
-import TimSuKienChiTietChuDe from '../components/TimSuKienChiTietChuDe';
-import TimSuKien from '../components/TimSuKien';
-import TimSuKienMap from '../components/TimSuKienMap';
-import TimSuKienNguoiDung from '../components/TimSuKienNguoiDung';
+import TimSuKienChiTietChuDe from '../components/TimSuKien/TimSuKienChiTietChuDe';
+import TimSuKien from '../components/TimSuKien/TimSuKien';
+import TimSuKienMap from '../components/TimSuKien/TimSuKienMap';
+import TimSuKienNguoiDung from '../components/TimSuKien/TimSuKienNguoiDung';
 import RouterTabTimSuKien from '../navigators/RouterTabTimSuKien';
 import {
     Dimensions

@@ -3,11 +3,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'native-base';
 
 class FloatButton extends React.Component {
+
+    onPress
     render() {
         return (
-            <TouchableOpacity style={[this.props.style]}>
+            <TouchableOpacity style={[this.props.style]} onPress={this.props.onPressNew}>
                 <View style={styles.container}>
-                    <Icon iconStyle={styles.icon} name='add'></Icon>
+                    <Icon style={styles.icon} name='add'></Icon>
                 </View>
             </TouchableOpacity>
         );
@@ -22,12 +24,13 @@ const styles = StyleSheet.create({
         paddingRight: 16,
         borderRadius: 28,
         justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'teal' 
     },
     icon: {
         width: 24,
         height: 24,
-        color: '#fff'
+        color: '#ffffff'
     }
 });
 

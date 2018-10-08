@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation';
 import { DetailEvent } from '../components/event/detailEvent';
 import { Home } from '../components/home/home';
 import { Card } from '../components/common/card';
+import {NewEvent} from '../components/event/newEvent';
 
 export default HomeRouter = createStackNavigator({
     DetailEventScreen: {
@@ -19,6 +20,11 @@ export default HomeRouter = createStackNavigator({
     },
     Card: {
         screen: Card,
+        navigationOptions: {
+            header: null
+        }
+    }, NewEvent: {
+        screen: NewEvent,
         navigationOptions: {
             header: null
         }

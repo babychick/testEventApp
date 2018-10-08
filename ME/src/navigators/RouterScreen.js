@@ -16,7 +16,7 @@ import {
 
 
 
-import TimSuKien from '../components/TimSuKien';
+import TimSuKien from '../components/TimSuKien/TimSuKien';
 import RouterTimSuKien from '../navigators/RouterTimSuKien'
 // import QuanTri from '../components/QuanTri';
 import RouterHome from '../navigators/RouterHome'

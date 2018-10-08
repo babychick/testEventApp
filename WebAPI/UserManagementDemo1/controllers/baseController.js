@@ -3,12 +3,20 @@ addOne = (res, model, object) => {
 
   model.create(object)
     .then(data => {
-        res.send(data);
-        console.log("done");
+        // res.send(data);
+        // console.log("done");
+        res.send({
+            title: 'ok',
+            result: data
+        })
     })
     .catch(err => {
-        res.send("Failed to create an user!");
-        console.log("Error: " + err);
+        // res.send("Failed to create an user!");
+        // console.log("Error: " + err);
+        res.send({
+            title: 'err',
+            result: null
+        })
     });
 }
 
@@ -59,12 +67,20 @@ updateOne = (res, model, object) => {
 
   model.updateOne({_id:object._id}, object)
     .then(data => {
-        res.send(data);
-        console.log(data);
+        // res.send(data);
+        // console.log(data);
+        res.send({
+            title: 'ok',
+            result: data
+        })
     })
     .catch(err => {
-        res.send("failed!");
-        console.log("Error: " + err);
+        // res.send("failed!");
+        // console.log("Error: " + err);
+        res.send({
+            title: 'err',
+            result: null
+        })
     });
 }
 

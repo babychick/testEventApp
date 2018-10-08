@@ -8,7 +8,9 @@ class NewEvent extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <AppBar title="Tạo sự kiện"></AppBar>
+                <AppBar title="Tạo sự kiện" type='Entypo' name='check' goBack={() => {
+                            this.props.navigation.navigate('Home')
+                        }}></AppBar>
                 <View style={{paddingHorizontal: 16}}>
                     <TextBox type='MaterialIcons' name='home' placeholder='Tên sự kiện'></TextBox>
                     <TextBox type='MaterialIcons' name='subtitles' placeholder='Chủ đề'></TextBox>

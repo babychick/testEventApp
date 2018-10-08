@@ -11,8 +11,8 @@ import { StyleSheet,
 import { createMaterialTopTabNavigator } from 'react-navigation';
 import { Icon } from 'native-base';
 
-import TimSuKienChuDe from '../components/TimSuKienChuDe';
-import TimSuKienMap from '../components/TimSuKienMap';
+import TimSuKienChuDe from '../components/TimSuKien/TimSuKienChuDe';
+import TimSuKienMap from '../components/TimSuKien/TimSuKienMap';
 
 export default createMaterialTopTabNavigator({
     ChuDe: {

@@ -20,7 +20,7 @@ class AppBar extends React.Component {
                 </TouchableOpacity>
                 <Text style={styles.title}>{this.props.title}</Text>
                 <TouchableOpacity style={styles.actionItem}>
-                    <Icon type='MaterialIcons' style={{color: '#fff'}} name='edit'/>
+                    <Icon type={this.props.type} style={{color: '#fff'}} name={this.props.name}/>
                 </TouchableOpacity>                
             </View>
         );

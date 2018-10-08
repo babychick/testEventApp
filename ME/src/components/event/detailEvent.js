@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AppBar } from '../common/appBar';
 import { Color } from '../../assets/color';
-
+import url from '../../assets/url';
 class DetailEvent extends React.Component {
 
     constructor(props) {
@@ -14,7 +14,7 @@ class DetailEvent extends React.Component {
     }
 
     componentDidMount () {
-        fetch('http://192.168.1.23:3000/Event/' + this.state.eventId)
+        fetch(url+'event/' + this.state.eventId)
             .then(data => data.json())
             .then(dataJson => {
                 this.setState({
@@ -32,11 +32,11 @@ class DetailEvent extends React.Component {
                 <ScrollView>
                     <View>
                         <Image style={styles.image} source={require('../../assets/image/y_r1.jpg')} resizeMode='stretch'/>
-                        <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}>
+                        {/* <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}>
                             <View style={styles.shadowBox}>
                                 <Text style={styles.registerButton}>ĐĂNG KÝ</Text>
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     <View style={{paddingHorizontal: 16}}>
                         <Text style={styles.heading}>{this.state.event.eventName}</Text>
