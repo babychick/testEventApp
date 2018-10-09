@@ -13,6 +13,39 @@ const StyleTimSuKien = StyleSheet.create({
         // // marginTop: 24,
         backgroundColor:"#FFFFFF"
     },
+    viewtexttt:{
+        flex: 100,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        // // marginTop: 24,
+        backgroundColor:"#FFFFFF"
+    },texttt:{
+        fontSize: 20,
+        color: 'red'
+    }, viewbuttontt:{
+        // width:WIDTH * 0.5,
+        // height: 50,
+        marginTop: 5,
+        borderRadius: 20,
+        backgroundColor: '#00796B',
+        alignItems: 'center',
+    }, textbuttontt:{
+        // padding: 10,
+        fontSize: 16,
+        color: '#FFFFFF'
+    }, iconbuttontt:{
+        // padding: 10,
+        marginLeft: 5,
+        fontSize: 16,
+        color: '#FFFFFF'
+    },texticon:{
+        // flex: 1,
+        padding: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
      header :{
         width : WIDTH,
         height: 56,

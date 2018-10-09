@@ -45,21 +45,21 @@ export default class TimSuKienChiTietChuDe extends Component {
     }
 
     _getStore = async()=>{
-            try {
-                const store = await AsyncStorage.getItem('data');
-                this.setState({
-                    ...this.state,
-                    store : JSON.parse(store)
-                    })
-            } catch (error) {
-                
-            }
+        try {
+            const store = await AsyncStorage.getItem('data');
+            this.setState({
+                ...this.state,
+                store : JSON.parse(store)
+                })
+        } catch (error) {
+            
         }
+    }
 
     async componentWillMount(){
-        this._getStore()
-        this._isRegistered()
-       try {
+        await this._getStore()
+        await this._isRegistered()
+        try {
             fetch(url+'user/'+this.state.data.adminId)
                 .then( data => data.json())
                 .then( dataJson => {
@@ -122,13 +122,12 @@ export default class TimSuKienChiTietChuDe extends Component {
 			})
             .then( (response ) => response.json())
             .then( (responseJson) =>{
-            //    if(responseJson.userId == this.state.store._id){
-            //        this._disableRegister()
-            //    }
-            alert(JSON.stringify(responseJson.userId))
+               if(responseJson[0].userId == this.state.store._id){
+                   this._disableRegister()
+               }
             })
 		} catch (error) {
-            alert(error);
+            // alert(error);
 		}
     }
     render() {

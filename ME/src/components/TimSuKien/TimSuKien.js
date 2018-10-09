@@ -10,6 +10,7 @@ import { StyleSheet,
     Image,
     Picker,
     FlatList,
+    AsyncStorage,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
 import EventData from '../../data/EventData';
@@ -36,19 +37,20 @@ export default class TimSuKien extends Component {
             selected: 'Ẩm thực',
             isVisible: false,
             eventList: [],
-            eventList1: []
+            eventList1: [],
+            addInfo: false,
+            store: {
+                _id: '',
+                email:''
+            }
         };
     }
 
-    renderchude(){
-        items=[];
-        for(let item of chude){
-            items.push(<Picker.Item key={item} label = {item} value = {item}/>)
-        }
-        return items;
-    }
+    
 
     async componentWillMount () {
+        await this._getStore()
+        await this._isAddInfo()
         try {
             fetch(url+'event/findAllEvent')
                 .then( data => data.json())
@@ -60,6 +62,41 @@ export default class TimSuKien extends Component {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    _isAddInfo(){
+        try {
+            fetch(url+'account/email/'+this.state.store.email)
+                .then( data => data.json())
+                .then( dataJson => {
+                    this.setState({
+                        ...this.state,
+                        addInfo: dataJson[0].addInfo
+                    });
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    _getStore = async()=>{
+        try {
+            const store = await AsyncStorage.getItem('data');
+            this.setState({
+                ...this.state,
+                store : JSON.parse(store)
+                })
+        } catch (error) {
+            
+        }
+    }
+    
+    renderchude(){
+        items=[];
+        for(let item of chude){
+            items.push(<Picker.Item key={item} label = {item} value = {item}/>)
+        }
+        return items;
     }
 
     async findEvent(){
@@ -83,6 +120,32 @@ export default class TimSuKien extends Component {
 		}
     }
     render() {
+        if( this.state.addInfo == false){
+            return(
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <View style={styles.tenheader}>
+                            <Text style={styles.ten}>Tìm sự kiện</Text>
+                        </View>
+                    </View> 
+                    <View style={styles.viewtexttt}>
+                        <Text style={styles.texttt}>Bạn chưa cập nhật thông tin</Text>
+                        <View style={styles.viewbuttontt}>
+                            <TouchableOpacity onPress={() => 
+                                this.props.navigation.navigate('CaNhan')
+                            }>
+                                <View style={styles.texticon}>
+                                    <Text style={styles.textbuttontt}>Cập nhật thông tin</Text>
+                                    <Icon type='Feather' name='corner-down-right' style={styles.iconbuttontt}/>
+                                </View>
+                                
+                            </TouchableOpacity>
+                        </View>
+                        
+                    </View>
+                </View>
+            );
+        } else {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -91,6 +154,7 @@ export default class TimSuKien extends Component {
                     </View>
                     {/* <View> */}
                         <TouchableOpacity onPress={() => {
+                            // alert(JSON.stringify(this.state.addInfo))
                             this.props.navigation.navigate('TimSuKienMap')
                         }}>
                             <Icon type='Foundation' name='map' style={styles.icon}/>
@@ -133,6 +197,7 @@ export default class TimSuKien extends Component {
                 </View>
             </View>
         );
+        }
     }
 }
 
