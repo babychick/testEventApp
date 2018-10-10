@@ -15,14 +15,20 @@ app.use(bodyParser.json());
 const userRoute = require('./routes/userRoute');
 const eventRoute = require('./routes/eventRoute');
 const accountRoute = require('./routes/accountRoute');
-const registerRoute = require('./routes/registerRoute');
+const eventTypeRoute = require('./routes/eventTypeRoute');
+const attendeeRoute = require('./routes/attendeeRoute');
+const registrantRoute = require('./routes/registrantRoute');
+const scheduleRoute = require('./routes/scheduleRoute');
 
 connectDB.connect();
 
-app.use('/user', userRoute);
-app.use('/event', eventRoute);
-app.use('/account', accountRoute);
-app.use('/register', registerRoute);
+app.use('/User', userRoute);
+app.use('/Event', eventRoute);
+app.use('/Account', accountRoute);
+app.use('/EvenType', eventTypeRoute);
+app.use('/Attendee', attendeeRoute);
+app.use('/Registrant', registrantRoute);
+app.use('/Schedule', scheduleRoute);
 
 // localhost:port/api/v1/user/ ->
 

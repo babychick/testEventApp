@@ -15,17 +15,18 @@ findAllUser = (req, res) => {
 }
 
 // find by id
-findById = (req, res) => {
+findUserById = (req, res) => {
   let userId = req.params.userId;
 
   baseController.findById(res, userModel, userId);
 }
 
-// find key-value
-findByKeyValue = (req, res) => {
-  let obj = req.body;
+findUserByAccountId = (req, res) => {
+    let obj = {
+        accountId: req.body.accountId
+    }
 
-  baseController.findByKeyValue(res, userModel, obj);
+    baseController.findByKeyValue(res, userModel, obj);
 }
 
 // update user info
@@ -46,7 +47,7 @@ module.exports = {
     addOneUser,
     findAllUser,
     findById,
+    findUserByAccountId,
     updateUser,
-    deleteUser,
-    findByKeyValue
+    deleteUser
 }

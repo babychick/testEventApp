@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-let attendeeSchema = new Schema({
+let registrantSchema = new Schema({
 
     adminID: {type: String, require: true},
 
@@ -13,6 +13,6 @@ let attendeeSchema = new Schema({
     status: {type: Boolean, require: true}
 });
 
-let attendee = mongoose.model('attendee', attendeeSchema);
+let registrant = mongoose.model('registrant', registrantSchema);
 
-module.exports = attendee;
+module.exports = registrant;
