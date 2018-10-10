@@ -10,6 +10,7 @@ import { StyleSheet,
     Image,
     Picker,
     FlatList,
+    Animated,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
 import EventData from '../../data/EventData';
@@ -18,6 +19,9 @@ import MapViewDirections from 'react-native-maps-directions';
 const GOOGLE_MAPS_APIKEY = "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams";
 import AppStyle from '../../theme';
 const styles = AppStyle.StyleTimSuKienMap;
+
+import locations from '../../data/locations';
+
 export default class TimSuKienMap extends Component {
     
     render() {
@@ -45,7 +49,29 @@ export default class TimSuKienMap extends Component {
                         longitudeDelta: 0.01,
                     }}
                     >
-                    <MapView.Marker 
+
+                    {locations.map((marker, index) => {
+                        const coords = {
+                            latitude: marker.latitude,
+                            longitude: marker.longitude
+                        };
+                        return (
+                            <MapView.Marker
+                                key={index}
+                                coordinate={coords}
+                                title={marker.title}
+                                description={marker.description}
+                                // pinColor={marker.isDone ? '#0066b0' : '#ea4335'}
+                                // opacity={this.state.isFocus == index ? 1 : 0.5}
+                                onCalloutPress={() => {
+                                    alert(marker.title);
+                                }}
+                            >
+                            </MapView.Marker>
+                        );
+                    })
+                    }
+                    {/* <MapView.Marker 
                         coordinate={{
                             latitude: 9.969066,
                             longitude: 105.690211
@@ -55,7 +81,7 @@ export default class TimSuKienMap extends Component {
                         onPress={() => {
                             this.props.navigation.navigate('TimSuKienChiTietChuDe');
                         }}
-                    />
+                    /> */}
 
                     {/* <MapView.Marker 
                         coordinate={{
@@ -68,24 +94,6 @@ export default class TimSuKienMap extends Component {
                             this.props.navigation.navigate('TimSuKienChiTietChuDe');
                         }}
                     /> */}
-
-                    <MapViewDirections
-                        origin={
-                            {
-                            latitude: 10.031114,
-                            longitude: 105.771645,
-                            }
-                        }
-                        destination={
-                            {
-                                latitude: 9.969066,
-                            longitude: 105.690211
-                            }
-                        }
-                        apikey={GOOGLE_MAPS_APIKEY}
-                        strokeWidth={5}
-                        strokeColor="#0066b0"
-                    />
                 </MapView>
             </View>
         );

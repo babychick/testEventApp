@@ -38,7 +38,7 @@ export default class TimSuKien extends Component {
             isVisible: false,
             eventList: [],
             eventList1: [],
-            addInfo: false,
+            addInfo: true,
             store: {
                 _id: '',
                 email:''
