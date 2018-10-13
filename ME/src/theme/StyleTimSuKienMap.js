@@ -47,6 +47,61 @@ const StyleTimSuKienChuDeMap = StyleSheet.create({
         fontSize: 25,
         color: '#FFFFFF', 
         marginHorizontal: 16,
+    },
+    toolView: {
+        marginTop:80,
+        flexDirection: 'column',
+        paddingLeft: 8,
+        paddingRight: 8,
+        justifyContent:'center',
+        alignItems: 'center',
+        borderRadius: 20,
+        borderWidth: 0.5,
+        borderColor: '#00796B',
+        backgroundColor: 'rgba(250, 250, 250, 0.8)',
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        // width: 46
+    }, viewDetail:{
+        width: WIDTH - 64,
+        height: 80,
+        backgroundColor: '#FFFFFF',
+        flexDirection: 'column',
+        position: 'absolute',
+        bottom: 0,
+        marginHorizontal: 32,
+        marginBottom: 8,
+        borderWidth: 1,
+        borderRadius: 20,
+        borderColor: '#00796B',
+    }, viewTitle:{
+        // flex: 1,
+        width: WIDTH - 96,
+        flexDirection: 'row',
+        marginHorizontal: 16,
+        marginTop: 8,
+        justifyContent: 'space-between'
+    }, textTitle:{
+        fontSize: 16,
+        fontWeight: 'bold'
+    }, iconClose:{
+        // position: 'absolute',
+    }, viewDateTime:{
+        width: WIDTH - 96,
+        flexDirection: 'row',
+        marginHorizontal: 16,
+        marginTop: 8,
+    }, TextDateTime:{
+        fontSize: 12,
+        color: 'red'
+    }, viewAddress:{
+        width: WIDTH - 96,
+        marginHorizontal: 16,
+        // marginTop: 8,
+    }, textAddress:{
+        fontSize: 12,
+        color: '#696969'
     }
 });
 export default StyleTimSuKienChuDeMap;

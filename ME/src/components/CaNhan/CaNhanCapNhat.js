@@ -207,6 +207,7 @@ export default class CaNhanCapNhat extends Component {
                                 isVisible={this.state.isVisible}
                                 onConfirm={this.handlePiker}
                                 onCancel={this.hidePiker}
+                                maximumDate={new Date()}
                                 mode = {'date'}
                                 locale={'af-NA'}
                             />
