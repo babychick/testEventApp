@@ -1,1 +1,0 @@
-let connect = require('./connectDB');
