@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { StyleSheet, 
     Text, 
     View, 
@@ -13,43 +13,44 @@ import {
     Icon
 } from 'native-base';
 // import Icon from 'react-native-vector-icons/Ionicons';
-
-
-
 import TimSuKien from '../components/TimSuKien/TimSuKien';
-import RouterTimSuKien from '../navigators/RouterTimSuKien'
-// import QuanTri from '../components/QuanTri';
-import RouterHome from '../navigators/RouterHome'
+import RouterTimSuKien from '../navigators/RouterTimSuKien';
 import RouterCaNhan from '../navigators/RouterCaNhan';
-import SuKien from '../components/SuKien';
+import ManageRouter from '../navigators/ManageRouter';
+import CalendarScreen from '../navigators/CalendarRouter';
 
 export default createBottomTabNavigator({
     RouterTimSuKien: {
         screen: RouterTimSuKien,
         navigationOptions: {
             tabBarIcon:({tintColor}) =>{
-                    return(<Icon type='Ionicons' name='md-search' style={{ fontSize: 24, color: tintColor }} />);
-            }, title: 'Tìm sự kiện'
+                    return(<Icon type='MaterialIcons' name='home' style={{ fontSize: 24, color: tintColor }} />);
+            }, title: 'Trang chủ'
 		}
-    }, SuKien: {
-        screen: SuKien,
+    },
+    Calendar: {
+        screen: CalendarScreen,
         navigationOptions: {
-             tabBarIcon:({tintColor}) =>{
-                    return(<Icon type='Entypo' name='book' style={{ fontSize: 24, color: tintColor }} />);
-            }, title: 'Sự kiện', header: null
-		}
-    }, RouterHome:{
-        screen: RouterHome,
+            tabBarLabel: 'Lịch',
+            tabBarIcon: ({tintColor}) => (
+                <Icon name='calendar' type='Foundation' size={ 24 } style={{color: [tintColor]}}/>
+            ),
+        }
+    },
+    Manage: {
+        screen: ManageRouter,
         navigationOptions: {
-           tabBarIcon:({tintColor}) =>{
-                    return(<Icon type='Entypo' name='add-to-list' style={{ fontSize: 24, color: tintColor }} />);
-            }, title: 'Quản trị'
-		}
-    }, RouterCaNhan: {
+            tabBarLabel: 'Quản lý',
+            tabBarIcon: ({tintColor}) => (
+                <Icon name='clipboard-notes' type='Foundation' size={ 24 } style={{color: [tintColor]}}/>
+            )
+        }
+    },
+    RouterCaNhan: {
         screen: RouterCaNhan,
         navigationOptions: {
             tabBarIcon:({tintColor}) =>{
-                    return(<Icon type='MaterialCommunityIcons' name='face-profile' style={{ fontSize: 24, color: tintColor }} />);
+                    return(<Icon type='MaterialIcons' name='person' style={{ fontSize: 24, color: tintColor }} />);
             }, title: 'Cá nhân'
 		}
     }
