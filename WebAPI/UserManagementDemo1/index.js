@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static('uploads'));
 
 // routes
 const userRoute = require('./routes/userRoute');
@@ -19,6 +20,8 @@ const eventTypeRoute = require('./routes/eventTypeRoute');
 const attendeeRoute = require('./routes/attendeeRoute');
 const registrantRoute = require('./routes/registrantRoute');
 const scheduleRoute = require('./routes/scheduleRoute');
+const registerRoute = require('./routes/registerRoute');
+const upImageRouter = require('./routes/upImageRouter');
 
 connectDB.connect();
 
@@ -29,6 +32,8 @@ app.use('/EvenType', eventTypeRoute);
 app.use('/Attendee', attendeeRoute);
 app.use('/Registrant', registrantRoute);
 app.use('/Schedule', scheduleRoute);
+app.use('/register', registerRoute);
+app.use('/upload', upImageRouter);
 
 // localhost:port/api/v1/user/ ->
 

@@ -21,6 +21,8 @@ import moment from 'moment';
 import Modal from 'react-native-modalbox';
 import nation from '../../data/national';
 import url from '../../assets/url';
+
+import {ImagePicker} from 'expo'
 var ngayht = (new Date().getDate()) + '-' + (new Date().getMonth() + 1) + '-' + (new Date().getFullYear());
 export default class CaNhanCapNhat extends Component {
     constructor (props) {
@@ -32,6 +34,11 @@ export default class CaNhanCapNhat extends Component {
             isVisible: false,
             chonngay: moment(this.props.navigation.state.params.data.birthday).format('DD-MM-YYYY'),
             data : this.props.navigation.state.params.data,
+            fileData:{
+                uri : null,
+                type: null,
+                name: null
+            }
         };
     }
 
@@ -105,7 +112,8 @@ export default class CaNhanCapNhat extends Component {
             isBanned : data.isBanned,
             rateStar : data.rateStar,
             nation : data.nation,
-            linkImage : data.linkImage
+            linkImage : data.linkImage,
+            image: null,
         }
     }
 
@@ -153,6 +161,66 @@ export default class CaNhanCapNhat extends Component {
         alert('Cập nhật thất bại vui lòng kiểm tra lại')
     }
 
+    _pickImage = async()=>{
+        const result = await ImagePicker.launchImageLibraryAsync({
+            allowEditting: true,
+            aspect: [4,3],
+        });
+
+        if(!result.cancelled) {
+            this.setState({
+                ...this.state,
+                data:{
+                    ...this.state.data,
+                    linkImage: result.uri
+                },
+                fileData: {
+                    uri : result.uri,
+                    type:  result.type,
+                    name:  result.name
+                }
+            })
+        }
+    }
+
+    // _upImage = async()=>{
+    //     // const data = new FormData();
+    //     // data.append('file', 'name');
+    //     // data.append('fileData', this.state.fileData);
+    //     var n =  Date.now(); 
+    //     var photo = {
+    //     uri: this.state.fileData.uri,
+    //     type: 'image/jpeg',
+    //     name: n+'photo.jpg',
+    //     // size: this.state.uri[0].size,
+    //     };
+    //     var form = new FormData();
+    //     form.append("fileData", photo);
+    //     // alert(data)
+    //     try {
+    //         await fetch(url+'upload', {
+	// 			method: 'POST',
+    //             headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'multipart/form-data',
+    //             },
+    //             body: form,
+	// 		})
+    //         .then( (response ) => response.json())
+    //         .then( (responseJson) =>{
+    //             this.setState({
+    //                 ...this.state,
+    //                 data:{
+    //                     ...this.state.data,
+    //                     linkImage: responseJson.filename
+    //                 },
+    //             })
+    //         });
+	// 	} catch (error) {
+    //         alert(err)
+	// 	}
+    // }
+
     render() {
         return (
             <View style = {styles.container}>
@@ -166,8 +234,9 @@ export default class CaNhanCapNhat extends Component {
                         </TouchableOpacity>
                         <Text style={styles.textheader}>Cập nhật thông tin</Text>
                         <TouchableOpacity onPress={() => {
-                            // alert(JSON.stringify(this._params()))
                             this._onPressCapNhat()
+                            // alert(JSON.stringify(this.state.fileData))
+                            // this._upImage()
                         }}>
                             <Icon type='Entypo' name='check' style={styles.iconheader2}/>
                         </TouchableOpacity>
@@ -176,12 +245,12 @@ export default class CaNhanCapNhat extends Component {
                     {/* <KeyboardAvoidingView style={{flex:1}}> */}
                         <ScrollView>
                         <View style={styles.suaanh}>
-                            <Image source = {{uri: this.state.data.linkImage}}
+                            <Image source = {{uri:this.state.data.linkImage}}
                                 style={styles.anhdaidien}
                             ></Image>
                             <TouchableOpacity onPress={() => {
-                            alert(JSON.stringify(this._params()))
-                        }}>
+                                this._pickImage()
+                            }}>
                             <Text style={styles.textchonanh}>Chọn ảnh</Text>
                             </TouchableOpacity>
                         </View>

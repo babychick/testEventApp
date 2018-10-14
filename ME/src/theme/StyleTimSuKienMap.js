@@ -86,12 +86,13 @@ const StyleTimSuKienChuDeMap = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold'
     }, iconClose:{
+        color: '#00796B'
         // position: 'absolute',
     }, viewDateTime:{
         width: WIDTH - 96,
         flexDirection: 'row',
         marginHorizontal: 16,
-        marginTop: 8,
+        // marginTop: 8,
     }, TextDateTime:{
         fontSize: 12,
         color: 'red'

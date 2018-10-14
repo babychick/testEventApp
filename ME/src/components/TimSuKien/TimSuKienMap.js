@@ -58,9 +58,6 @@ export default class TimSuKienMap extends Component {
                         <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
                     </TouchableOpacity>
                     <Text style={styles.textheader}>Sự kiện quanh đây</Text>
-                    {/* <TouchableOpacity>
-                        <Icon type='Entypo' name='check' style={styles.iconheader2}/>
-                    </TouchableOpacity> */}
                 </View>
 
                 <DateTimePicker
@@ -95,6 +92,10 @@ export default class TimSuKienMap extends Component {
                         latitudeDelta: 0.01,
                         longitudeDelta: 0.01,
                     }}
+                    onPress={() => this.setState({
+                        ...this.state,
+                        isHidenView: false,
+                    })}
                     >
 
                     {locations.map((marker, index) => {
@@ -106,8 +107,8 @@ export default class TimSuKienMap extends Component {
                             <MapView.Marker
                                 key={index}
                                 coordinate={coords}
-                                title={marker.title}
-                                description={marker.description}
+                                // title={marker.title}
+                                // description={marker.description}
                                 // pinColor={marker.isDone ? '#0066b0' : '#ea4335'}
                                 // opacity={this.state.isFocus == index ? 1 : 0.5}
                                 onCalloutPress={() => {

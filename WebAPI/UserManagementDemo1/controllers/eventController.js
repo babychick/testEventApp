@@ -30,6 +30,13 @@ findEventByName = (req, res) => {
     baseController.findByKeyValue(res, eventModel, obj);
 }
 
+// find key-value
+findByKeyValue = (req, res) => {
+  let obj = req.body;
+
+  baseController.findByKeyValue(res, eventModel, obj);
+}
+
 // update event info
 updateEvent = (req, res) => {
     let obj = req.body;
@@ -50,5 +57,6 @@ module.exports = {
     findEventById,
     findEventByName,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    findByKeyValue
 }

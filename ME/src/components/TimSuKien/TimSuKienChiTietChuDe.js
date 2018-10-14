@@ -29,6 +29,7 @@ export default class TimSuKienChiTietChuDe extends Component {
             data : this.props.navigation.state.params.data,
             name: '',
             isDisable: false,
+            colorDisable: '#00796B',
             originCoords: {
                 latitude: 0,
                 longitude: 0
@@ -89,8 +90,12 @@ export default class TimSuKienChiTietChuDe extends Component {
             .then( (response ) => response.json())
             .then( (responseJson) =>{
                if(responseJson.title == 'ok'){
-                   this._disableRegister()
-                   alert('Đăng ký thành công')
+                    this._disableRegister()
+                    alert('Đăng ký thành công')
+                    this.setState({
+                        ...this.state,
+                        colorDisable: '#696969'
+                    })
                }else{
                    alert('Đăng ký không thành công')
                }
@@ -103,7 +108,8 @@ export default class TimSuKienChiTietChuDe extends Component {
     _disableRegister(){
         this.setState({
             ...this.state,
-            isDisable: true
+            isDisable: true,
+            colorDisable: '#696969'
         })
     }
 
@@ -141,9 +147,6 @@ export default class TimSuKienChiTietChuDe extends Component {
                         <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
                         </TouchableOpacity>
                         <Text style={styles.textheader}>Chi tiết sự kiện</Text>
-                        {/* <TouchableOpacity>
-                            <Icon type='Ionicons' style={styles.iconheader2} name='md-map'/>
-                        </TouchableOpacity>   */}
                     </View>
                 </View>
                 <ScrollView style = {styles.duoi}>
@@ -157,7 +160,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                                 // alert((this.state.store._id))
                             }}>
                             <View>
-                                <Text style={styles.registerButton}>ĐĂNG KÝ</Text>
+                                <Text style={[styles.registerButton, {backgroundColor: this.state.colorDisable}]}>ĐĂNG KÝ</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

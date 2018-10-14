@@ -55,7 +55,6 @@ const StyleTimSuKienChiTietChuDe = StyleSheet.create({
         paddingHorizontal: 16,
         color: '#ffffff',
         textAlignVertical: 'center',
-        backgroundColor: '#00796B',
         borderRadius: 3,
     }, caption: {
         height: 24,
