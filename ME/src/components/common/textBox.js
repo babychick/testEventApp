@@ -7,7 +7,7 @@ class TextBox extends React.Component {
         return (
             <View style={styles.container}>
                 <Icon style={styles.icon} size={24} type={this.props.type} name={this.props.name}></Icon>
-                <TextInput underlineColorAndroid='rgba(0,0,0,0)' style={styles.text} value={this.props.value} placeholder={this.props.placeholder}></TextInput>
+                <TextInput keyboardType={this.props.keyboardType} underlineColorAndroid='rgba(0,0,0,0)' style={styles.text} value={this.props.value} placeholder={this.props.placeholder} placeholderTextColor='#959595'></TextInput>
             </View>
         );
     }
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
         width: Dimensions.get('screen').width - 76,
         height: 24,
         marginLeft: 20,
-        fontSize: 16,
+        fontSize: 18,
         color: '#000'
     }
 });
