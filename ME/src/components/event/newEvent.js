@@ -45,7 +45,7 @@ class NewEvent extends React.Component {
             endTime: moment().format('HH:mm'),
             member: null,
             description: null,
-            imageList: [],
+            linkImage: [],
             subject: ['Ẩm thực',
                 'Lễ hội',
                 'Dân gian',
@@ -123,16 +123,23 @@ class NewEvent extends React.Component {
 
     openImagePicker = async () => {
         let arr = [];
-
-        await ImagePicker.launchImageLibraryAsync({
+        arr = this.state.linkImage;
+        const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: false,
             base64: true,
             mediaTypes: 'Images',
             quality: 0.5
         })
-        .then(data => {
-            // chưa add code
-        })
+        // .then(data => {
+        //     // chưa add code
+        // })
+        if(!result.cancelled) {
+           arr.push(result.uri);
+           this.setState({
+                ...this.state,
+                linkImage: arr
+            })
+        }
     }
 
     selectDestination = (data, details = null) => {  
@@ -156,7 +163,10 @@ class NewEvent extends React.Component {
                     type='Entypo'
                     name='check'
                     goBack={() => { this.props.navigation.navigate(this.state.hostScreen) }}
-                    click={this.onSave} />
+                    click={
+                        // this.onSave
+                        alert(JSON.stringify(this.state.linkImage))
+                    } />
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
                     <KeyboardAvoidingView behavior='padding'>
