@@ -45,7 +45,12 @@ class NewEvent extends React.Component {
             endTime: moment().format('HH:mm'),
             member: null,
             description: null,
-            linkImage: [],
+            arrfileData:{
+                uri : null,
+                type: null,
+                name: null
+            },
+            linkImage: null,
             subject: ['Ẩm thực',
                 'Lễ hội',
                 'Dân gian',
@@ -122,24 +127,62 @@ class NewEvent extends React.Component {
     }
 
     openImagePicker = async () => {
-        let arr = [];
-        arr = this.state.linkImage;
+        // let arr = [];
+        // arr = this.state.linkImage;
         const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: false,
-            base64: true,
-            mediaTypes: 'Images',
-            quality: 0.5
-        })
-        // .then(data => {
-        //     // chưa add code
-        // })
+            aspect: [4,3],
+            // base64: true,
+            // mediaTypes: 'Images',
+            // quality: 0.5
+        });
+
         if(!result.cancelled) {
-           arr.push(result.uri);
+        //    arr.push(result.uri);
            this.setState({
                 ...this.state,
-                linkImage: arr
-            })
+                linkImage: result.uri,
+                arrfileData: {
+                    uri : result.uri,
+                    type:  result.type,
+                    name:  result.name
+                }
+            });
         }
+    }
+
+    _onPressUpLoad = async()=>{
+        var n =  Date.now(); 
+        var photo = {
+            uri: this.state.arrfileData.uri,
+            type: 'image/jpeg',
+            name: n+'photo.jpg',
+        };
+        var form = new FormData();
+        form.append("arrfileData", photo);
+        try {
+            await fetch(url+'upload/array', {
+				method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
+                },
+                body: form,
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
+                // this.setState({
+                //     ...this.state,
+                //     data:{
+                //         ...this.state.data,
+                //         linkImage: responseJson.filename
+                //     },
+                // })
+                // alert(JSON.stringify(responseJson))
+            });
+		} catch (error) {
+            // alert(err)
+		}
     }
 
     selectDestination = (data, details = null) => {  
@@ -165,7 +208,8 @@ class NewEvent extends React.Component {
                     goBack={() => { this.props.navigation.navigate(this.state.hostScreen) }}
                     click={
                         // this.onSave
-                        alert(JSON.stringify(this.state.linkImage))
+                        // this._onPressUpLoad()
+                        alert(JSON.stringify(this.state.arrfileData.uri))
                     } />
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
@@ -308,6 +352,20 @@ class NewEvent extends React.Component {
                                 <Text style={{ fontSize: 18, marginLeft: 20 }}>Thêm ảnh</Text>
                             </TouchableOpacity>
                         </View>
+
+                        {/* test up anh */}                        
+                        <View style={{ borderBottomWidth: 1 }}>
+                            <TouchableOpacity style={{ flexDirection: 'row', height: 56, paddingBottom: 16, paddingTop: 16 }} 
+                            onPress={() => {
+                                this._onPressUpLoad()
+                            }}
+                            >
+                                <Icon type='Entypo' name='images' style={{ color: 'teal' }}></Icon>
+                            </TouchableOpacity>
+                        </View>
+                        {/* test up anh */}  
+
+
                     </KeyboardAvoidingView>
                 </ScrollView>
             </View>

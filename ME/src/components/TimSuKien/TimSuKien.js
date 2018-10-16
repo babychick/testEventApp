@@ -203,13 +203,15 @@ export default class TimSuKien extends Component {
 
 class EventListItem extends Component{
     render(){
+        var ar = (JSON.stringify(this.props.item.linkImage)).split(',');
+        var image = ar[0].substr(1);
         return(       
             <View style={styles.viewlist}>
-                <Image source = {{uri: this.props.item.linkImage}}
+                <Image source = {{uri: image}}
                     style = {styles.listImage}>
                 </Image>
                 <View style={styles.viewInfo}>
-                    <Text style = {styles.listTextTitle}>{ this.props.item.eventName }</Text>
+                    <Text style = {styles.listTextTitle}>{this.props.item.eventName }</Text>
                     <Text style = {styles.listText}>{ this.props.item.date }</Text>
                     <Text style = {styles.listText}>{ this.props.item.location }</Text>
                 </View>

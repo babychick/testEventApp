@@ -21,12 +21,26 @@ router.post('/',upload.single('fileData'), (req, res,next) => {
    console.log('Error: ', err);
     // res.send(err)
   }else{
-//    console.log('File contents ',req.file.filename);
+   console.log('File contents ',req.file.filename);
     res.send({
         filename: req.file.filename
     })
   }
  });
 });
+
+router.post('/array', upload.array('arrfileData', 12), function (req, res, next) {
+  fs.readFile(req.file,(err, contents)=> {
+   if (err) {
+   console.log('Error: ', err);
+    // res.send(err)
+  }else{
+   console.log('File contents ',req.file.filename);
+    res.send({
+        filename: req.file.filename
+    })
+  }
+ });
+})
 
 module.exports = router;

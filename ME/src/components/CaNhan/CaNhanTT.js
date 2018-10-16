@@ -105,7 +105,7 @@ export default class CaNhanTT extends Component {
                     </View>
                     <View style={styles.khung}>
                         <View>
-                            <Image source = {{uri: this.state.linkImage}}
+                            <Image source = {{uri: url + this.state.linkImage}}
                                 style={styles.anhdaidien}
                             ></Image>
                         </View>

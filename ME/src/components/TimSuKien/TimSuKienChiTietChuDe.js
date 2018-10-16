@@ -11,6 +11,7 @@ import { StyleSheet,
     Picker,
     FlatList,
     AsyncStorage,
+    Dimensions,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
 import Modal from 'react-native-modalbox';
@@ -21,6 +22,7 @@ import url from '../../assets/url'
 import { MapView } from 'expo';
 import MapViewDirections from 'react-native-maps-directions';
 const GOOGLE_MAPS_APIKEY = "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams";
+import Swiper from 'react-native-swiper'
 
 export default class TimSuKienChiTietChuDe extends Component {
     constructor(props){
@@ -137,6 +139,7 @@ export default class TimSuKienChiTietChuDe extends Component {
 		}
     }
     render() {
+        var cars =["https://znews-photo-td.zadn.vn/w1024/Uploaded/rugtzn/2014_03_27/jakeolsonphotography1.jpg", "https://www.gettyimages.ca/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg","https://image.viettimes.vn/666x374/Uploaded/2018/haovna/2017_10_06/img_002059cba09c24d64__880_bzwt.jpg"];
         return (
             <View style={styles.container}>
                 <View style={styles.tren}>
@@ -151,7 +154,13 @@ export default class TimSuKienChiTietChuDe extends Component {
                 </View>
                 <ScrollView style = {styles.duoi}>
                     <View>
-                        <Image style={styles.image} source={{uri:this.state.data.linkImage}} resizeMode='cover'/>
+                        {/* <Image style={styles.image} source={{uri:this.state.data.linkImage}} resizeMode='cover'/> */}
+                        <Swiper autoplay height={Dimensions.get('window').height * 0.35}>
+                            {cars.map((item, key) => (
+                                // alert(item)
+                                <Image key={key} style={styles.image} source={{uri:item}} resizeMode='cover'/>
+                            ))}
+                        </Swiper>
                         <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
                             disabled={this.state.isDisable}
                              onPress={() => {

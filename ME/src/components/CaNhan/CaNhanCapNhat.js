@@ -32,6 +32,7 @@ export default class CaNhanCapNhat extends Component {
             selected: 'nam',
             nselected: 'Afghanistan',
             isVisible: false,
+            isSelectI: false,
             chonngay: moment(this.props.navigation.state.params.data.birthday).format('DD-MM-YYYY'),
             data : this.props.navigation.state.params.data,
             fileData:{
@@ -117,7 +118,7 @@ export default class CaNhanCapNhat extends Component {
         }
     }
 
-    async _onPressCapNhat(){
+    async _capNhatTT(){
         try {
             let data = this.state.data;
             let dt = await AsyncStorage.getItem('data');
@@ -136,15 +137,12 @@ export default class CaNhanCapNhat extends Component {
                 }else{
                     this._capNhatThatBai()
                 }
-                
-                // alert(JSON.stringify(responseJson))
             })
 		} catch (error) {
             this._capNhatThatBai()
             // alert(error)
 		}
     }
-
     
     _capNhatThanhCong(){
         Alert.alert(
@@ -170,9 +168,10 @@ export default class CaNhanCapNhat extends Component {
         if(!result.cancelled) {
             this.setState({
                 ...this.state,
+                isSelectI: true,
                 data:{
                     ...this.state.data,
-                    linkImage: result.uri
+                    linkImage: result.uri,
                 },
                 fileData: {
                     uri : result.uri,
@@ -183,45 +182,45 @@ export default class CaNhanCapNhat extends Component {
         }
     }
 
-    // _upImage = async()=>{
-    //     // const data = new FormData();
-    //     // data.append('file', 'name');
-    //     // data.append('fileData', this.state.fileData);
-    //     var n =  Date.now(); 
-    //     var photo = {
-    //     uri: this.state.fileData.uri,
-    //     type: 'image/jpeg',
-    //     name: n+'photo.jpg',
-    //     // size: this.state.uri[0].size,
-    //     };
-    //     var form = new FormData();
-    //     form.append("fileData", photo);
-    //     // alert(data)
-    //     try {
-    //         await fetch(url+'upload', {
-	// 			method: 'POST',
-    //             headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'multipart/form-data',
-    //             },
-    //             body: form,
-	// 		})
-    //         .then( (response ) => response.json())
-    //         .then( (responseJson) =>{
-    //             this.setState({
-    //                 ...this.state,
-    //                 data:{
-    //                     ...this.state.data,
-    //                     linkImage: responseJson.filename
-    //                 },
-    //             })
-    //         });
-	// 	} catch (error) {
-    //         alert(err)
-	// 	}
-    // }
+    _onPressCapNhat = async()=>{
+        var n =  Date.now(); 
+        var photo = {
+        uri: this.state.fileData.uri,
+        type: 'image/jpeg',
+        name: n+'photo.jpg',
+        };
+        var form = new FormData();
+        form.append("fileData", photo);
+        // alert(data)
+        try {
+            await fetch(url+'upload', {
+				method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
+                },
+                body: form,
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
+                // alert(responseJson.filename)
+                this.setState({
+                    ...this.state,
+                    data:{
+                        ...this.state.data,
+                        linkImage: responseJson.filename
+                    },
+                })
+                this._capNhatTT()
+
+            });
+		} catch (error) {
+            alert(err)
+		}
+    }
 
     render() {
+        uri = this.state.isSelectI == false ? url + this.state.data.linkImage : this.state.data.linkImage
         return (
             <View style = {styles.container}>
             {/* <KeyboardAvoidingView> */}
@@ -234,9 +233,9 @@ export default class CaNhanCapNhat extends Component {
                         </TouchableOpacity>
                         <Text style={styles.textheader}>Cập nhật thông tin</Text>
                         <TouchableOpacity onPress={() => {
-                            this._onPressCapNhat()
+                            // 
                             // alert(JSON.stringify(this.state.fileData))
-                            // this._upImage()
+                            this._onPressCapNhat()
                         }}>
                             <Icon type='Entypo' name='check' style={styles.iconheader2}/>
                         </TouchableOpacity>
@@ -245,9 +244,7 @@ export default class CaNhanCapNhat extends Component {
                     {/* <KeyboardAvoidingView style={{flex:1}}> */}
                         <ScrollView>
                         <View style={styles.suaanh}>
-                            <Image source = {{uri:this.state.data.linkImage}}
-                                style={styles.anhdaidien}
-                            ></Image>
+                            <Image source = {{uri:uri}} style={styles.anhdaidien}></Image> 
                             <TouchableOpacity onPress={() => {
                                 this._pickImage()
                             }}>
