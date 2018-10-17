@@ -21,6 +21,8 @@ var options = {
     }
 };
 
+var form = new FormData();
+
 class NewEvent extends React.Component {
     constructor(props) {
         super(props);
@@ -45,12 +47,8 @@ class NewEvent extends React.Component {
             endTime: moment().format('HH:mm'),
             member: null,
             description: null,
-            arrfileData:{
-                uri : null,
-                type: null,
-                name: null
-            },
             linkImage: null,
+            files: null,
             subject: ['Ẩm thực',
                 'Lễ hội',
                 'Dân gian',
@@ -127,8 +125,6 @@ class NewEvent extends React.Component {
     }
 
     openImagePicker = async () => {
-        // let arr = [];
-        // arr = this.state.linkImage;
         const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: false,
             aspect: [4,3],
@@ -136,30 +132,23 @@ class NewEvent extends React.Component {
             // mediaTypes: 'Images',
             // quality: 0.5
         });
-
         if(!result.cancelled) {
-        //    arr.push(result.uri);
-           this.setState({
+            var n =  Date.now(); 
+            var photo = {
+                uri: result.uri,
+                type: 'image/jpeg',
+                name: n+'photo.jpg',
+            };
+            form.append("fileData", photo);
+            this.setState({
                 ...this.state,
                 linkImage: result.uri,
-                arrfileData: {
-                    uri : result.uri,
-                    type:  result.type,
-                    name:  result.name
-                }
+                // upImageList: arrI,
             });
         }
     }
 
     _onPressUpLoad = async()=>{
-        var n =  Date.now(); 
-        var photo = {
-            uri: this.state.arrfileData.uri,
-            type: 'image/jpeg',
-            name: n+'photo.jpg',
-        };
-        var form = new FormData();
-        form.append("arrfileData", photo);
         try {
             await fetch(url+'upload/array', {
 				method: 'POST',
@@ -171,17 +160,19 @@ class NewEvent extends React.Component {
 			})
             .then( (response ) => response.json())
             .then( (responseJson) =>{
-                // this.setState({
-                //     ...this.state,
-                //     data:{
-                //         ...this.state.data,
-                //         linkImage: responseJson.filename
-                //     },
-                // })
-                // alert(JSON.stringify(responseJson))
+                var arrNameImage = [];
+                responseJson.forEach(function(element) {
+                    arrNameImage.push(element.originalname);
+                });
+                this.setState({
+                    ...this.state,
+                    files: arrNameImage
+                })
+                //files là arr tên của các hình ảnh, lưu cái này nữa tui get ra làm lấy được các ảnh trong arr đó
+                alert(JSON.stringify(this.state.files))
             });
 		} catch (error) {
-            // alert(err)
+            alert(err)
 		}
     }
 
@@ -207,9 +198,9 @@ class NewEvent extends React.Component {
                     name='check'
                     goBack={() => { this.props.navigation.navigate(this.state.hostScreen) }}
                     click={
-                        // this.onSave
+                        this.onSave
                         // this._onPressUpLoad()
-                        alert(JSON.stringify(this.state.arrfileData.uri))
+                        // alert(JSON.stringify(this.state.arrfileData.uri))
                     } />
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
