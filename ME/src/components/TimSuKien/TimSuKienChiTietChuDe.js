@@ -19,9 +19,9 @@ import EventData from '../../data/EventData';
 import AppStyle from '../../theme';
 const styles = AppStyle.StyleTimSuKienChiTietChuDe;
 import url from '../../assets/url'
-import { MapView } from 'expo';
+import { MapView, Location } from 'expo';
 import MapViewDirections from 'react-native-maps-directions';
-const GOOGLE_MAPS_APIKEY = "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams";
+const GOOGLE_MAPS_APIKEY = "AIzaSyDOslcGKfgI3sQ0sIiF3FZFEsK79Ms0C3o";
 import Swiper from 'react-native-swiper'
 
 export default class TimSuKienChiTietChuDe extends Component {
@@ -43,9 +43,31 @@ export default class TimSuKienChiTietChuDe extends Component {
             store: {
                 _id: '',
                 email:''
-            }
+            },
+            lat: 10.031114,
+            long: 105.771645
         };
     }
+
+    _getLocation = async() =>{
+        navigator.geolocation.getCurrentPosition(
+        (position) => {
+            this.setState({
+                lat: position.coords.latitude,
+                long: position.coords.longitude,
+            });
+        });
+    }
+
+    _getLocationAsync = async () => {
+        let location = await Location.getCurrentPositionAsync({});
+        this.setState(
+            {
+                lat: location.coords.latitude,
+                long: location.coords.longitude,
+            }
+        );
+    };
 
     _getStore = async()=>{
         try {
@@ -60,8 +82,10 @@ export default class TimSuKienChiTietChuDe extends Component {
     }
 
     async componentWillMount(){
+        this._getLocationAsync()
         await this._getStore()
         await this._isRegistered()
+        
         try {
             fetch(url+'user/'+this.state.data.adminId)
                 .then( data => data.json())
@@ -230,8 +254,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                                         liteMode={true}
                                         style={{ flex: 1 }}
                                         initialRegion={{
-                                        latitude: 10.031114,
-                                        longitude: 105.771645,
+                                        latitude: this.state.lat,
+                                        longitude: this.state.long,
                                         latitudeDelta: 0.01,
                                         longitudeDelta: 0.01,
                                     }}
@@ -262,8 +286,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                             // toolbarEnabled = {true}
                             style={{ flex: 1 }}
                             initialRegion={{
-                                latitude: 10.031114,
-                                longitude: 105.771645,
+                                latitude: this.state.lat,
+                                longitude: this.state.long,
                                 latitudeDelta: 0.01,
                                 longitudeDelta: 0.01,
                             }}

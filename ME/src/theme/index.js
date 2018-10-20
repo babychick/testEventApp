@@ -8,6 +8,7 @@ import StyleTimSuKienChuDe from './StyleTimSuKienChuDe';
 import StyleTimSuKienMap from './StyleTimSuKienMap';
 import StyleTimSuKienChiTietChuDe from './StyleTimSuKienChiTietChuDe';
 import StyleTimSuKienNguoiDung from './StyleTimSuKienNguoiDung'
+import StyleHome from './StyleHome'
 import StyleDangNhap from './StyleDangNhap';
 const AppStyle = {
     StyleCaNhanTT,
@@ -19,7 +20,8 @@ const AppStyle = {
     StyleTimSuKienMap,
     StyleTimSuKienChiTietChuDe,
     StyleDangNhap,
-    StyleTimSuKienNguoiDung
+    StyleTimSuKienNguoiDung,
+    StyleHome
 
 }
 export default AppStyle;

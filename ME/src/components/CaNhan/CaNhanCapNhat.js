@@ -39,7 +39,7 @@ export default class CaNhanCapNhat extends Component {
                 uri : null,
                 type: null,
                 name: null
-            }
+            }, 
         };
     }
 
@@ -183,40 +183,44 @@ export default class CaNhanCapNhat extends Component {
     }
 
     _onPressCapNhat = async()=>{
-        var n =  Date.now(); 
-        var photo = {
-        uri: this.state.fileData.uri,
-        type: 'image/jpeg',
-        name: n+'photo.jpg',
-        };
-        var form = new FormData();
-        form.append("fileData", photo);
-        // alert(data)
-        try {
-            await fetch(url+'upload', {
-				method: 'POST',
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data',
-                },
-                body: form,
-			})
-            .then( (response ) => response.json())
-            .then( (responseJson) =>{
-                // alert(responseJson.filename)
-                this.setState({
-                    ...this.state,
-                    data:{
-                        ...this.state.data,
-                        linkImage: responseJson.filename
+        if(this.state.isSelectI == true){
+            var n =  Date.now(); 
+            var photo = {
+            uri: this.state.fileData.uri,
+            type: 'image/jpeg',
+            name: n+'photo.jpg',
+            };
+            var form = new FormData();
+            form.append("fileData", photo);
+            // alert(data)
+            try {
+                await fetch(url+'upload', {
+                    method: 'POST',
+                    headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     },
+                    body: form,
                 })
-                this._capNhatTT()
-
-            });
-		} catch (error) {
-            alert(err)
-		}
+                .then( (response ) => response.json())
+                .then( (responseJson) =>{
+                    // alert(responseJson.filename)
+                    this.setState({
+                        ...this.state,
+                        data:{
+                            ...this.state.data,
+                            linkImage: responseJson.filename
+                        },
+                    })
+                    this._capNhatTT()
+                });
+            } catch (error) {
+                alert(error)
+            }
+        }else {
+            this._capNhatTT();
+        }
+        
     }
 
     render() {

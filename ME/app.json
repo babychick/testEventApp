@@ -1,11 +1,12 @@
 {
   "expo": {
     "sdkVersion": "27.0.0",
+    "facebookSchema":"fb2220517691301103",
     "android": {
       "package": "com.met.app",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams"
+          "apiKey": "AIzaSyDOslcGKfgI3sQ0sIiF3FZFEsK79Ms0C3o"
         }
       }
     }

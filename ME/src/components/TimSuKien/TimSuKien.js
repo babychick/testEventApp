@@ -38,6 +38,7 @@ export default class TimSuKien extends Component {
             isVisible: false,
             eventList: [],
             eventList1: [],
+            isFetching: false,
             addInfo: true,
             store: {
                 _id: '',
@@ -51,12 +52,17 @@ export default class TimSuKien extends Component {
     async componentWillMount () {
         await this._getStore()
         await this._isAddInfo()
+        await this._getEvent()
+    }
+
+    _getEvent= async()=>{
         try {
             fetch(url+'event/findAllEvent')
                 .then( data => data.json())
                 .then( dataJson => {
                     this.setState({
-                        eventList: dataJson
+                        eventList: dataJson,
+                        isFetching: false
                     });
                 })
         } catch (err) {
@@ -85,7 +91,8 @@ export default class TimSuKien extends Component {
             this.setState({
                 ...this.state,
                 store : JSON.parse(store)
-                })
+            })
+            alert(store)
         } catch (error) {
             
         }
@@ -118,6 +125,10 @@ export default class TimSuKien extends Component {
 		} catch (error) {
             alert(error);
 		}
+    }
+
+    onRefresh() {
+        this.setState({ isFetching: true }, function() { this._getEvent() });
     }
     render() {
         if( this.state.addInfo == false){
@@ -183,6 +194,8 @@ export default class TimSuKien extends Component {
                 <View style={styles.viewsukien}>
                     {/* <Text style={styles.title}>Gợi ý</Text> */}
                     <FlatList 
+                    onRefresh={() => this.onRefresh()}
+                    refreshing={this.state.isFetching}    
                     data = {this.state.eventList}
                     renderItem = {({item, index}) =>
                     <TouchableOpacity onPress={() => {

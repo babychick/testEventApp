@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Image, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -9,17 +9,6 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { Color } from '../../assets/color';
 import { ImagePicker } from 'expo';
 import url from '../../assets/url';
-
-var options = {
-    title: 'Select Avatar',
-    customButtons: [
-        { name: 'fb', title: 'Choose Photo from Facebook' },
-    ],
-    storageOptions: {
-        skipBackup: true,
-        path: 'images'
-    }
-};
 
 var form = new FormData();
 
@@ -41,8 +30,8 @@ class NewEvent extends React.Component {
             location: null,
             locationX: null,
             locationY: null,
-            startDate: moment().format('DD-MM-YYYY'),
-            endDate: moment().format('DD-MM-YYYY'),
+            startDate: moment().format('YYYY-MM-DD'),
+            endDate: moment().format('YYYY-MM-DD'),
             startTime: moment().format('HH:mm'),
             endTime: moment().format('HH:mm'),
             member: null,
@@ -69,6 +58,8 @@ class NewEvent extends React.Component {
     }
 
     onSave = () => {
+        console.log('voday');
+        {this.onPressUpLoad}
         fetch(url + 'event/addOneEvent', {
             method: 'POST',
             headers: {
@@ -80,13 +71,14 @@ class NewEvent extends React.Component {
                 eventName: this.state.eventName,
                 eventType: this.state.eventType,
                 location: this.state.location,
-                locationX: this.start.locationX,
-                locationY: this.start.locationY,
+                locationX: this.state.locationX,
+                locationY: this.state.locationY,
                 startDate: this.state.startDate,
                 endDate: this.state.endDate,
                 startTime: this.state.startTime,
                 endTime: this.state.endTime,
                 member: this.state.member,
+                linkImage: this.state.files,
                 description: this.state.description
             }),
         }).then(res => {
@@ -94,18 +86,21 @@ class NewEvent extends React.Component {
                 alert('Tạo thành công')
             }
         });
+        console.log(
+            this.state.startDate + " " + this.state.endDate
+        );
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
-            startDate: moment(date).format('DD-MM-YYYY'),
+            startDate: moment(date).format('YYYY-MM-DD'),
             isSDVisible: false
         })
     }
 
     handleEndDatePicker = (date) => {
         this.setState({
-            endDate: moment(date).format('DD-MM-YYYY'),
+            endDate: moment(date).format('YYYY-MM-DD'),
             isEDVisible: false
         })
     }
@@ -127,10 +122,7 @@ class NewEvent extends React.Component {
     openImagePicker = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: false,
-            aspect: [4,3],
-            // base64: true,
-            // mediaTypes: 'Images',
-            // quality: 0.5
+            aspect: [4,3]
         });
         if(!result.cancelled) {
             var n =  Date.now(); 
@@ -148,9 +140,9 @@ class NewEvent extends React.Component {
         }
     }
 
-    _onPressUpLoad = async()=>{
+    onPressUpLoad = ()=>{
         try {
-            await fetch(url+'upload/array', {
+             fetch(url+'upload/array', {
 				method: 'POST',
                 headers: {
                 'Accept': 'application/json',
@@ -169,9 +161,9 @@ class NewEvent extends React.Component {
                     files: arrNameImage
                 })
                 //files là arr tên của các hình ảnh, lưu cái này nữa tui get ra làm lấy được các ảnh trong arr đó
-                alert(JSON.stringify(this.state.files))
+                // alert(JSON.stringify(this.state.files))
             });
-		} catch (error) {
+		} catch (err) {
             alert(err)
 		}
     }
@@ -197,11 +189,7 @@ class NewEvent extends React.Component {
                     type='Entypo'
                     name='check'
                     goBack={() => { this.props.navigation.navigate(this.state.hostScreen) }}
-                    click={
-                        this.onSave
-                        // this._onPressUpLoad()
-                        // alert(JSON.stringify(this.state.arrfileData.uri))
-                    } />
+                    click={this.onSave} />
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
                     <KeyboardAvoidingView behavior='padding'>
@@ -343,20 +331,6 @@ class NewEvent extends React.Component {
                                 <Text style={{ fontSize: 18, marginLeft: 20 }}>Thêm ảnh</Text>
                             </TouchableOpacity>
                         </View>
-
-                        {/* test up anh */}                        
-                        <View style={{ borderBottomWidth: 1 }}>
-                            <TouchableOpacity style={{ flexDirection: 'row', height: 56, paddingBottom: 16, paddingTop: 16 }} 
-                            onPress={() => {
-                                this._onPressUpLoad()
-                            }}
-                            >
-                                <Icon type='Entypo' name='images' style={{ color: 'teal' }}></Icon>
-                            </TouchableOpacity>
-                        </View>
-                        {/* test up anh */}  
-
-
                     </KeyboardAvoidingView>
                 </ScrollView>
             </View>

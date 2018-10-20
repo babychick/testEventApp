@@ -17,7 +17,7 @@ import EventData from '../../data/EventData';
 import { MapView } from 'expo';
 import MapViewDirections from 'react-native-maps-directions';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-const GOOGLE_MAPS_APIKEY = "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams";
+const GOOGLE_MAPS_APIKEY = "AIzaSyDOslcGKfgI3sQ0sIiF3FZFEsK79Ms0C3o";
 import AppStyle from '../../theme';
 const styles = AppStyle.StyleTimSuKienMap;
 

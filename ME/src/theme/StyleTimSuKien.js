@@ -100,7 +100,8 @@ const StyleTimSuKien = StyleSheet.create({
         color: '#FFFFFF',
         padding: 5
     }, viewsukien:{
-        width: WIDTH
+        height: HEIGHT * 0.75,
+        width: WIDTH,
     }, viewlist: {
         flex:1, 
         flexDirection:'row',

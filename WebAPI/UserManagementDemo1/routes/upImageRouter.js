@@ -30,17 +30,6 @@ router.post('/',upload.single('fileData'), (req, res,next) => {
 });
 
 router.post('/array', upload.any(), function (req, res, next) {
-//   fs.readFile(req.file,(err, contents)=> {
-//    if (err) {
-//    console.log('Error: ', err);
-//     // res.send(err)
-//   }else{
-//    console.log('File contents ',req.file.filename);
-//     res.send({
-//         filename: req.file.filename
-//     })
-//   }
-//  });
   res.send(req.files)
 })
 

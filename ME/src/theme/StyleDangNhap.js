@@ -23,6 +23,22 @@ const StyleDangNhap = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
         textAlign: 'center'
+    }, viewdangnhap2:{
+        width: WIDTH-32,
+        marginTop: 20,
+        height: 40,
+        backgroundColor: 'red',
+        borderRadius: 15,
+        marginHorizontal: 16,
+        justifyContent: 'center',
+    }, viewdangnhap3:{
+        width: WIDTH-32,
+        marginTop: 20,
+        height: 40,
+        backgroundColor: 'blue',
+        borderRadius: 15,
+        marginHorizontal: 16,
+        justifyContent: 'center',
     }
 });
 export default StyleDangNhap;
