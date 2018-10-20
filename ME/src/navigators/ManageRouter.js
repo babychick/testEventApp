@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { NewEvent } from '../components/event/newEvent';
-import { EventManager } from '../components/event/eventManagement';
 import { DetailEvent } from '../components/event/detailEvent';
+import { EventManager } from '../components/event/eventManagement';
 
 export default ManageRouter = createStackNavigator({
     NewEventScreen: {

@@ -46,8 +46,6 @@ export default class TimSuKien extends Component {
         };
     }
 
-    
-
     async componentWillMount () {
         await this._getStore()
         await this._isAddInfo()
@@ -66,12 +64,12 @@ export default class TimSuKien extends Component {
 
     _isAddInfo(){
         try {
-            fetch(url+'account/email/'+this.state.store.email)
+            fetch( url + 'account/email/' + this.state.store.email)
                 .then( data => data.json())
                 .then( dataJson => {
                     this.setState({
                         ...this.state,
-                        addInfo: dataJson[0].addInfo
+                        addInfo: dataJson.addInfo
                     });
                 })
         } catch (err) {

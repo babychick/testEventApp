@@ -7,7 +7,12 @@ class TextBox extends React.Component {
         return (
             <View style={styles.container}>
                 <Icon style={styles.icon} size={24} type={this.props.type} name={this.props.name}></Icon>
-                <TextInput keyboardType={this.props.keyboardType} underlineColorAndroid='rgba(0,0,0,0)' style={styles.text} value={this.props.value} placeholder={this.props.placeholder} placeholderTextColor='#959595'></TextInput>
+                <TextInput keyboardType={this.props.keyboardType}
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            style={styles.text} value={this.props.value}
+                            placeholder={this.props.placeholder}
+                            placeholderTextColor='#959595'
+                            onChangeText={this.props.onChangeText}></TextInput>
             </View>
         );
     }

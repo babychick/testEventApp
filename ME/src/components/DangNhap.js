@@ -1,19 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, 
+import {
     Text, 
     View, 
-    ImageBackground, 
-    KeyboardAvoidingView, 
-    TextInput, 
     TouchableOpacity,
-    Keyboard,
-    Image,
-    AsyncStorage,
-    ScrollView  } from 'react-native';
-import {Icon} from 'native-base';
-import QRCode from 'react-native-qrcode';
-
+    AsyncStorage } from 'react-native';
 import AppStyle from '../theme';
+
 const styles = AppStyle.StyleDangNhap;
 
 export default class DangNhap extends Component {
@@ -24,8 +16,6 @@ export default class DangNhap extends Component {
                 _id: '5baf39270be9833d48edafd6',
                 email: 'longtb2@gmail.com'
             }
-            
-
         };
     }
 

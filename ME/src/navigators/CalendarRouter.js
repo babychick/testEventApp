@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
-import { DetailEvent } from '../components/event/detailEvent';
 import { NewEvent } from '../components/event/newEvent';
+import { DetailEvent } from '../components/event/detailEvent';
 import { CalendarScreen } from '../components/event/calendar';
 
 export default ManageRouter = createStackNavigator({

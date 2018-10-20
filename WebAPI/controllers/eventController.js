@@ -23,11 +23,19 @@ findEventById = (req, res) => {
 
 // find event by Name
 findEventByName = (req, res) => {
-    let obj = {
+    let queryString = {
         eventName: req.params.eventName
     }
 
-    baseController.findByKeyValue(res, eventModel, obj);
+    baseController.findByKeyValue(res, eventModel, queryString);
+}
+// find event by date
+findEventByDate = (req, res) => {
+    let queryString = {
+        startDate: req.params.startDate
+    }
+
+    baseController.findByKeyValue(res, eventModel, queryString);
 }
 
 // update event info
@@ -44,11 +52,31 @@ deleteEvent = (req, res) => {
     baseController.deleteOne(res, eventModel, eventId);
 }
 
+// delete all event
+deleteAllEvent = (req, res) => {
+    
+    eventModel.remove({})
+        .then(data => {
+            res.send({
+                title: 'ok',
+                data: 'Deleted all.'
+            });
+        })
+        .catch(err => {
+            res.send({
+                title: 'err',
+                data: 'Deleting failed!s'
+            });
+        })
+}
+
 module.exports = {
     addOneEvent,
     findAllEvent,
     findEventById,
     findEventByName,
+    findEventByDate,
     updateEvent,
-    deleteEvent
+    deleteEvent,
+    deleteAllEvent
 }

@@ -19,6 +19,7 @@ const eventTypeRoute = require('./routes/eventTypeRoute');
 const attendeeRoute = require('./routes/attendeeRoute');
 const registrantRoute = require('./routes/registrantRoute');
 const scheduleRoute = require('./routes/scheduleRoute');
+const upImageRouter = require('./routes/upImageRoute');
 
 connectDB.connect();
 
@@ -29,6 +30,7 @@ app.use('/EvenType', eventTypeRoute);
 app.use('/Attendee', attendeeRoute);
 app.use('/Registrant', registrantRoute);
 app.use('/Schedule', scheduleRoute);
+app.use('/upload', upImageRouter);
 
 // localhost:port/api/v1/user/ ->
 

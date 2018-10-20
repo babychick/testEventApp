@@ -26,7 +26,6 @@ class Card extends React.Component {
                 <Image style={styles.image} source={require('../../assets/image/y_r1.jpg')} resizeMode='stretch'/>
                 <View style={styles.subContainer}>
                     <View style={styles.leftSubContainer}>
-                        <Text style={[styles.leftSubContainerContent, {color: 'red'}]}>{this.props.status}</Text>
                         <Text style={styles.leftSubContainerContent}>{this.props.time}</Text>
                         <Text style={styles.leftSubContainerContent}>{this.props.date}</Text>
                     </View>

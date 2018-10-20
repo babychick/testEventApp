@@ -2,19 +2,12 @@ import React, {Component} from 'react';
 import { StyleSheet, 
     Text, 
     View, 
-    ImageBackground, 
-    KeyboardAvoidingView, 
-    TextInput, 
     TouchableOpacity,
-    Keyboard,
     Image,
-    Picker,
-    FlatList,
     AsyncStorage,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
 import Modal from 'react-native-modalbox';
-import EventData from '../../data/EventData';
 import AppStyle from '../../theme';
 const styles = AppStyle.StyleTimSuKienChiTietChuDe;
 import url from '../../assets/url'

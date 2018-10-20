@@ -1,17 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, 
+import { 
     Text, 
     View, 
-    ImageBackground, 
-    KeyboardAvoidingView, 
-    TextInput, 
     TouchableOpacity,
-    Keyboard,
-    Image,
     AsyncStorage,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
-
 import AppStyle from '../../theme';
 const styles = AppStyle.StyleCaNhan;
     

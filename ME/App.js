@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, AppRegistry } from 'react-native';
-import RouterDangNhap from './src/navigators/RouterDangNhap'
+import RouterDangNhap from './src/navigators/RouterDangNhap';
 
 export default class App extends React.Component {
     constructor(props) {
@@ -21,7 +21,6 @@ export default class App extends React.Component {
             SimpleLineIcons: require("native-base/Fonts/SimpleLineIcons.ttf"),
             Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
         });
-        this.setState({ isReady: true });
     }
 
     render() {
@@ -39,5 +38,3 @@ const styles = StyleSheet.create({
         flex: 1
     },
 });
-
-AppRegistry.registerComponent('ME', () => App);
