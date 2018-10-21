@@ -147,7 +147,7 @@ export default class TimSuKienNguoiDung extends Component {
                                     <View style={styles.canhchu}>
                                         <Text style={styles.tt}>{this.state.address}</Text>
                                     </View>
-                                        <Icon type='MaterialIcons' name='navigate-next' style={styles.iconNext}/>
+                                        {/* <Icon type='MaterialIcons' name='navigate-next' style={styles.iconNext}/> */}
                                 </View>
                             </TouchableOpacity>
                         </View>

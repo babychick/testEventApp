@@ -23,8 +23,16 @@ findAccountByEmail = (req, res) => {
     baseController.findByKeyValue(res, accountModel, obj);
 }
 
+// update user info
+updateAccount = (req, res) => {
+  let obj = req.body;
+
+  baseController.updateOne(res, accountModel, obj);
+}
+
 module.exports = {
     addOneAccount,
     findAccountById,
-    findAccountByEmail
+    findAccountByEmail,
+    updateAccount
 }

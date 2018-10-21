@@ -86,7 +86,7 @@ export default class DangNhap extends Component {
             await fetch(url+'account/email/'+this.state.data.email)
                 .then( data => data.json())
                 .then( dataJson => {
-                    if(dataJson == null){
+                    if(dataJson[0] != null){
                         this.setState({
                             ...this.state,
                             data:{
@@ -97,9 +97,12 @@ export default class DangNhap extends Component {
                        console.log('old ' +dataJson[0]._id )
                     this.saveData();
                     this.props.navigation.navigate('RouterTimSuKien');
+                    // alert('Có r')
                     } else {
                         this.addAccount();
+                        // alert('chưa có')
                     }
+                    // console.log(dataJson)
                 })
         } catch (err) {
             console.log(err)
@@ -171,31 +174,27 @@ export default class DangNhap extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <TouchableOpacity  onPress={() => {
+                {/* <TouchableOpacity  onPress={() => {
                         this.saveData()
                         this.props.navigation.navigate('RouterTimSuKien')
                     }}>
                     <View style={styles.viewdangnhap}>
                         <Text style={styles.textdangnhap}>ĐĂNG NHẬP</Text>
                     </View>
-                </TouchableOpacity>
-
+                </TouchableOpacity> */}
+                <View style={styles.viewLogo}>
+                    <View style={styles.logo}>
+                        <Text style={styles.textLogo}>SK</Text>
+                    </View>
+                    <Text style={styles.text}>Quàn lý sự kiện</Text>
+                </View>
                 <TouchableOpacity  onPress={() => {
                     this.SignInGG()
                     }}>
                     <View style={styles.viewdangnhap2}>
-                        <Text style={styles.textdangnhap}>GOOGLE</Text>
+                        <Text style={styles.textdangnhap}>Đăng nhập với Google</Text>
                     </View>
                 </TouchableOpacity>
-
-                {/* <TouchableOpacity  onPress={() => {
-                    this.SignInFB()
-                    }}>
-                    <View style={styles.viewdangnhap3}>
-                        <Text style={styles.textdangnhap}>FACEBOOK</Text>
-                    </View>
-                </TouchableOpacity> */}
-
             </View>
         )
     }

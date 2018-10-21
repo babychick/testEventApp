@@ -40,6 +40,7 @@ export default class CaNhanCapNhat extends Component {
                 type: null,
                 name: null
             }, 
+            addif: false
         };
     }
 
@@ -143,6 +144,27 @@ export default class CaNhanCapNhat extends Component {
             // alert(error)
 		}
     }
+
+    async  _capNhatAddInfo(){
+        try {
+            let data = this.state.data;
+            let dt = await AsyncStorage.getItem('data');
+            await fetch(url+'account/updateAccount', {
+				method: 'PUT',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({
+                    _id : this.state.data.data._id,
+                    addInfo : true, 
+                    email: this.state.data.data.email
+                }),
+			})
+		} catch (error) {
+            console.log(err);
+		}
+    }
     
     _capNhatThanhCong(){
         Alert.alert(
@@ -212,15 +234,34 @@ export default class CaNhanCapNhat extends Component {
                             linkImage: responseJson.filename
                         },
                     })
-                    this._capNhatTT()
+                    this._capNhatTT();
                 });
             } catch (error) {
                 alert(error)
             }
         }else {
+            this._capNhatAddInfo()
             this._capNhatTT();
         }
-        
+    }
+
+    checkUpFull = async() =>{
+        if(
+            this.state.data.name != '' &&
+            this.state.data.birthday != null &&
+            this.state.data.job != '' &&
+            this.state.data.phone != '' &&
+            this.state.data.address != '' &&
+            this.state.data.linkImage !='' )
+            {
+                this.setState({
+                    ...this.state,
+                    addif: true
+                })
+                this._onPressCapNhat();
+            } else {
+                alert('Bạn phải cập nhật đầy đủ thông tin')
+            }
     }
 
     render() {
@@ -239,7 +280,8 @@ export default class CaNhanCapNhat extends Component {
                         <TouchableOpacity onPress={() => {
                             // 
                             // alert(JSON.stringify(this.state.fileData))
-                            this._onPressCapNhat()
+                            // this._onPressCapNhat()
+                            this.checkUpFull()
                         }}>
                             <Icon type='Entypo' name='check' style={styles.iconheader2}/>
                         </TouchableOpacity>
@@ -300,6 +342,7 @@ export default class CaNhanCapNhat extends Component {
                                 placeholder = {this.state.data.phone}
                                 placeholderTextColor = {'#818181'}
                                 underlineColorAndroid= 'rgba(0,0,0,0)'
+                                keyboardType ='numeric'
                                 onChangeText = {this.handlePhone}
                              ></TextInput>
                         </View>

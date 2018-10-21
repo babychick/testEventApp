@@ -48,6 +48,12 @@ export default class TimSuKien extends Component {
     }
 
     
+    // async componentDidUpdate () {
+    //     await this._getStore()
+    //     await this._isAddInfo()
+    //     // await this._getEvent()
+    //     alert('did update')
+    // }
 
     async componentWillMount () {
         await this._getStore()
@@ -92,7 +98,7 @@ export default class TimSuKien extends Component {
                 ...this.state,
                 store : JSON.parse(store)
             })
-            alert(store)
+            // alert(store)
         } catch (error) {
             
         }
