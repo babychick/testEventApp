@@ -21,14 +21,16 @@ const styles = AppStyle.StyleTimSuKienChiTietChuDe;
 import url from '../../assets/url'
 import { MapView, Location } from 'expo';
 import MapViewDirections from 'react-native-maps-directions';
-const GOOGLE_MAPS_APIKEY = "AIzaSyDOslcGKfgI3sQ0sIiF3FZFEsK79Ms0C3o";
-import Swiper from 'react-native-swiper'
+const GOOGLE_MAPS_APIKEY = "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams";
+import Swiper from 'react-native-swiper';
+import moment from 'moment';
 
 export default class TimSuKienChiTietChuDe extends Component {
     constructor(props){
         super(props)
         this.state = {
             data : this.props.navigation.state.params.data,
+            location: this.props.navigation.state.params.location,
             name: '',
             isDisable: false,
             colorDisable: '#00796B',
@@ -44,11 +46,10 @@ export default class TimSuKienChiTietChuDe extends Component {
                 _id: '',
                 email:''
             },
-            lat: 10.031114,
-            long: 105.771645
+            // lat: 10.031114,
+            // long: 105.771645
         };
     }
-
     _getLocation = async() =>{
         navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -59,15 +60,15 @@ export default class TimSuKienChiTietChuDe extends Component {
         });
     }
 
-    _getLocationAsync = async () => {
-        let location = await Location.getCurrentPositionAsync({});
-        this.setState(
-            {
-                lat: location.coords.latitude,
-                long: location.coords.longitude,
-            }
-        );
-    };
+    // _getLocationAsync = async () => {
+    //     let location = await Location.getCurrentPositionAsync({});
+    //     this.setState(
+    //         {
+    //             lat: location.coords.latitude,
+    //             long: location.coords.longitude,
+    //         }
+    //     );
+    // };
 
     _getStore = async()=>{
         try {
@@ -82,10 +83,9 @@ export default class TimSuKienChiTietChuDe extends Component {
     }
 
     async componentWillMount(){
-        this._getLocationAsync()
+        console.log(this.state.data.locationY)
         await this._getStore()
         await this._isRegistered()
-        
         try {
             fetch(url+'user/'+this.state.data.adminId)
                 .then( data => data.json())
@@ -163,7 +163,12 @@ export default class TimSuKienChiTietChuDe extends Component {
 		}
     }
     render() {
-        var cars =["https://znews-photo-td.zadn.vn/w1024/Uploaded/rugtzn/2014_03_27/jakeolsonphotography1.jpg", "https://www.gettyimages.ca/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg","https://image.viettimes.vn/666x374/Uploaded/2018/haovna/2017_10_06/img_002059cba09c24d64__880_bzwt.jpg"];
+        // var cars =["https://znews-photo-td.zadn.vn/w1024/Uploaded/rugtzn/2014_03_27/jakeolsonphotography1.jpg", "https://www.gettyimages.ca/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg","https://image.viettimes.vn/666x374/Uploaded/2018/haovna/2017_10_06/img_002059cba09c24d64__880_bzwt.jpg"];
+        var cars = (this.state.data.linkImage).split(',');
+        var lat = this.state.location.lat;
+        var long = this.state.location.long;
+        var X = Number.parseFloat(this.state.data.locationX, 10);
+        var Y = Number.parseFloat(this.state.data.locationY, 10);
         return (
             <View style={styles.container}>
                 <View style={styles.tren}>
@@ -217,14 +222,14 @@ export default class TimSuKienChiTietChuDe extends Component {
 
                             <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
                                 <Text style={{height: 24, fontSize: 14, width: 80}}>Bắt đầu</Text>
-                                <Text style={styles.content}>{this.state.data.time}</Text>
-                                <Text style={[styles.content, {marginLeft: 32}]}>{this.state.data.date}</Text>
+                                <Text style={styles.content}>{this.state.data.startTime}</Text>
+                                <Text style={[styles.content, {marginLeft: 32}]}>{moment(this.state.data.startDate).format('DD-MM-YYYY')}</Text>
                             </View>
 
                             <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
                                 <Text style={{height: 24, fontSize: 14, width: 80}}>Kết thúc</Text>
-                                <Text style={styles.content}>{this.state.data.time}</Text>
-                                <Text style={[styles.content, {marginLeft: 32}]}>{this.state.data.date}</Text>
+                                <Text style={styles.content}>{this.state.data.endTime}</Text>
+                                <Text style={[styles.content, {marginLeft: 32}]}>{moment(this.state.data.endDate).format('DD-MM-YYYY')}</Text>
                             </View>
 
                         </View>
@@ -254,16 +259,16 @@ export default class TimSuKienChiTietChuDe extends Component {
                                         liteMode={true}
                                         style={{ flex: 1 }}
                                         initialRegion={{
-                                        latitude: this.state.lat,
-                                        longitude: this.state.long,
+                                        latitude: X,
+                                        longitude: Y,
                                         latitudeDelta: 0.01,
                                         longitudeDelta: 0.01,
                                     }}
                                     >
                                         <MapView.Marker 
                                             coordinate={{
-                                                latitude: 10.032422,
-                                                longitude: 105.781578,
+                                                latitude: X,
+                                                longitude: Y,
                                             }}
                                         />
                                     </MapView>
@@ -286,8 +291,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                             // toolbarEnabled = {true}
                             style={{ flex: 1 }}
                             initialRegion={{
-                                latitude: this.state.lat,
-                                longitude: this.state.long,
+                                latitude: lat,
+                                longitude: long,
                                 latitudeDelta: 0.01,
                                 longitudeDelta: 0.01,
                             }}
@@ -295,8 +300,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                             
                             <MapView.Marker 
                                 coordinate={{
-                                    latitude: 10.032422,
-                                    longitude: 105.781578,
+                                    latitude: X,
+                                    longitude: Y,
                                 }}
                                 title={this.state.data.eventName}
                                 description={this.state.data.location}
@@ -313,7 +318,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                                 }
                                 apikey={GOOGLE_MAPS_APIKEY}
                                 strokeWidth={5}
-                                strokeColor="#0066b0"
+                                strokeColor="#009688"
                             />
 
                         </MapView>
@@ -322,12 +327,12 @@ export default class TimSuKienChiTietChuDe extends Component {
                         <TouchableOpacity style={styles.modalButtonChiDuong} onPress={() => {
                                 this.setState({
                                     originCoords: {
-                                        latitude: 10.031114,
-                                        longitude: 105.771645
+                                        latitude: lat,
+                                        longitude: long
                                     },
                                     destinationCoords: {
-                                        latitude: 10.032422,
-                                        longitude: 105.781578
+                                        latitude: X,
+                                        longitude: Y
                                     }
                                 });
                             }}>

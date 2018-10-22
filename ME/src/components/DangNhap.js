@@ -23,8 +23,8 @@ export default class DangNhap extends Component {
         super(props)
         this.state = {
             data:{
-                _id: '',
-                email: ''
+                _id: '_id',
+                email: 'email'
             },
             signedIn: false,
             email: '',
@@ -42,8 +42,20 @@ export default class DangNhap extends Component {
                 rateStar: 0,
                 nation: 'Afghanistan',
                 linkImage: ''
-            }
+            },
         };
+    }
+
+    async componentWillMount () {
+        try {
+            const store = await AsyncStorage.getItem('data');
+            // alert(JSON.parse(store)._id)
+            if(JSON.parse(store)._id != '_id'){
+                this.props.navigation.navigate('RouterTimSuKien');
+            }
+        } catch (error) {
+            
+        }
     }
 
     saveData = async() =>{

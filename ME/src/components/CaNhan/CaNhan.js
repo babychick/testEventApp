@@ -46,6 +46,15 @@ export default class CaNhan extends Component {
             }
         }
 
+        saveData = async() =>{
+            var data = JSON.stringify({
+                _id: '_id',
+                email: 'email'
+            });
+            AsyncStorage.setItem('data', data);
+            this.props.navigation.navigate('DangNhap');
+        }
+
         
     render() {
         return (
@@ -86,7 +95,7 @@ export default class CaNhan extends Component {
                     </TouchableOpacity> 
 
                     <TouchableOpacity onPress={() => {
-                        this.props.navigation.navigate('DangNhap')
+                        this.saveData();
                     }}>
                         <View style={styles.loutitem}>
                             <Icon type='Feather' name='log-out' style={styles.iconLeft}/>

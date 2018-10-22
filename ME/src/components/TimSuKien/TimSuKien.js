@@ -13,9 +13,10 @@ import { StyleSheet,
     AsyncStorage,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
+import { Constants, Location, Permissions } from 'expo';
 import EventData from '../../data/EventData';
 import AppStyle from '../../theme';
-import url from '../../assets/url'
+import url from '../../assets/url';
 const styles = AppStyle.StyleTimSuKien;
 
 export default class TimSuKien extends Component {
@@ -43,22 +44,68 @@ export default class TimSuKien extends Component {
             store: {
                 _id: '',
                 email:''
+            },
+            location:{
+                lat:'',
+                log: ''
             }
         };
     }
 
     
-    // async componentDidUpdate () {
-    //     await this._getStore()
-    //     await this._isAddInfo()
-    //     // await this._getEvent()
-    //     alert('did update')
+
+    // _getLocation = async()=>{
+    //     let location = Location.getCurrentPositionAsync({});
+    //     alert(JSON.stringify(location))
+    //     this.setState({
+    //         // location:{
+    //         //     lat: location.coords.latitude,
+    //         //     long: location.coords.longitude,
+    //         // }
+    //     });
     // }
 
+    // _getLocation2 = async() =>{
+    //     navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //         this.setState({
+    //             location:{
+    //             lat: position.coords.latitude,
+    //             long: position.coords.longitude,
+    //         }
+    //         });
+    //         alert(JSON.stringify(position))
+    //     });
+    // }
+
+    _getLocationAsync = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+            alert('GPS không khả dụng')
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        this.setState({
+            location:{
+                lat: location.coords.latitude,
+                long: location.coords.longitude,
+            }
+        });
+        alert(JSON.stringify(location))
+    };
+
+    componentDidMount() {
+        this._getLocationAsync();
+    }
+
     async componentWillMount () {
+         
         await this._getStore()
         await this._isAddInfo()
         await this._getEvent()
+        
+        // await this._getLocation()
+
     }
 
     _getEvent= async()=>{
@@ -136,6 +183,28 @@ export default class TimSuKien extends Component {
     onRefresh() {
         this.setState({ isFetching: true }, function() { this._getEvent() });
     }
+
+    _isUpInfo = async()=>{
+        try {
+            fetch(url+'account/email/'+this.state.store.email)
+                .then( data => data.json())
+                .then( dataJson => {
+                    this.setState({
+                        ...this.state,
+                        addInfo: dataJson[0].addInfo
+                    });
+                    if(dataJson[0].addInfo == true){
+                         this._getEvent()
+                    }else{
+                        this.props.navigation.navigate('CaNhan')
+                    }
+                   
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     render() {
         if( this.state.addInfo == false){
             return(
@@ -146,14 +215,14 @@ export default class TimSuKien extends Component {
                         </View>
                     </View> 
                     <View style={styles.viewtexttt}>
-                        <Text style={styles.texttt}>Bạn chưa cập nhật thông tin</Text>
+                        <Text style={styles.texttt}>Cập nhật thông tin?</Text>
                         <View style={styles.viewbuttontt}>
                             <TouchableOpacity onPress={() => 
-                                this.props.navigation.navigate('CaNhan')
+                                this._isUpInfo()
                             }>
                                 <View style={styles.texticon}>
-                                    <Text style={styles.textbuttontt}>Cập nhật thông tin</Text>
-                                    <Icon type='Feather' name='corner-down-right' style={styles.iconbuttontt}/>
+                                    <Text style={styles.textbuttontt}>Xác nhận</Text>
+                                    {/* <Icon type='Feather' name='corner-down-right' style={styles.iconbuttontt}/> */}
                                 </View>
                                 
                             </TouchableOpacity>
@@ -205,7 +274,7 @@ export default class TimSuKien extends Component {
                     data = {this.state.eventList}
                     renderItem = {({item, index}) =>
                     <TouchableOpacity onPress={() => {
-                        this.props.navigation.navigate('TimSuKienChiTietChuDe',{data:this.state.eventList[index]});
+                        this.props.navigation.navigate('TimSuKienChiTietChuDe',{data:this.state.eventList[index], location: this.state.location});
                     }}>
                         
                         <EventListItem item={item} index={index}/>

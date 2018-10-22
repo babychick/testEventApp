@@ -37,7 +37,6 @@ class NewEvent extends React.Component {
             member: null,
             description: null,
             linkImage: null,
-            files: null,
             subject: ['Ẩm thực',
                 'Lễ hội',
                 'Dân gian',
@@ -49,46 +48,6 @@ class NewEvent extends React.Component {
                 'Giai tri',
                 'Van hoa, Giao duc']
         }
-    }
-
-    onGetEventName = (text) => {
-        this.setState({
-            eventName: text
-        })
-    }
-
-    onSave = () => {
-        console.log('voday');
-        {this.onPressUpLoad}
-        fetch(url + 'event/addOneEvent', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8',
-            },
-            body: JSON.stringify({
-                adminId: this.state.adminId,
-                eventName: this.state.eventName,
-                eventType: this.state.eventType,
-                location: this.state.location,
-                locationX: this.state.locationX,
-                locationY: this.state.locationY,
-                startDate: this.state.startDate,
-                endDate: this.state.endDate,
-                startTime: this.state.startTime,
-                endTime: this.state.endTime,
-                member: this.state.member,
-                linkImage: this.state.files,
-                description: this.state.description
-            }),
-        }).then(res => {
-            if (res.title === 'ok') {
-                alert('Tạo thành công')
-            }
-        });
-        console.log(
-            this.state.startDate + " " + this.state.endDate
-        );
     }
 
     handleStartDatePicker = (date) => {
@@ -124,48 +83,71 @@ class NewEvent extends React.Component {
             allowsEditing: false,
             aspect: [4,3]
         });
+
         if(!result.cancelled) {
+            console.log(result.uri);
             var n =  Date.now(); 
             var photo = {
                 uri: result.uri,
                 type: 'image/jpeg',
-                name: n+'photo.jpg',
+                name: n+'photo.jpg'
             };
             form.append("fileData", photo);
-            this.setState({
-                ...this.state,
-                linkImage: result.uri,
-                // upImageList: arrI,
-            });
         }
     }
 
-    onPressUpLoad = ()=>{
-        try {
-             fetch(url+'upload/array', {
-				method: 'POST',
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data',
-                },
-                body: form,
-			})
-            .then( (response ) => response.json())
-            .then( (responseJson) =>{
-                var arrNameImage = [];
-                responseJson.forEach(function(element) {
-                    arrNameImage.push(element.originalname);
-                });
-                this.setState({
-                    ...this.state,
-                    files: arrNameImage
-                })
-                //files là arr tên của các hình ảnh, lưu cái này nữa tui get ra làm lấy được các ảnh trong arr đó
-                // alert(JSON.stringify(this.state.files))
-            });
-		} catch (err) {
-            alert(err)
-		}
+    onPressUpLoad = async ()=>{
+        await fetch( url +'upload/', {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+            },
+            body: form,
+        })
+        .then( (response ) => response.json())
+        .then( (responseJson) =>{
+            console.log(responseJson);
+            let object = JSON.stringify(responseJson);
+            this.setState({
+                linkImage: object
+            })
+        })
+        .catch(err => {
+            alert(err);
+        });
+    }
+    
+    onSave = async () => {
+        let upload = await this.onPressUpLoad();
+        await fetch(url + 'event/addOneEvent', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                adminId: this.state.adminId,
+                eventName: this.state.eventName,
+                eventType: this.state.eventType,
+                location: this.state.location,
+                locationX: this.state.locationX,
+                locationY: this.state.locationY,
+                startDate: this.state.startDate,
+                endDate: this.state.endDate,
+                startTime: this.state.startTime,
+                endTime: this.state.endTime,
+                member: this.state.member,
+                linkImage: this.state.linkImage,
+                description: this.state.description
+            }),
+        })
+        .then(res => res.json())
+        .then(resJson => {
+            if (resJson.title === 'ok') {
+                alert('Tạo thành công');
+            }
+        });
     }
 
     selectDestination = (data, details = null) => {  
@@ -296,7 +278,7 @@ class NewEvent extends React.Component {
                                         marginRight: 16,
                                         paddingHorizontal: 16,
                                         fontSize: 16,
-                                        height: 24
+                                        height: 24,
                                     },
                                     textInputContainer: {
                                         backgroundColor: '#fff',                                        
