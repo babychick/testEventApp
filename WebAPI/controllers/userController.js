@@ -46,7 +46,7 @@ deleteUser = (req, res) => {
 module.exports = {
     addOneUser,
     findAllUser,
-    findById,
+    findUserById,
     findUserByAccountId,
     updateUser,
     deleteUser

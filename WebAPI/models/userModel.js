@@ -11,12 +11,20 @@ const userSchema = new Schema({
     birthday: {type: Date, require: true},
 
     job: {type: String},
+    
+    gender: {type: String},
+
+    phone: {type: String},
 
     address: {type: String},
 
     isBanned: {type: Boolean},
 
+    nation: {type: String},
+
     rateStar: {type: Number, max: 5},
+
+    linkImage: {type: String}
 });
 
 const user = mongoose.model('user', userSchema);
