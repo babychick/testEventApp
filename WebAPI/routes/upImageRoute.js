@@ -6,6 +6,14 @@ let router = express.Router();
 let upload = multer({ storage : uploadController.storage });
 
 router.post('/', upload.single('fileData'), uploadController.uploadImage);
-router.post('/array', upload.array('arrfileData', 12), uploadController.uploadMultiImage);
+router.post('/', upload.any(), (req, res) => {
+    let imageArray = [];
+    req.files.map((img, index) => {
+        imageArray.push(img.originalname);
+        console.log(img.size);
+    })
+
+    res.send(imageArray);
+});
 
 module.exports = router;
