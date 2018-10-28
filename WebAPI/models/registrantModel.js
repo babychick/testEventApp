@@ -6,9 +6,19 @@ let registrantSchema = new Schema({
 
     adminID: {type: String, require: true},
 
+    adminName: {type: String, require: true},
+
     eventID: {type: String, require: true},
 
     userID: {type: String, require: true},
+
+    userName: {type: String, require: true},
+
+    email: {type: String, require: true},
+
+    phone: {type: String, require: true},
+
+    linkImage: {type: String, require: true},
 
     status: {type: Boolean, require: true}
 });
