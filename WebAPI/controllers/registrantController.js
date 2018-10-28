@@ -10,8 +10,10 @@ addOneRegistrant = (req, res) => {
 
 // FIND ALL REGISTRANT
 findAllRegistrant = (req, res) => {
-    let obj = { eventId: req.params.eventId };
-    
+    let obj = { 
+            eventId: req.body.eventId,
+            adminId: req.body.adminId };
+
     baseController.findByKeyValue(res, registrantModel, obj);
 }
 
