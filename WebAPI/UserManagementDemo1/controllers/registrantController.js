@@ -10,9 +10,18 @@ addOneRegistrant = (req, res) => {
 
 // FIND ALL REGISTRANT
 findAllRegistrant = (req, res) => {
-    let obj = { eventId: req.params.eventId };
-    
+    let obj = { 
+            eventId: req.body.eventId,
+            adminId: req.body.adminId };
+
     baseController.findByKeyValue(res, registrantModel, obj);
+}
+
+// find key-value
+findByKeyValue = (req, res) => {
+  let obj = req.body;
+
+  baseController.findByKeyValue(res, registrantModel, obj);
 }
 
 // FIND ALL EVENT
@@ -41,5 +50,6 @@ module.exports = {
     findAllRegistrant,
     findAllEvent,
     updateStatus,
-    deleteOneRegistrant
+    deleteOneRegistrant,
+    findByKeyValue
 }

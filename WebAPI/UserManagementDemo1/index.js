@@ -22,6 +22,7 @@ const registrantRoute = require('./routes/registrantRoute');
 const scheduleRoute = require('./routes/scheduleRoute');
 const registerRoute = require('./routes/registerRoute');
 const upImageRouter = require('./routes/upImageRouter');
+const sendEmail = require('./routes/sendEmailRoute')
 
 connectDB.connect();
 
@@ -34,6 +35,7 @@ app.use('/Registrant', registrantRoute);
 app.use('/Schedule', scheduleRoute);
 app.use('/register', registerRoute);
 app.use('/upload', upImageRouter);
+app.use('/sendEmail',sendEmail);
 
 // localhost:port/api/v1/user/ ->
 

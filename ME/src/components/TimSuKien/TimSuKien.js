@@ -18,7 +18,10 @@ import EventData from '../../data/EventData';
 import AppStyle from '../../theme';
 import url from '../../assets/url';
 const styles = AppStyle.StyleTimSuKien;
+import moment from 'moment';
 
+var now = (new Date().getDate()) + '-' + (new Date().getMonth() + 1) + '-' + (new Date().getFullYear());
+let today = moment().format('YYYY-MM-DD');
 export default class TimSuKien extends Component {
     constructor (props) {
         super(props)
@@ -48,7 +51,8 @@ export default class TimSuKien extends Component {
             location:{
                 lat:'',
                 log: ''
-            }
+            }, 
+            isLocation : false
         };
     }
 
@@ -81,28 +85,33 @@ export default class TimSuKien extends Component {
     _getLocationAsync = async () => {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);
         if (status !== 'granted') {
-            alert('GPS không khả dụng')
+            this.setState({ isLocation : true });
+        } else {
+            this.setState({ isLocation : false });
         }
-
         let location = await Location.getCurrentPositionAsync({});
         this.setState({
             location:{
                 lat: location.coords.latitude,
                 long: location.coords.longitude,
-            }
+            },
+            isLocation : true 
         });
-        alert(JSON.stringify(location))
+        // alert(JSON.stringify(location))
     };
 
-    componentDidMount() {
-        this._getLocationAsync();
-    }
+    // componentDidMount() {
+    //     this._getLocationAsync();
+    // }
+
+    
 
     async componentWillMount () {
-         
+        
         await this._getStore()
         await this._isAddInfo()
         await this._getEvent()
+        await this._getLocationAsync();
         
         // await this._getLocation()
 
@@ -113,8 +122,18 @@ export default class TimSuKien extends Component {
             fetch(url+'event/findAllEvent')
                 .then( data => data.json())
                 .then( dataJson => {
+                    var a = [];
+                    var count = 0;
+                    for(var i = 0; i< dataJson.length; i++){
+                        let convertedDate = moment(dataJson[i].startDate, 'YYYY-MM-DD', false).format('YYYY-MM-DD');
+                        // console.log(convertedDate + '')
+                        if(moment(today).isBefore(convertedDate) && count < 10){
+                            a.push(dataJson[i]);
+                            count++;
+                        }
+                    }
                     this.setState({
-                        eventList: dataJson,
+                        eventList: a,
                         isFetching: false
                     });
                 })
@@ -171,8 +190,15 @@ export default class TimSuKien extends Component {
 			})
             .then( data => data.json())
                 .then( dataJson => {
+                    var a = [];
+                    for(var i = 0; i< dataJson.length; i++){
+                        let convertedDate = moment(dataJson[i].startDate, 'YYYY-MM-DD', false).format('YYYY-MM-DD');
+                        if(moment(today).isBefore(convertedDate)){
+                            a.push(dataJson[i]);
+                        }
+                    }
                     this.setState({
-                        eventList: dataJson
+                        eventList: a
                     });
                 })
 		} catch (error) {
@@ -241,7 +267,7 @@ export default class TimSuKien extends Component {
                     {/* <View> */}
                         <TouchableOpacity onPress={() => {
                             // alert(JSON.stringify(this.state.addInfo))
-                            this.props.navigation.navigate('TimSuKienMap')
+                            this.props.navigation.navigate('TimSuKienMap',{location: this.state.location, isLocation: this.state.isLocation})
                         }}>
                             <Icon type='Foundation' name='map' style={styles.icon}/>
                         </TouchableOpacity>
@@ -274,7 +300,7 @@ export default class TimSuKien extends Component {
                     data = {this.state.eventList}
                     renderItem = {({item, index}) =>
                     <TouchableOpacity onPress={() => {
-                        this.props.navigation.navigate('TimSuKienChiTietChuDe',{data:this.state.eventList[index], location: this.state.location});
+                        this.props.navigation.navigate('TimSuKienChiTietChuDe',{data:this.state.eventList[index], location: this.state.location, screen: 0, isLocation: this.state.isLocation});
                     }}>
                         
                         <EventListItem item={item} index={index}/>
@@ -291,16 +317,21 @@ export default class TimSuKien extends Component {
 
 class EventListItem extends Component{
     render(){
-        var ar = (JSON.stringify(this.props.item.linkImage)).split(',');
-        var image = ar[0].substr(1);
+        var ar = (this.props.item.linkImage).split(',');
+        var image = '';
+        if(ar.length == 1){
+            image = JSON.parse(this.props.item.linkImage);
+        } else {
+            image = JSON.parse(ar[0].substr(1));
+        }
         return(       
             <View style={styles.viewlist}>
-                <Image source = {{uri: image}}
+                <Image source = {{uri:url + image}}
                     style = {styles.listImage}>
                 </Image>
                 <View style={styles.viewInfo}>
                     <Text style = {styles.listTextTitle}>{this.props.item.eventName }</Text>
-                    <Text style = {styles.listText}>{ this.props.item.date }</Text>
+                    <Text style = {styles.listText}>{ this.props.item.startTime + ' ' + this.props.item.startDate}</Text>
                     <Text style = {styles.listText}>{ this.props.item.location }</Text>
                 </View>
             </View>

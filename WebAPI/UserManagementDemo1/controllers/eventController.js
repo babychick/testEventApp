@@ -23,11 +23,19 @@ findEventById = (req, res) => {
 
 // find event by Name
 findEventByName = (req, res) => {
-    let obj = {
+    let queryString = {
         eventName: req.params.eventName
     }
 
-    baseController.findByKeyValue(res, eventModel, obj);
+    baseController.findByKeyValue(res, eventModel, queryString);
+}
+// find event by date
+findEventByDate = (req, res) => {
+    let queryString = {
+        startDate: req.params.startDate
+    }
+
+    baseController.findByKeyValue(res, eventModel, queryString);
 }
 
 // find key-value
@@ -37,11 +45,20 @@ findByKeyValue = (req, res) => {
   baseController.findByKeyValue(res, eventModel, obj);
 }
 
+
 // update event info
 updateEvent = (req, res) => {
     let obj = req.body;
 
     baseController.updateOne(res, eventModel, obj);
+}
+
+findEventByAdminId = (req, res) => {
+    let queryString = {
+        adminId: req.params.adminId
+    }
+
+    baseController.findByKeyValue(res, eventModel, queryString);
 }
 
 // delete event
@@ -51,12 +68,33 @@ deleteEvent = (req, res) => {
     baseController.deleteOne(res, eventModel, eventId);
 }
 
+// delete all event
+deleteAllEvent = (req, res) => {
+    
+    eventModel.remove({})
+        .then(data => {
+            res.send({
+                title: 'ok',
+                data: 'Deleted all.'
+            });
+        })
+        .catch(err => {
+            res.send({
+                title: 'err',
+                data: 'Deleting failed!s'
+            });
+        })
+}
+
 module.exports = {
     addOneEvent,
     findAllEvent,
     findEventById,
     findEventByName,
+    findEventByDate,
+    findByKeyValue,
     updateEvent,
     deleteEvent,
-    findByKeyValue
+    deleteAllEvent,
+    findEventByAdminId
 }

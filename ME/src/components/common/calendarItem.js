@@ -6,15 +6,26 @@ class CalendarItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            backgroundColor: null
+        }
+    }
 
+    componentDidMount() {
+        if (this.props.index % 2 === 0) {
+            this.setState({
+                backgroundColor: '#E0F2F1'
+            })
+        } else {
+            this.setState({
+                backgroundColor: '#fff'
+            })
         }
     }
 
     render() {
         return (
-            <TouchableOpacity style={[styles.container, {backgroundColor: this.props.backgroundColor}]}
-             onPress={() => {this.props.navigation.onPress}}
-            >
+            <TouchableOpacity style={[styles.container, {backgroundColor: this.state.backgroundColor}]}
+                                onPress={this.props.onPress}>
                 {/* Left */}
                 <View style={styles.leftContainer}>
                     <Text style={styles.time}>{this.props.start}</Text>
@@ -33,6 +44,8 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: Color._50
     },
     leftContainer: {
         flex: 1,

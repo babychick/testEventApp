@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Alert, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -7,7 +7,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Color } from '../../assets/color';
-import { ImagePicker } from 'expo';
+import { ImagePicker, ImageManipulator } from 'expo';
 import url from '../../assets/url';
 
 var form = new FormData();
@@ -80,15 +80,21 @@ class NewEvent extends React.Component {
 
     openImagePicker = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: false,
-            aspect: [4,3]
+            allowsEditing: false
         });
 
         if(!result.cancelled) {
             console.log(result.uri);
-            var n =  Date.now(); 
+
+            let resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ rotate: 0 }], { format: 'jpeg'});
+
+            if (resizedPhoto.width > 1000 && resizedPhoto.height > 750) {
+                resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ resize: {width: 1000, height: 750} }], { format: 'jpeg'});
+            }
+            
+            var n =  Date.now();
             var photo = {
-                uri: result.uri,
+                uri: resizedPhoto.uri,
                 type: 'image/jpeg',
                 name: n+'photo.jpg'
             };
@@ -97,7 +103,7 @@ class NewEvent extends React.Component {
     }
 
     onPressUpLoad = async ()=>{
-        await fetch( url +'upload/', {
+        await fetch( url +'upload', {
             method: 'POST',
             headers: {
             'Accept': 'application/json',
@@ -112,6 +118,7 @@ class NewEvent extends React.Component {
             this.setState({
                 linkImage: object
             })
+            // alert(JSON.stringify(this.state.linkImage))
         })
         .catch(err => {
             alert(err);
@@ -120,6 +127,7 @@ class NewEvent extends React.Component {
     
     onSave = async () => {
         let upload = await this.onPressUpLoad();
+        alert(this.state.linkImage)
         await fetch(url + 'event/addOneEvent', {
             method: 'POST',
             headers: {
@@ -145,7 +153,9 @@ class NewEvent extends React.Component {
         .then(res => res.json())
         .then(resJson => {
             if (resJson.title === 'ok') {
-                alert('Tạo thành công');
+                Alert.alert('THÔNG BÁO', 'Tạo sự kiện thành công.',
+                    [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen)}]);
+                form = new FormData();
             }
         });
     }

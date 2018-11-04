@@ -31,6 +31,8 @@ export default class TimSuKienChiTietChuDe extends Component {
         this.state = {
             data : this.props.navigation.state.params.data,
             location: this.props.navigation.state.params.location,
+            isLocation: this.props.navigation.state.params.isLocation,
+            screen: this.props.navigation.state.params.screen,
             name: '',
             isDisable: false,
             colorDisable: '#00796B',
@@ -46,6 +48,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                 _id: '',
                 email:''
             },
+            phone: '',
+            linkImage: ''
             // lat: 10.031114,
             // long: 105.771645
         };
@@ -76,18 +80,18 @@ export default class TimSuKienChiTietChuDe extends Component {
             this.setState({
                 ...this.state,
                 store : JSON.parse(store)
-                })
+                }) 
         } catch (error) {
             
         }
     }
 
     async componentWillMount(){
-        console.log(this.state.data.locationY)
         await this._getStore()
         await this._isRegistered()
+        await this._getUser()
         try {
-            fetch(url+'user/'+this.state.data.adminId)
+            await fetch(url+'user/'+this.state.data.adminId)
                 .then( data => data.json())
                 .then( dataJson => {
                     this.setState({
@@ -98,19 +102,48 @@ export default class TimSuKienChiTietChuDe extends Component {
         } catch (err) {
             alert(err)
         }
+    
+    }
+
+    _getUser = async()=>{
+         try {
+            await fetch(url+'user/findByKeyValue', {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({accountId: this.state.store._id}),
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
+                this.setState({
+                    phone: responseJson[0].phone,
+                    linkImage: responseJson[0].linkImage
+                })
+            } )
+		} catch (error) {
+            alert(error);
+		}
     }
 
     async _onPressRegister(){
         try {
-            await fetch(url+'register/addOneRegister', {
+            await fetch(url+'Registrant/addOneRegistrant', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
 					'Content-Type': 'application/json;charset=UTF-8',
 				},
 				body: JSON.stringify({
+                    adminID: this.state.data.adminId,
+                    adminName: this.state.name,
                     userId: this.state.store._id,
-                    eventId: this.state.data._id 
+                    email: this.state.store._id,
+                    eventId: this.state.data._id,
+                    status: false,
+                    phone: this.state.phone,
+                    linkImage: this.state.linkImage
                 }),
 			})
             .then( (response ) => response.json())
@@ -141,7 +174,7 @@ export default class TimSuKienChiTietChuDe extends Component {
 
     async _isRegistered(){
         try {
-            await fetch(url+'register/findByKeyValue', {
+            await fetch(url+'Registrant/findByKeyValue', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -163,191 +196,222 @@ export default class TimSuKienChiTietChuDe extends Component {
 		}
     }
     render() {
-        // var cars =["https://znews-photo-td.zadn.vn/w1024/Uploaded/rugtzn/2014_03_27/jakeolsonphotography1.jpg", "https://www.gettyimages.ca/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg","https://image.viettimes.vn/666x374/Uploaded/2018/haovna/2017_10_06/img_002059cba09c24d64__880_bzwt.jpg"];
-        var cars = (this.state.data.linkImage).split(',');
-        var lat = this.state.location.lat;
-        var long = this.state.location.long;
-        var X = Number.parseFloat(this.state.data.locationX, 10);
-        var Y = Number.parseFloat(this.state.data.locationY, 10);
-        return (
-            <View style={styles.container}>
-                <View style={styles.tren}>
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={() => {
-                            this.props.navigation.navigate('TimSuKien')
-                        }}>
-                        <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
-                        </TouchableOpacity>
-                        <Text style={styles.textheader}>Chi tiết sự kiện</Text>
-                    </View>
-                </View>
-                <ScrollView style = {styles.duoi}>
-                    <View>
-                        {/* <Image style={styles.image} source={{uri:this.state.data.linkImage}} resizeMode='cover'/> */}
-                        <Swiper autoplay height={Dimensions.get('window').height * 0.35}>
-                            {cars.map((item, key) => (
-                                // alert(item)
-                                <Image key={key} style={styles.image} source={{uri:item}} resizeMode='cover'/>
-                            ))}
-                        </Swiper>
-                        <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
-                            disabled={this.state.isDisable}
-                             onPress={() => {
-                                // this._disableDemo()
-                                this._onPressRegister()
-                                // alert((this.state.store._id))
-                            }}>
-                            <View>
-                                <Text style={[styles.registerButton, {backgroundColor: this.state.colorDisable}]}>ĐĂNG KÝ</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{paddingHorizontal: 16}}>
-                        <Text style={styles.heading}>{this.state.data.eventName}</Text>
-
-                        <Text style={styles.caption}>{this.state.data.status}</Text>
-
-                        <View style={[styles.subContainer, { flexDirection: 'row' }]}>
-                            <Text style={styles.subHeading}>Được tổ chức bởi</Text>
+        if(this.state.isLocation == true){
+            // var cars = ["1540716360618photo.jpg","1540716356606photo.jpg"];
+            var cars = [];
+            cars = (JSON.parse(this.state.data.linkImage));
+            var lat = this.state.location.lat;
+            var long = this.state.location.long;
+            var X = Number.parseFloat(this.state.data.locationX, 10);
+            var Y = Number.parseFloat(this.state.data.locationY, 10);
+            return (
+                <View style={styles.container}>
+                    <View style={styles.tren}>
+                        <View style={styles.header}>
                             <TouchableOpacity onPress={() => {
-                                this.props.navigation.navigate('TimSuKienNguoiDung', {data: this.state.data.adminId})
+                                if( this.state.screen == 0){
+                                    this.props.navigation.navigate('TimSuKien')
+                                } else {
+                                    this.props.navigation.navigate('TimSuKienMap', {location: this.state.location, isLocation: this.state.isLocation})
+                                }
+                                    
                             }}>
-                                <Text style={[styles.content, {marginTop: 5}]}>{this.state.name}</Text>
+                            <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
                             </TouchableOpacity>
+                            <Text style={styles.textheader}>Chi tiết sự kiện</Text>
                         </View>
-
-                        <View style={styles.subContainer}>
-
-                            <Text style={styles.subHeading}>Thời gian</Text>
-
-                            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                                <Text style={{height: 24, fontSize: 14, width: 80}}>Bắt đầu</Text>
-                                <Text style={styles.content}>{this.state.data.startTime}</Text>
-                                <Text style={[styles.content, {marginLeft: 32}]}>{moment(this.state.data.startDate).format('DD-MM-YYYY')}</Text>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                                <Text style={{height: 24, fontSize: 14, width: 80}}>Kết thúc</Text>
-                                <Text style={styles.content}>{this.state.data.endTime}</Text>
-                                <Text style={[styles.content, {marginLeft: 32}]}>{moment(this.state.data.endDate).format('DD-MM-YYYY')}</Text>
-                            </View>
-
-                        </View>
-
-                        <View style={[styles.subContainer, { flexDirection: 'row' }]}>
-                            <Text style={styles.subHeading}>Thành viên</Text>
-                            <Text style={[styles.content, {marginTop: 5}]}>40</Text>
-                        </View>
-
-                        <View style={[styles.subContainer, { flexDirection: 'row' }]}>
-                            <Text style={styles.subHeading}>Trạng thái</Text>
-                            <Text style={[styles.content, {marginTop: 5}]}>Tốt</Text>
-                        </View>
-
-                        <View style={styles.subContainer}>
-                            <Text style={styles.subHeading}>Mô tả</Text>
-                            <Text style={{fontSize: 14, marginLeft: 16, textAlignVertical: 'bottom', }}>{this.state.data.description}</Text>
-                        </View>
-
-                        <View style={styles.subContainerlocation}>
-                            <Text style={styles.subHeadinglocation}>Địa điểm</Text>
-                            <TouchableOpacity onPress={() => {
-                                    this.refs.showMap.open()
+                    </View>
+                    <ScrollView style = {styles.duoi}>
+                        <View>
+                            {/* <Image style={styles.image} source={{uri:this.state.data.linkImage}} resizeMode='cover'/> */}
+                            <Swiper autoplay height={Dimensions.get('window').height * 0.35}>
+                                {cars.map((item, key) => (
+                                    <Image key={key} style={styles.image} source={{uri:url + item}} resizeMode='cover'/>
+                                ))}
+                            </Swiper>
+                            <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
+                                disabled={this.state.isDisable}
+                                onPress={() => {
+                                    // this._disableDemo()
+                                    this._onPressRegister()
+                                    // alert((this.state.store._id))
                                 }}>
-                            <View  style={styles.maplocation} >
-                                    <MapView 
-                                        liteMode={true}
-                                        style={{ flex: 1 }}
-                                        initialRegion={{
-                                        latitude: X,
-                                        longitude: Y,
-                                        latitudeDelta: 0.01,
-                                        longitudeDelta: 0.01,
-                                    }}
-                                    >
-                                        <MapView.Marker 
-                                            coordinate={{
-                                                latitude: X,
-                                                longitude: Y,
-                                            }}
-                                        />
-                                    </MapView>
+                                <View>
+                                    <Text style={[styles.registerButton, {backgroundColor: this.state.colorDisable}]}>ĐĂNG KÝ</Text>
                                 </View>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                </ScrollView>
-                <Modal
-                    ref = {'showMap'}
-                    style={styles.modal}
-                    onClosed={this.onClose}
-                    onOpened={this.onOpened}
-                    swipeToClose = {false}
-                    onClosingState={this.onClosingState}
-                >
-                    <View style={styles.modalMap}>
-                        <MapView showsUserLocation={true}
-                            showsCompass = {true}
-                            // toolbarEnabled = {true}
-                            style={{ flex: 1 }}
-                            initialRegion={{
-                                latitude: lat,
-                                longitude: long,
-                                latitudeDelta: 0.01,
-                                longitudeDelta: 0.01,
-                            }}
-                            >
-                            
-                            <MapView.Marker 
-                                coordinate={{
-                                    latitude: X,
-                                    longitude: Y,
-                                }}
-                                title={this.state.data.eventName}
-                                description={this.state.data.location}
-                                onPress={() => {
-                                    this.props.navigation.navigate('TimSuKienChiTietChuDe');
-                                }}
-                            />
-                            <MapViewDirections
-                                origin={
-                                    this.state.originCoords
-                                }
-                                destination={
-                                    this.state.destinationCoords
-                                }
-                                apikey={GOOGLE_MAPS_APIKEY}
-                                strokeWidth={5}
-                                strokeColor="#009688"
-                            />
+                        <View style={{paddingHorizontal: 16}}>
+                            <Text style={styles.heading}>{this.state.data.eve ntName}</Text>
 
-                        </MapView>
-                    </View>
-                    <View style={styles.modalButton}>
-                        <TouchableOpacity style={styles.modalButtonChiDuong} onPress={() => {
-                                this.setState({
-                                    originCoords: {
-                                        latitude: lat,
-                                        longitude: long
-                                    },
-                                    destinationCoords: {
+                            <Text style={styles.caption}>{this.state.data.status}</Text>
+
+                            <View style={[styles.subContainer, { flexDirection: 'row' }]}>
+                                <Text style={styles.subHeading}>Được tổ chức bởi</Text>
+                                <TouchableOpacity onPress={() => {
+                                    this.props.navigation.navigate('TimSuKienNguoiDung', {data: this.state.data.adminId})
+                                }}>
+                                    <Text style={[styles.content, {marginTop: 5}]}>{this.state.name}</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.subContainer}>
+
+                                <Text style={styles.subHeading}>Thời gian</Text>
+
+                                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                                    <Text style={{height: 24, fontSize: 14, width: 80}}>Bắt đầu</Text>
+                                    <Text style={styles.content}>{this.state.data.startTime}</Text>
+                                    <Text style={[styles.content, {marginLeft: 32}]}>{this.state.data.startDate}</Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
+                                    <Text style={{height: 24, fontSize: 14, width: 80}}>Kết thúc</Text>
+                                    <Text style={styles.content}>{this.state.data.endTime}</Text>
+                                    <Text style={[styles.content, {marginLeft: 32}]}>{this.state.data.endDate}</Text>
+                                </View>
+
+                            </View>
+
+                            <View style={[styles.subContainer, { flexDirection: 'row' }]}>
+                                <Text style={styles.subHeading}>Thành viên</Text>
+                                <Text style={[styles.content, {marginTop: 5}]}>40</Text>
+                            </View>
+
+                            <View style={[styles.subContainer, { flexDirection: 'row' }]}>
+                                <Text style={styles.subHeading}>Trạng thái</Text>
+                                <Text style={[styles.content, {marginTop: 5}]}>Tốt</Text>
+                            </View>
+
+                            <View style={styles.subContainer}>
+                                <Text style={styles.subHeading}>Mô tả</Text>
+                                <Text style={{fontSize: 14, marginLeft: 16, textAlignVertical: 'bottom', }}>{this.state.data.description}</Text>
+                            </View>
+
+                            <View style={styles.subContainerlocation}>
+                                <Text style={styles.subHeadinglocation}>Địa điểm</Text>
+                                <TouchableOpacity onPress={() => {
+                                        this.refs.showMap.open()
+                                    }}>
+                                <View  style={styles.maplocation} >
+                                        <MapView 
+                                            liteMode={true}
+                                            style={{ flex: 1 }}
+                                            initialRegion={{
+                                            latitude: X,
+                                            longitude: Y,
+                                            latitudeDelta: 0.01,
+                                            longitudeDelta: 0.01,
+                                        }}
+                                        >
+                                            <MapView.Marker 
+                                                coordinate={{
+                                                    latitude: X,
+                                                    longitude: Y,
+                                                }}
+                                            />
+                                        </MapView>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </ScrollView>
+                    <Modal
+                        ref = {'showMap'}
+                        style={styles.modal}
+                        onClosed={this.onClose}
+                        onOpened={this.onOpened}
+                        swipeToClose = {false}
+                        onClosingState={this.onClosingState}
+                    >
+                        <View style={styles.modalMap}>
+                            <MapView showsUserLocation={true}
+                                showsCompass = {true}
+                                showsMyLocationButton={true}
+                                // toolbarEnabled = {true}
+                                style={{ flex: 1 }}
+                                initialRegion={{
+                                    latitude: lat,
+                                    longitude: long,
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01,
+                                }}
+                                >
+                                
+                                <MapView.Marker 
+                                    coordinate={{
                                         latitude: X,
-                                        longitude: Y
+                                        longitude: Y,
+                                    }}
+                                    title={this.state.data.eventName}
+                                    description={this.state.data.location}
+                                    // onPress={() => {
+                                    //     this.props.navigation.navigate('TimSuKienChiTietChuDe');
+                                    // }}
+                                />
+                                <MapViewDirections
+                                    origin={
+                                        this.state.originCoords
                                     }
-                                });
-                            }}>
-                            <Text style={styles.modalTextChiDuong}>Chỉ đường</Text>
-                            <Icon type='MaterialCommunityIcons' style={styles.modalIconChiDuong} name='directions-fork'/>
-                        </TouchableOpacity>
+                                    destination={
+                                        this.state.destinationCoords
+                                    }
+                                    apikey={GOOGLE_MAPS_APIKEY}
+                                    strokeWidth={5}
+                                    strokeColor="#009688"
+                                />
 
-                        <TouchableOpacity style={styles.modalButtonDong} onPress={() => {
-                                this.refs.showMap.close()
+                            </MapView>
+                        </View>
+                        <View style={styles.modalButton}>
+                            <TouchableOpacity style={styles.modalButtonChiDuong} onPress={() => {
+                                    this.setState({
+                                        originCoords: {
+                                            latitude: lat,
+                                            longitude: long
+                                        },
+                                        destinationCoords: {
+                                            latitude: X,
+                                            longitude: Y
+                                        }
+                                    });
+                                }}>
+                                <Text style={styles.modalTextChiDuong}>Chỉ đường</Text>
+                                <Icon type='MaterialCommunityIcons' style={styles.modalIconChiDuong} name='directions-fork'/>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={styles.modalButtonDong} onPress={() => {
+                                    this.refs.showMap.close()
+                                }}>
+                                <Text style={styles.modalTextDong}>Đóng</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
+                </View>
+            )
+        } else {
+            return(
+                <View style={styles.container}>
+                    <View style={styles.tren}>
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => {
+                                if( this.state.screen == 0){
+                                    this.props.navigation.navigate('TimSuKien')
+                                } else {
+                                    this.props.navigation.navigate('TimSuKienMap', {location: this.state.location, isLocation: this.state.isLocation})
+                                }
+                                    
                             }}>
-                            <Text style={styles.modalTextDong}>Đóng</Text>
-                        </TouchableOpacity>
+                            <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
+                            </TouchableOpacity>
+                            <Text style={styles.textheader}>Chi tiết sự kiện</Text>
+                        </View>
                     </View>
-                </Modal>
-            </View>
-        )
+                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                        <Text style={{fontSize: 16, color: 'red'}}>Bạn chưa bật GPS</Text>
+                    </View>
+                </View>
+            );
+        }
     }
 }

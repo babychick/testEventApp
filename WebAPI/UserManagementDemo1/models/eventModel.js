@@ -16,19 +16,19 @@ let eventSchema = new Schema({
 
     locationY: {type: String, require: true},
 
-    startDate: {type: Date, require: Date.now},
+    startDate: {type: String, require: true},
     
-    endDate: {type: Date, require: Date.now},
+    endDate: {type: String, require: true},
 
     startTime: {type: String, require: true},
 
     endTime: {type: String, require: true},
 
     member: {type: Number, require: true},
-
-    description: {type: String, default: ""},
-
+    
     linkImage: {type: String},
+
+    description: {type: String, default: "Chưa có mô tả"}
 });
 
 let event = mongoose.model('event', eventSchema);

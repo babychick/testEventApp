@@ -6,7 +6,7 @@ let accountSchema = new Schema({
     
     email: {type: String, require: true},
     
-    password: {type: String, require: true},
+    token: {type: String, require: true},
     
     addInfo: {type: Boolean, default: false}
 });

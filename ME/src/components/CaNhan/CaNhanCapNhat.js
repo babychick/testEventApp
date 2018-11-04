@@ -216,7 +216,7 @@ export default class CaNhanCapNhat extends Component {
             form.append("fileData", photo);
             // alert(data)
             try {
-                await fetch(url+'upload', {
+                await fetch(url+'upload/avatar', {
                     method: 'POST',
                     headers: {
                     'Accept': 'application/json',
@@ -235,12 +235,13 @@ export default class CaNhanCapNhat extends Component {
                         },
                     })
                     this._capNhatTT();
+                    this._capNhatAddInfo()
                 });
             } catch (error) {
                 alert(error)
             }
         }else {
-            this._capNhatAddInfo()
+            // this._capNhatAddInfo()
             this._capNhatTT();
         }
     }

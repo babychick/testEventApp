@@ -61,14 +61,7 @@ export default class CaNhanTT extends Component {
                     nation: responseJson[0].nation,
                     linkImage: responseJson[0].linkImage
                 })
-                // alert(JSON.stringify(responseJson))
             } )
-			// let responseJson = await response.json();
-			// return responseJson;
-            // alert(responseJson)
-            // this.setState({
-            //     name : 'responseJson.name'
-            // })
 		} catch (error) {
             alert(error);
 		}

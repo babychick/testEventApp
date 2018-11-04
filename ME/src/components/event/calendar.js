@@ -1,60 +1,99 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Color } from '../../assets/color';
 import moment from 'moment';
 import url from '../../assets/url';
-import { Item } from '../common/item';
 import { CalendarItem } from '../common/calendarItem';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import { Switch } from 'react-native-switch';
+import { Icon, } from 'native-base';
+import { Item } from '../common/item';
 
-var startDate = moment().format('YYYY-MM-DD');
+let today = moment().format('DD-MM-YYYY');
 
 LocaleConfig.locales['vi'] = {
-    monthNames: ['Tháng Một','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Mười Hai'],
-    monthNamesShort: ['Tháng 1.','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],
-    dayNames: ['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'],
-    dayNamesShort: ['T2','T3','T4','T5','T6','T7','CN']
-  };
-  
+    monthNames: ['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'],
+    monthNamesShort: ['Tháng 1.', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+    dayNames: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'],
+    dayNamesShort: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+};
+
 LocaleConfig.defaultLocale = 'vi';
 
 class CalendarScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentDate: today,
             eventList: [],
             allEvent: [],
             allDateEvent: [],
             myAllDateEvent: null,
             data: {
                 event: null,
-                
             },
-            hostScreen: 'CalendarScreen'
+            hostScreen: 'CalendarScreen',
+            isVisible: false,
+            pickedDate: null,
+            renderCalendarPage: false,
+            searchValue: '',
+            showClearText: false,
+            iconName: null
         }
     }
 
     async componentDidMount() {
-        await fetch( url + 'event/findAllEvent')
+        { this.showClearTextButton }
+        await fetch(url + 'Registrant/findEvent')
             .then(data => data.json())
             .then(dataJson => {
+                console.log(dataJson);
                 this.setState({
                     allEvent: dataJson
                 });
+                console.log(this.state.allEvent);
             })
             .catch(err => {
                 alert('Fetch failed...' + err);
                 console.log(err);
             })
-        let arr = {};
-        this.state.allEvent.map((item, key) => {
-            arr[moment(item.startDate).format('YYYY-MM-DD')] = {marked: true, dotColor: '#E91E63'};
-        })
-        this.setState({
-            myAllDateEvent: arr,
-        })
-        console.log(this.state.myAllDateEvent);
-        await fetch( url + 'event/findByDate/' + startDate + 'T00:00:00.000Z')
+        if (this.state.allEvent) {
+            let arr = {};
+            this.state.allEvent.map((item, key) => {
+                let convertedDate = moment(item.startDate, 'DD-MM-YYYY', false).format('YYYY-MM-DD');
+                if (item.startDate == today) {
+                    arr[convertedDate] = {
+                        customStyles: {
+                            container: {
+                                backgroundColor: '#FFFFFF',
+                            },
+                            text: {
+                                color: '#26A69A',
+                                fontWeight: 'bold'
+                            },
+                        },
+                    }
+                } else {
+                    arr[convertedDate] = {
+                        customStyles: {
+                            container: {
+                                backgroundColor: '#009688',
+                            },
+                            text: {
+                                color: '#FFFFFF'
+                            },
+                        },
+                    }
+                }
+            })
+
+            this.setState({
+                myAllDateEvent: arr,
+            })
+        }
+
+        await fetch(url + 'registrant/findByDate/' + this.state.currentDate)
             .then(data => data.json())
             .then(dataJson => {
                 this.setState({
@@ -66,9 +105,8 @@ class CalendarScreen extends React.Component {
             })
     }
 
-   fetchByDate = async (date) => {
-       console.log(url + 'event/findByDate/' + date.dateString + 'T00:00:00.000Z');
-        await fetch( url + 'event/findByDate/' + date.dateString + 'T00:00:00.000Z')
+    fetchByDate = async (date) => {
+        await fetch(url + 'registrant/findByDate/' + moment(date.dateString).format('DD-MM-YYYY'))
             .then(data => data.json())
             .then(dataJson => {
                 this.setState({
@@ -78,42 +116,180 @@ class CalendarScreen extends React.Component {
             .catch(err => {
                 alert('Không tìm thấy sự kiện!')
             })
+        this.setState({
+            currentDate: moment(date.dateString).format('DD-MM-YYYY')
+        })
+    }
+
+    onSwitch = (value) => {
+        this.setState({
+            renderCalendarPage: value
+        })
+    }
+
+    onRenderContent = () => {
+        if (this.state.renderCalendarPage) {
+
+        } else {
+
+        }
+    }
+
+    handleDatePicker = (date) => {
+        this.setState({
+            pickedDate: moment(date).format('DD-MM-YYYY'),
+            isVisible: false
+        })
+    }
+
+    onClearText = () => {
+        this.setState({
+            searchValue: '',
+            iconName: null
+        })
+    }
+
+    showClearTextButton = (value) => {
+        if (value === '') {
+            this.setState({
+                showClearText: false
+            })
+        } else {
+            this.setState({
+                showClearText: true,
+                searchValue: value
+            })
+        }
+
+        if (this.state.showClearText === true) {
+            this.setState({
+                iconName: 'close'
+            })
+        }
+
+        if (this.state.showClearText === false) {
+            this.setState({
+                iconName: null
+            })
+        }
+    }
+
+    onPressCancel = (id) => {
+        fetch(url + 'registrant/' + id, {
+            method: 'DELETE'
+        })
+            .then(data => data.json())
+            .then(dataJson => {
+                if (dataJson.title === 'ok') {
+                    Alert.alert('THÔNG BÁO', 'Hủy thành công.',
+                        [{ text: 'OK' }]);
+                }
+            })
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <Calendar theme={{
-                    backgroundColor: '#ffffff',
-                    calendarBackground: '#ffffff',
-                    textSectionTitleColor: Color._700,
-                    todayTextColor: Color._400,
-                    arrowColor: Color._600,
-                    textDayFontSize: 17,
-                    textMonthFontSize: 17,
-                    textDayHeaderFontSize: 17,
-                    textMonthFontWeight: 'bold',
-                    
-                    }}
-                    markedDates={this.state.myAllDateEvent}
-                    onDayPress={this.fetchByDate}/>
-
-                <Text style={styles.subTitle}>Sự kiện trong ngày</Text>
-
-                <ScrollView style={styles.list}>
+                <View style={styles.topContainer}>
                     {
-                        this.state.eventList.map((item, key) => (
-                            <CalendarItem start={item.startTime}
-                                            end={item.endTime}
-                                            eventName={item.eventName}
-                                            key={key}
-                                            index={key}
-                                            onPress={() => {this.props.navigation.navigate('DetailEventScreen', {data: {item: item, hostScreen: 'CalendarScreen'}})}}/>
-                            
-                        ))
+                        this.state.renderCalendarPage ? (
+                            <View style={styles.searchBarContainer}>
+                                <Icon style={{ color: '#fff' }} type='Ionicons' name='search'></Icon>
+                                <TextInput underlineColorAndroid='rgba(0,0,0,0)'
+                                    selectionColor='#fff'
+                                    style={styles.searchText}
+                                    placeholder='Tìm sự kiện'
+                                    onChangeText={this.showClearTextButton}
+                                >{this.state.searchValue}</TextInput>
+                                {/* <TouchableOpacity onPress={this.onClearText}>
+                                    <Icon style={{ color: '#fff' }} type='Ionicons' name={this.state.iconName}></Icon>
+                                </TouchableOpacity> */}
+                            </View>
+                        ) : (
+                                <View style={{ flex: 2 }}>
+                                    <TouchableOpacity onPress={() => this.setState({ isVisible: true })}>
+                                        <Text style={{ fontSize: 16, color: '#FFFFFF' }}>CHỌN NGÀY</Text>
+                                    </TouchableOpacity>
+                                    <DateTimePicker
+                                        isVisible={this.state.isVisible}
+                                        onConfirm={this.handleDatePicker}
+                                        onCancel={() => this.setState({ isVisible: false })}
+                                        mode={'date'}
+                                        datePickerModeAndroid={'spinner'}
+                                        locale={'vi'}
+                                        format={'DD-MM-YYYY'}
+                                    />
+                                </View>
+                            )
                     }
-                </ScrollView>
 
+                    <View>
+                        <Switch onValueChange={this.onSwitch}
+                            value={this.state.renderCalendarPage}
+                            barHeight={24}
+                            circleSize={20}
+                            disabled={false}
+                            circleBorderWidth={0}
+                            backgroundActive={'#004D40'}
+                            backgroundInactive={'#004D40'}
+                            switchLeftPx={2.5}
+                            switchRightPx={2.5}
+                        />
+                    </View>
+                </View>
+                {
+                    this.state.renderCalendarPage ? (
+                        <View>
+                            {
+                                this.state.allEvent.map((item, key) => (
+                                    <Item linkImage={url + item.linkImage[0]}
+                                        eventName={item.eventName}
+                                        time={item.startTime + " " + item.startDate}
+                                        location={item.location}
+                                        onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'DetailEventScreen' } }) }}
+                                        onCancel={this.onPressCancel(item._id)} />
+                                ))
+                            }
+                        </View>
+                    ) : (
+                            <View>
+                                <Calendar theme={{
+                                    backgroundColor: '#ffffff',
+                                    calendarBackground: '#ffffff',
+                                    textSectionTitleColor: Color._700,
+                                    todayTextColor: Color._400,
+                                    arrowColor: Color._600,
+                                    textDayFontSize: 15,
+                                    textMonthFontSize: 15,
+                                    textDayHeaderFontSize: 15,
+                                    paddingVertical: 5,
+                                    textMonthFontWeight: 'bold'
+                                }}
+                                    style={{
+                                        height: 300,
+                                    }}
+                                    markedDates={this.state.myAllDateEvent}
+                                    markingType={'custom'}
+                                    onDayPress={this.fetchByDate} />
+
+                                <Text style={styles.subTitle}>Sự kiện ngày {this.state.currentDate}</Text>
+
+                                <ScrollView style={styles.list}>
+                                    {
+                                        this.state.eventList.map((item, key) => (
+                                            <CalendarItem start={item.startTime}
+                                                end={item.endTime}
+                                                eventName={item.eventName}
+                                                key={key}
+                                                index={key}
+                                                onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'CalendarScreen' } }) }}
+                                                onPressCancel={this.onPressCancel(item._id)} />
+                                        ))
+                                    }
+                                </ScrollView>
+                            </View>
+                        )
+                }
             </View>
         )
     }
@@ -131,11 +307,30 @@ const styles = StyleSheet.create({
     subTitle: {
         fontSize: 14,
         backgroundColor: '#EEEEEE',
-        paddingVertical: 8,
-        paddingLeft: 16,
-        marginTop: 24,
+        paddingVertical: 4,
+        marginTop: 12,
         textAlign: 'center'
-    }
+    },
+    topContainer: {
+        flexDirection: 'row',
+        height: 48,
+        backgroundColor: Color._500,
+        padding: 12
+    },
+    searchBarContainer: {
+        flex: 2,
+        flexDirection: 'row',
+        padding: 12,
+        backgroundColor: Color._500,
+        alignItems: 'center'
+    },
+    searchText: {
+        width: Dimensions.get('window').width - 132,
+        height: 24,
+        paddingHorizontal: 16,
+        fontSize: 18,
+        color: '#fff'
+    },
 })
 
 export { CalendarScreen };

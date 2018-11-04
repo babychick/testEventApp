@@ -1,36 +1,19 @@
-var fs = require('fs');
-var multer  = require('multer');
-// var upload = multer({ dest: 'uploads/' });
+let uploadController = require('../controllers/uploadController');
 let express = require('express');
+let multer  = require('multer');
+const fs = require('fs');
 let router = express.Router();
+let upload = multer({ storage : uploadController.storage });
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-
-const upload = multer({storage: storage})
-
-router.post('/',upload.single('fileData'), (req, res,next) => {
-  fs.readFile(req.file.path,(err, contents)=> {
-   if (err) {
-   console.log('Error: ', err);
-    // res.send(err)
-  }else{
-   console.log('File contents ',req.file.filename);
-    res.send({
-        filename: req.file.filename
+router.post('/avatar', upload.single('fileData'), uploadController.uploadImage);
+router.post('/', upload.any(), (req, res) => {
+    let imageArray = [];
+    req.files.map((img, index) => {
+        imageArray.push(img.originalname);
+        console.log(img.size);
     })
-  }
- });
-});
 
-router.post('/array', upload.any(), function (req, res, next) {
-  res.send(req.files)
-})
+    res.send(imageArray);
+});
 
 module.exports = router;

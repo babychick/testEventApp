@@ -4,12 +4,6 @@ import { Icon } from 'native-base';
 import { Color } from '../../assets/color';
 
 class AppBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            title: ''
-        }
-    }
 
     render() {
 
@@ -19,9 +13,7 @@ class AppBar extends React.Component {
                     <Icon type='MaterialIcons' style={{color: '#fff'}} name='arrow-back'/>
                 </TouchableOpacity>
                 <Text style={styles.title}>{this.props.title}</Text>
-                <TouchableOpacity style={styles.actionItem}
-                    onPress={this.props.click}
-                >
+                <TouchableOpacity style={styles.actionItem} onPress={this.props.click}>
                     <Icon type={this.props.type} style={{color: '#fff'}} name={this.props.name}/>
                 </TouchableOpacity>                
             </View>
@@ -46,7 +38,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         fontWeight: 'bold',
-        includeFontPadding: false
     },
     actionItem: {
         position: 'absolute',

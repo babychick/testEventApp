@@ -17,6 +17,50 @@ import AppStyle from '../theme';
 const styles = AppStyle.StyleDangNhap;
 const androidClientId ='249723835237-f1oa73oih93srs9126a3ugbcvf0f6ssa.apps.googleusercontent.com';
 import url from '../assets/url';
+import Expo, {Permissions, Notifications } from 'expo';
+
+
+async function registerForPushNotificationsAsync() {
+        const { status: existingStatus } = await Permissions.getAsync(
+            Permissions.NOTIFICATIONS
+        );
+        let finalStatus = existingStatus;
+
+        // only ask if permissions have not already been determined, because
+        // iOS won't necessarily prompt the user a second time.
+        if (existingStatus !== 'granted') {
+            // Android remote notification permissions are granted during the app
+            // install, so this will only ask on iOS
+            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+            finalStatus = status;
+        }
+
+        // Stop here if the user did not grant permissions
+        if (finalStatus !== 'granted') {
+            return;
+        }
+
+        // Get the token that uniquely identifies this device
+        // let token = await Notifications.getExpoPushTokenAsync();
+        // console.log(token);
+
+        // POST the token to your backend server from where you can retrieve it to send push notifications.
+        // return fetch(PUSH_ENDPOINT, {
+        //     method: 'POST',
+        //     headers: {
+        //     Accept: 'application/json',
+        //     'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({
+        //     token: {
+        //         value: token,
+        //     },
+        //     user: {
+        //         username: 'Brent',
+        //     },
+        //     }),
+        // });
+    }
 
 export default class DangNhap extends Component {
     constructor(props){
@@ -47,15 +91,29 @@ export default class DangNhap extends Component {
     }
 
     async componentWillMount () {
+        // this.register();
+        registerForPushNotificationsAsync()
         try {
             const store = await AsyncStorage.getItem('data');
             // alert(JSON.parse(store)._id)
             if(JSON.parse(store)._id != '_id'){
-                this.props.navigation.navigate('RouterTimSuKien');
+                await this.props.navigation.navigate('RouterTimSuKien');
             }
         } catch (error) {
             
         }
+    }
+
+    
+
+    register= async() =>{
+        const {status} = await Expo.Permissions.askAsync(Expo.Permissions.NOTIFICATIONS);
+        if(status !== 'granted'){
+            alert('Bạn cần cấp phép để thông báo');
+            return;
+        }
+        const token = await Expo.Notifications.getExpoPushTokenAsync();
+        console.log(token)
     }
 
     saveData = async() =>{
@@ -198,7 +256,7 @@ export default class DangNhap extends Component {
                     <View style={styles.logo}>
                         <Text style={styles.textLogo}>SK</Text>
                     </View>
-                    <Text style={styles.text}>Quàn lý sự kiện</Text>
+                    <Text style={styles.text}>Quản lý sự kiện</Text>
                 </View>
                 <TouchableOpacity  onPress={() => {
                     this.SignInGG()
