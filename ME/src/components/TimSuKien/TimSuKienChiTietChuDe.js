@@ -242,7 +242,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                             </TouchableOpacity>
                         </View>
                         <View style={{paddingHorizontal: 16}}>
-                            <Text style={styles.heading}>{this.state.data.eve ntName}</Text>
+                            <Text style={styles.heading}>{this.state.data.eventName}</Text>
 
                             <Text style={styles.caption}>{this.state.data.status}</Text>
 
