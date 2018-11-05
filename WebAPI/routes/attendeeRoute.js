@@ -3,7 +3,7 @@ let express = require('express');
 
 let router = express.Router();
 
-router.post('/addOneType', attendeeController.addOneAttendee);
+router.post('/addOneAttendee', attendeeController.addOneAttendee);
 router.get('/:userId', attendeeController.findEventOfUser);
 router.get('/findAttendees', attendeeController.findAttendees);
 

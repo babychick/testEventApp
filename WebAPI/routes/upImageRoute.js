@@ -5,7 +5,7 @@ const fs = require('fs');
 let router = express.Router();
 let upload = multer({ storage : uploadController.storage });
 
-router.post('/', upload.single('fileData'), uploadController.uploadImage);
+// router.post('/', upload.single('fileData'), uploadController.uploadImage);
 router.post('/', upload.any(), (req, res) => {
     let imageArray = [];
     req.files.map((img, index) => {

@@ -4,13 +4,23 @@ const Schema = mongoose.Schema;
 
 let registrantSchema = new Schema({
 
-    adminID: {type: String, require: true},
+    adminId: {type: String, require: true},
 
     adminName: {type: String, require: true},
 
-    eventID: {type: String, require: true},
+    eventId: {type: String, require: true},
 
-    userID: {type: String, require: true},
+    eventName: {type: String, require: true},
+
+    startDate: {type: String, require: true},
+
+    startTime: {type: String, require: true},
+
+    endTime: {type: String, require: true},
+
+    location: {type: String, require: true},
+
+    userId: {type: String, require: true},
 
     userName: {type: String, require: true},
 

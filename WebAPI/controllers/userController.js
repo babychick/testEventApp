@@ -4,7 +4,7 @@ let baseController = require('./baseController');
 // add one user
 addOneUser = (req, res) => {
     let obj = req.body;
-
+    console.log(obj);
     baseController.addOne(res, userModel, obj);
 }
 

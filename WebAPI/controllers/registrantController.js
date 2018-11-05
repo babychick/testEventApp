@@ -24,6 +24,12 @@ findAllEvent = (req, res) => {
     baseController.findByKeyValue(res, registrantModel, obj);
 }
 
+findByDate = (req, res) => {
+    let obj = { startDate: req.body.startDate };
+
+    baseController.findByKeyValue(res, registrantModel, obj);
+}
+
 // UPDATE STATUS OF REGISTRANT
 updateStatus = (req, res) => {
     let obj = req.body;
@@ -42,6 +48,7 @@ module.exports = {
     addOneRegistrant,
     findAllRegistrant,
     findAllEvent,
+    findByDate,
     updateStatus,
     deleteOneRegistrant
 }

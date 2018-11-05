@@ -38,6 +38,14 @@ findEventByDate = (req, res) => {
     baseController.findByKeyValue(res, eventModel, queryString);
 }
 
+findEventByAdminId = (req, res) => {
+    let queryString = {
+        adminId: req.params.adminId
+    }
+
+    baseController.findByKeyValue(res, eventModel, queryString);
+}
+
 // update event info
 updateEvent = (req, res) => {
     let obj = req.body;
@@ -76,6 +84,7 @@ module.exports = {
     findEventById,
     findEventByName,
     findEventByDate,
+    findEventByAdminId,
     updateEvent,
     deleteEvent,
     deleteAllEvent

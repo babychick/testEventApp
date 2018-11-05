@@ -4,6 +4,26 @@ import { AppBar } from '../common/appBar';
 import { Color } from '../../assets/color';
 import url from '../../assets/url';
 import moment from 'moment';
+import { createMaterialTopTabNavigator } from 'react-navigation';
+// import { InforEvent } from './inforEvent';
+// import { ReviewEvent } from './reviewEvent';
+
+// const tabNavigation = createMaterialTopTabNavigator({
+//     InforEventScreen: {
+//         screen: InforEvent,
+//         navigationOptions: {
+//             tabBarLabel: 'CHI TIẾT'
+//         }
+//     },
+//     // ReviewEventScreen: {
+//     //     screen: ReviewEvent,
+//     //     navigationOptions: {
+//     //         tabBarLabel: 'ĐÁNH GIÁ'
+//     //     }
+//     // }
+// }, {
+//     initialRouteName: 'InforEventScreen'
+// })
 
 class DetailEvent extends React.Component {
 
@@ -14,12 +34,13 @@ class DetailEvent extends React.Component {
         this.state = {
             status: null,
             hostScreen: data.hostScreen,
-            event: data.item
+            event: data.item,
+            iconName: null
         }
     }
 
     componentDidMount() {
-        let today = moment().format('YYYY-MM-DD');
+        let today = moment().format('DD-MM-YYYY');
         if (this.state.event.startDate < today) {
             this.setState({
                 status: 'Chua dien ra'
@@ -44,71 +65,28 @@ class DetailEvent extends React.Component {
                     <Text style={styles.registerButton}>ĐĂNG KÝ</Text>
                 </View>
             </TouchableOpacity>
+        } else {
+            this.setState({
+                iconName: 'edit'
+            })
         }
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <AppBar title='Thông tin sự kiện' goBack={() => this.props.navigation.navigate(this.state.hostScreen)}></AppBar>
+                <AppBar title='Thông tin sự kiện'
+                        name = {this.state.iconName}
+                        goBack = {() => this.props.navigation.navigate(this.state.hostScreen)}
+                        click = {() => this.props.navigation.navigate('EditEventScreen')}
+                        ></AppBar>
 
                 <ScrollView>
                     <View>
-                        <Image style={styles.image} source={require('../../assets/image/y_r1.jpg')} resizeMode='stretch' />
-                        {/* {this.renderRegistryButton} */}
+                        <Image style={styles.image} source={{uri: url + this.state.event.linkImage[0]}} resizeMode='stretch' />
+                        {this.renderRegistryButton}
                     </View>
-                    <View style={{ paddingHorizontal: 16 }}>
-                        <Text style={styles.heading}>{this.state.event.eventName}</Text>
-
-                        <Text style={styles.caption}>{this.state.event.eventType}</Text>
-
-                        <View style={[styles.subContainer, { flexDirection: 'row' }]}>
-                            <Text style={styles.subHeading}>Được tổ chức bởi</Text>
-                            <TouchableOpacity>
-                                <Text style={[styles.content, { marginTop: 5 }]}>{this.props.admin}</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.subContainer}>
-
-                            <Text style={styles.subHeading}>Thời gian</Text>
-
-                            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                                <Text style={{ height: 24, fontSize: 14, width: 80 }}>Bắt đầu</Text>
-                                <Text style={styles.content}>{this.state.event.startTime}</Text>
-                                <Text style={[styles.content, { marginLeft: 32 }]}>{this.state.event.startDate}</Text>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', paddingHorizontal: 16 }}>
-                                <Text style={{ height: 24, fontSize: 14, width: 80 }}>Kết thúc</Text>
-                                <Text style={styles.content}>{this.state.event.endTime}</Text>
-                                <Text style={[styles.content, { marginLeft: 32 }]}>{this.state.event.endDate}</Text>
-                            </View>
-
-                        </View>
-
-                        <View style={styles.subContainer}>
-                            <Text style={styles.subHeading}>Địa điểm</Text>
-                            <TouchableOpacity>
-                                <Text style={{ fontSize: 14, marginLeft: 16, textAlignVertical: 'bottom', }}>{this.state.event.location}</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={[styles.subContainer, { flexDirection: 'row' }]}>
-                            <Text style={styles.subHeading}>Thành viên</Text>
-                            <Text style={[styles.content, { marginTop: 5 }]}>{this.state.event.member}</Text>
-                        </View>
-
-                        <View style={[styles.subContainer, { flexDirection: 'row' }]}>
-                            <Text style={styles.subHeading}>Trạng thái</Text>
-                            <Text style={[styles.content, { marginTop: 5 }]}>{this.state.status}</Text>
-                        </View>
-
-                        <View style={styles.subContainer}>
-                            <Text style={styles.subHeading}>Mô tả</Text>
-                            <Text style={{ fontSize: 14, marginLeft: 16, textAlignVertical: 'bottom', }}>{this.state.event.description}</Text>
-                        </View>
-                    </View>
+                    {/* <tabNavigation></tabNavigation> */}
                 </ScrollView>
             </View>
         );
@@ -120,48 +98,10 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column'
     },
-    subContainer: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#cfcfcf',
-        paddingVertical: 16
-    },
     image: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height * 0.35,
     },
-    heading: {
-        height: 44,
-        fontSize: 21,
-        fontWeight: 'bold',
-        textAlignVertical: 'bottom',
-        includeFontPadding: false
-    },
-    subHeading: {
-        height: 32,
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlignVertical: 'center'
-    },
-    caption: {
-        height: 24,
-        fontSize: 14,
-        textAlignVertical: 'center',
-    },
-    content: {
-        height: 24,
-        fontSize: 14,
-        marginLeft: 16,
-        textAlignVertical: 'center'
-    },
-    registerButton: {
-        fontSize: 14,
-        height: 36,
-        paddingHorizontal: 16,
-        color: '#ffffff',
-        textAlignVertical: 'center',
-        backgroundColor: Color._700,
-        borderRadius: 3,
-    }
 });
 
 export { DetailEvent };

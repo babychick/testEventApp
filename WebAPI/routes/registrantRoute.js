@@ -3,8 +3,9 @@ let express = require('express');
 let router = express.Router();
 
 router.post('/addOneRegistrant', registrantController.addOneRegistrant);
-router.post('/findEvent', registrantController.findAllEvent);
-router.post('/findRegistrant', registrantController.findAllRegistrant);
+router.post('/findAllRegistrant', registrantController.findAllRegistrant);
+router.post('/findByDate', registrantController.findByDate);
+router.get('/:userId', registrantController.findAllEvent);
 router.put('/updateStatus', registrantController.updateStatus);
 router.delete('/:id', registrantController.deleteOneRegistrant);
 
