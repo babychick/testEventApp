@@ -1,4 +1,5 @@
 let registrantModel = require('../models/registrantModel');
+let attendeeModel = require('../models/attendeeModel');
 let baseController = require('./baseController');
 
 // ADD REGISTRANT
@@ -35,6 +36,20 @@ updateStatus = (req, res) => {
     let obj = req.body;
 
     baseController.updateOne(res, registrantModel, obj);
+
+    if (obj.status === 'Chấp nhận') {
+        let obj_1 = {
+            adminId: obj.adminId,
+            adminName: obj.adminName,
+            eventId: obj.eventId,
+            eventName: obj.eventName,
+            userId: obj.userId,
+            userName: obj.userName,
+            status: 'Chưa điểm danh'
+        }
+
+        baseController.addOne(res, attendeeModel, obj_1);
+    }
 }
 
 // DELETE REGISTRANT
