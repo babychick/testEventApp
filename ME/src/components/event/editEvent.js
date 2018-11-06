@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Dimensions, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -7,37 +7,36 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Color } from '../../assets/color';
-import { ImagePicker, ImageManipulator } from 'expo';
+import { ImagePicker } from 'expo';
 import url from '../../assets/url';
 
 var form = new FormData();
 
-class NewEvent extends React.Component {
+class EditEvent extends React.Component {
     constructor(props) {
         super(props);
         let data = this.props.navigation.state.params.data;
         this.state = {
-            fileSize: null,
             showList: false,
             isSDVisible: false,
             isEDVisible: false,
             isSTVisible: false,
             isETVisible: false,
             hostScreen: data.hostScreen,
-            adminId: data.userId,
-            adminName: null,
-            eventName: null,
-            eventType: 'Ẩm thực',
-            location: null,
-            locationX: null,
-            locationY: null,
-            startDate: moment().format('DD-MM-YYYY'),
-            endDate: moment().format('DD-MM-YYYY'),
-            startTime: moment().format('HH:mm'),
-            endTime: moment().format('HH:mm'),
-            member: null,
-            description: null,
-            linkImage: null,
+            userId: data.event.adminId,
+            eventId: data.event.eventId,
+            eventName: data.event.eventName,
+            eventType: data.event.eventType,
+            location: data.event.location,
+            locationX: data.event.locationX,
+            locationY: data.event.locationX,
+            startDate: data.event.startDate,
+            endDate: data.event.endDate,
+            startTime: data.event.startTime,
+            endTime: data.event.endTime,
+            member: data.event.member,
+            description: data.event.description,
+            linkImage: data.event.linkImage,
             subject: ['Ẩm thực',
                 'Lễ hội',
                 'Dân gian',
@@ -47,20 +46,20 @@ class NewEvent extends React.Component {
                 'Triễn lãm',
                 'Huong Nghiep',
                 'Giai tri',
-                'Van hoa, Giao duc'],
+                'Van hoa, Giao duc']
         }
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
-            startDate: moment(date).format('DD-MM-YYYY'),
+            startDate: moment(date).format('YYYY-MM-DD'),
             isSDVisible: false
         })
     }
 
     handleEndDatePicker = (date) => {
         this.setState({
-            endDate: moment(date).format('DD-MM-YYYY'),
+            endDate: moment(date).format('YYYY-MM-DD'),
             isEDVisible: false
         })
     }
@@ -81,21 +80,15 @@ class NewEvent extends React.Component {
 
     openImagePicker = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: false
+            allowsEditing: false,
+            aspect: [4,3]
         });
 
         if(!result.cancelled) {
             console.log(result.uri);
-
-            let resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ rotate: 0 }], { format: 'jpeg'});
-
-            if (resizedPhoto.width > 1000 && resizedPhoto.height > 750) {
-                resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ resize: {width: 1000, height: 750} }], { format: 'jpeg'});
-            }
-            
-            var n =  Date.now();
+            var n =  Date.now(); 
             var photo = {
-                uri: resizedPhoto.uri,
+                uri: result.uri,
                 type: 'image/jpeg',
                 name: n+'photo.jpg'
             };
@@ -113,12 +106,23 @@ class NewEvent extends React.Component {
             body: form,
         })
         .then( (response ) => response.json())
-        .then( (responseJson) =>{
+        .then( (responseJson) => {
             console.log(responseJson);
-            // let object = JSON.stringify(responseJson);
-            this.setState({
-                linkImage: responseJson
-            })
+            let object = JSON.stringify(responseJson);
+            let arr = this.state.linkImage;
+            if (this.state.linkImage === null || this.state.linkImage.length === 0) {
+                this.setState({
+                    linkImage: object
+                })
+            } else {
+                object.map((item, index) => {
+                    arr.push(item)
+                });
+
+                this.setState({
+                    linkImage: arr
+                })
+            }            
         })
         .catch(err => {
             alert(err);
@@ -127,20 +131,10 @@ class NewEvent extends React.Component {
     
     onSave = async () => {
         let upload = await this.onPressUpLoad();
-        console.log(this.state.adminId + " "
-                     + this.state.eventName + " "
-                     + this.state.eventType + " "
-                     + this.state.location + " "
-                     + this.state.locationX + " "
-                     + this.state.locationY + " "
-                     + this.state.startDate + " "
-                     + this.state.endDate + " "
-                     + this.state.linkImage);
-
-        await fetch(url + 'event/addOneEvent', {
+        await fetch(url + 'event/updateEvent', {
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8',
             },
             body: JSON.stringify({
@@ -162,9 +156,8 @@ class NewEvent extends React.Component {
         .then(res => res.json())
         .then(resJson => {
             if (resJson.title === 'ok') {
-                Alert.alert('THÔNG BÁO', 'Tạo sự kiện thành công.',
-                    [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen)}]);
-                form = new FormData();
+                alert('THÔNG BÁO', 'Cập nhật thành công.',
+                    [{text: 'OK', onPress: () => this.props.navigation.navigate('DetailEventScreen')}]);
             }
         });
     }
@@ -182,11 +175,15 @@ class NewEvent extends React.Component {
         })
     }
 
+    componentDidMount() {
+        
+    }
+
     render() {
         return (
             <View style={styles.container}>
 
-                <AppBar title='Tạo sự kiện'
+                <AppBar title='Cập nhật thông tin'
                     type='Entypo'
                     name='check'
                     goBack={() => { this.props.navigation.navigate(this.state.hostScreen) }}
@@ -194,11 +191,11 @@ class NewEvent extends React.Component {
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
                     <KeyboardAvoidingView behavior='padding'>
-                        <TextBox type='MaterialIcons' name='home' placeholder='Tên sự kiện' onChangeText={(text) => this.setState({ eventName: text })}></TextBox>
+                        <TextBox type='MaterialIcons' name='home' placeholder='Tên sự kiện' onChangeText={(text) => this.setState({ eventName: text })} value={this.state.eventName}></TextBox>
 
                         <View style={{ flexDirection: 'row', height: 56, paddingVertical: 16, borderBottomWidth: 1 }}>
                             <Icon type='MaterialIcons' name='subtitles' size={24} style={styles.icon}></Icon>
-                            <Picker style={styles.picker} selectedValue={this.state.eventType} value={this.state.subject[0]} onValueChange={(value) => this.setState({ eventType: value })} mode='dropdown' fontSize={18}>
+                            <Picker style={styles.picker} selectedValue={this.state.eventType} onValueChange={(value) => this.setState({ eventType: value })} mode='dropdown' fontSize={18}>
                                 {
                                     this.state.subject.map((item, key) => (
                                         <Picker.Item key={key} value={item} label={item} />
@@ -281,12 +278,12 @@ class NewEvent extends React.Component {
                                 fetchDetails={true}
                                 onPress={this.selectDestination}
                                 getDefaultValue={() => {
-                                    return ''; // text input default value
+                                    return '';
                                 }}
                                 query={{
                                     key: 'AIzaSyAGF8cAOPFPIKCZYqxuibF9xx5XD4JBb84',
                                     language: 'vi',
-                                    // types: '(cities)', // default: 'geocode'
+                                    // types: '(cities)'
                                 }}
                                 styles={{
                                     predefinedPlacesDescription: {
@@ -374,4 +371,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export { NewEvent };
+export { EditEvent };

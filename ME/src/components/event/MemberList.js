@@ -40,6 +40,34 @@ class MemberList extends React.Component {
         }
     }
 
+    onDeny = (item) => {
+        fetch( url + 'registrant/updateStatus', {
+            method: 'PUT',
+            header: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            body: JSON.stringify({
+                _id: item._id,
+                status: 'Từ chối'
+            })
+        })
+    }
+
+    onAccept = (item) => {
+        fetch( url + 'registrant/updateStatus', {
+            method: 'PUT',
+            header: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            body: JSON.stringify({
+                _id: item._id,
+                status: 'Chấp nhận'
+            })
+        })
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -57,10 +85,12 @@ class MemberList extends React.Component {
                                 </View>
                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                     <View style={styles.bottomContainer}>
-                                        <TouchableOpacity style={[styles.button, {backgroundColor: '#EF5350'}]}>
+                                        <TouchableOpacity style={[styles.button, {backgroundColor: '#EF5350'}]}
+                                                            onPress={this.onDeny(item)}>
                                             <Text style={{ color: '#FFFFFF' }}>TỪ CHỐI</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={[styles.button, {backgroundColor: Color._500}]}>
+                                        <TouchableOpacity style={[styles.button, {backgroundColor: Color._500}]}
+                                                            onPress={this.onAccept(item)}>
                                             <Text style={{ color: '#FFFFFF' }}>CHẤP NHẬN</Text>
                                         </TouchableOpacity>
                                     </View>

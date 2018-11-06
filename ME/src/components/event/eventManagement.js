@@ -6,6 +6,9 @@ import { PopupList } from './popupList';
 import url from '../../assets/url';
 import { Color } from '../../assets/color';
 
+let h = new Date().getHours();
+let m = new Date().getMinutes();
+
 class EventManager extends React.Component {
     constructor(props) {
         super(props);
@@ -15,11 +18,13 @@ class EventManager extends React.Component {
             showPopup: false,
             adminId: null,
             eventId: null,
-            refreshing: false
+            refreshing: false,
+            currentTime: h + ":" + m
         }
     }
 
     async componentWillMount() {
+        console.log(this.state.currentTime);
         let store = await AsyncStorage.getItem('data');
         // find user
         await fetch(url + 'user/findUserByAccountId', {
@@ -63,10 +68,24 @@ class EventManager extends React.Component {
             })
     }
 
+    renderCheckIn = (time) => {
+        if (time >= this.state.currentTime) {
+            <TouchableOpacity
+                style={styles.button}
+                onPress={this.onOpenQRScanner}>
+                <Text style={{ color: '#FFFFFF' }}>ĐIỂM DANH</Text>
+            </TouchableOpacity>
+        }
+    }
+
+    onOpenQRScanner = () => {
+        
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <FloatButton style={{ position: 'absolute', right: 16, bottom: 16, zIndex: 1}}
+                <FloatButton style={{ position: 'absolute', right: 16, bottom: 16, zIndex: 1 }}
                     onNewEvent={() => { this.props.navigation.navigate('NewEventScreen', { data: { hostScreen: 'EventManagerScreen', adminId: this.state.adminId } }) }} />
                 <ScrollView refreshControl={
                     <RefreshControl
@@ -80,20 +99,18 @@ class EventManager extends React.Component {
                                 <View style={styles.topContainer}>
                                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.eventName}</Text>
                                 </View>
-                                <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                                    <View style={styles.bottomContainer}>
-                                        <TouchableOpacity 
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('DetailEventScreen', { data: { hostScreen: 'EventManagerScreen', item: item } })}>
+                                    <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+                                        <View style={styles.bottomContainer}>
+                                            {this.renderCheckIn(item.startTime)}
+                                            <TouchableOpacity
                                                 style={styles.button}
-                                                onPress={() => this.props.navigation.navigate('DetailEventScreen', { data: { hostScreen: 'EventManagerScreen', item: item} })}>
-                                            <Text style={{ color: '#FFFFFF' }}>CHI TIẾT</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity 
-                                                style={styles.button}
-                                                onPress={() => this.props.navigation.navigate('MemberListScreen', { data: { hostScreen: 'EventManagerScreen', eventId: item.eventId, adminId: item.adminId} })}>
-                                            <Text style={{ color: '#FFFFFF' }}>DÁNH SÁCH</Text>
-                                        </TouchableOpacity>
+                                                onPress={() => this.props.navigation.navigate('MemberListScreen', { data: { hostScreen: 'EventManagerScreen', eventId: item.eventId, adminId: item.adminId } })}>
+                                                <Text style={{ color: '#FFFFFF' }}>DÁNH SÁCH</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         ))
                     }
