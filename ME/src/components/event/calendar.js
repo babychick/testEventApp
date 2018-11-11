@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { AsyncStorage, Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, RefreshControl } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Color } from '../../assets/color';
 import moment from 'moment';
@@ -7,7 +7,7 @@ import url from '../../assets/url';
 import { CalendarItem } from '../common/calendarItem';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Switch } from 'react-native-switch';
-import { Icon, } from 'native-base';
+import { Icon } from 'native-base';
 import { Item } from '../common/item';
 
 let today = moment().format('DD-MM-YYYY');
@@ -28,7 +28,6 @@ class CalendarScreen extends React.Component {
             currentDate: today,
             eventList: [],
             allEvent: [],
-            allDateEvent: [],
             myAllDateEvent: null,
             data: {
                 event: null,
@@ -39,26 +38,60 @@ class CalendarScreen extends React.Component {
             renderCalendarPage: false,
             searchValue: '',
             showClearText: false,
-            iconName: null
+            iconName: null,
+            showPopup: false,
+            userId: null,
+            store: {
+                _id: '',
+                email:''
+            },
+            it: '',
+            reloadItem: false,
+            refreshing: false
         }
     }
 
-    async componentDidMount() {
+    async componentWillMount() {
         { this.showClearTextButton }
-        await fetch(url + 'Registrant/findEvent')
-            .then(data => data.json())
-            .then(dataJson => {
-                console.log(dataJson);
-                this.setState({
-                    allEvent: dataJson
-                });
-                console.log(this.state.allEvent);
+        // let store = await AsyncStorage.getItem('data');
+        await this._getStore();
+        await this._getUser();        
+        
+
+        await this._refreshDate()
+        
+
+        await fetch(url + 'registrant/findByDate', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                userId: this.state.userId,
+                startDate: this.state.currentDate
+            }),
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            this.setState({
+                eventList: dataJson
             })
-            .catch(err => {
-                alert('Fetch failed...' + err);
-                console.log(err);
-            })
-        if (this.state.allEvent) {
+        })
+    }
+
+     _refreshDate = async()=>{
+         console.log('refresh')
+         // find all event
+        await fetch(url + 'registrant/' + this.state.userId)
+        .then(data => data.json())
+        .then(dataJson => {
+            console.log(dataJson);
+            this.setState({
+                allEvent: dataJson
+            });
+        })
+         if (this.state.allEvent) {
             let arr = {};
             this.state.allEvent.map((item, key) => {
                 let convertedDate = moment(item.startDate, 'DD-MM-YYYY', false).format('YYYY-MM-DD');
@@ -91,31 +124,61 @@ class CalendarScreen extends React.Component {
             this.setState({
                 myAllDateEvent: arr,
             })
-        }
+            }
+     }
 
-        await fetch(url + 'registrant/findByDate/' + this.state.currentDate)
-            .then(data => data.json())
-            .then(dataJson => {
-                this.setState({
-                    eventList: dataJson
-                })
+    _getStore = async()=>{
+        try {
+            const store = await AsyncStorage.getItem('data');
+            this.setState({
+                ...this.state,
+                store : JSON.parse(store)
             })
-            .catch(err => {
-                // alert('Không tìm thấy sự kiện!')
-            })
+            // alert(store)
+        } catch (error) {
+            
+        }
     }
 
-    fetchByDate = async (date) => {
-        await fetch(url + 'registrant/findByDate/' + moment(date.dateString).format('DD-MM-YYYY'))
-            .then(data => data.json())
-            .then(dataJson => {
+    _getUser = async()=>{
+        try {
+            await fetch(url+'user/findByKeyValue', {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({accountId: this.state.store._id}),
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
                 this.setState({
-                    eventList: dataJson
+                    userId : responseJson[0]._id,
                 })
+            } )
+		} catch (error) {
+            alert(error);
+		}
+    }
+
+    fetchByDate = (date) => {
+        fetch(url + 'registrant/findByDate', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                userId: this.state.userId,
+                startDate: moment(date.dateString).format('DD-MM-YYYY')
             })
-            .catch(err => {
-                alert('Không tìm thấy sự kiện!')
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            this.setState({
+                eventList: dataJson
             })
+        })
         this.setState({
             currentDate: moment(date.dateString).format('DD-MM-YYYY')
         })
@@ -127,19 +190,12 @@ class CalendarScreen extends React.Component {
         })
     }
 
-    onRenderContent = () => {
-        if (this.state.renderCalendarPage) {
-
-        } else {
-
-        }
-    }
-
     handleDatePicker = (date) => {
         this.setState({
             pickedDate: moment(date).format('DD-MM-YYYY'),
-            isVisible: false
-        })
+            isVisible: false,
+            showPopup: true
+        })   
     }
 
     onClearText = () => {
@@ -174,17 +230,43 @@ class CalendarScreen extends React.Component {
         }
     }
 
-    onPressCancel = (id) => {
-        fetch(url + 'registrant/' + id, {
-            method: 'DELETE'
-        })
-            .then(data => data.json())
-            .then(dataJson => {
-                if (dataJson.title === 'ok') {
-                    Alert.alert('THÔNG BÁO', 'Hủy thành công.',
-                        [{ text: 'OK' }]);
-                }
+    onPressCancel(id){
+        console.log("vo day");
+        fetch(url + 'registrant/deleteOneRegistrant', {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                id:id,
+                userId: this.state.userId,
+                startDate: this.state.currentDate
             })
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            if (dataJson.title === 'ok') {
+                Alert.alert('THÔNG BÁO', 'Hủy thành công.',
+                    [{ text: 'OK', onPress: () => {
+                        this.setState({
+                            eventList : dataJson.data
+                        })
+                        // this.setState({refreshing: true});
+                        // fetchData().then(() => {
+                        //     this.setState({refreshing: false});
+                        // });
+                        this._refreshDate()
+                    }
+                    }]);
+            }
+
+            if (dataJson.title === 'ERROR') {
+                Alert.alert('THÔNG BÁO', 'Hủy éo thành công.',
+                    [{ text: 'OK' }]);
+            }
+
+        })
     }
 
     render() {
@@ -211,8 +293,9 @@ class CalendarScreen extends React.Component {
                                         <Text style={{ fontSize: 16, color: '#FFFFFF' }}>CHỌN NGÀY</Text>
                                     </TouchableOpacity>
                                     <DateTimePicker
+                                        header={'Chọn ngày'}
                                         isVisible={this.state.isVisible}
-                                        onConfirm={this.handleDatePicker}
+                                        onConfirm={this.fetchByDate}
                                         onCancel={() => this.setState({ isVisible: false })}
                                         mode={'date'}
                                         datePickerModeAndroid={'spinner'}
@@ -242,12 +325,19 @@ class CalendarScreen extends React.Component {
                         <View>
                             {
                                 this.state.allEvent.map((item, key) => (
-                                    <Item linkImage={url + item.linkImage[0]}
+                                    <Item linkImage={url + item.linkImage[0] }
                                         eventName={item.eventName}
                                         time={item.startTime + " " + item.startDate}
                                         location={item.location}
                                         onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'DetailEventScreen' } }) }}
-                                        onCancel={this.onPressCancel(item._id)} />
+                                        onCancel={() => {
+                                            this.setState({
+                                                it : item._id
+                                            })
+                                            
+                                            const t =  this.onPressCancel(item._id)
+                                        }
+                                            } />
                                 ))
                             }
                         </View>
@@ -270,8 +360,7 @@ class CalendarScreen extends React.Component {
                                     }}
                                     markedDates={this.state.myAllDateEvent}
                                     markingType={'custom'}
-                                    onDayPress={this.fetchByDate} />
-
+                                        onDayPress={this.fetchByDate} />
                                 <Text style={styles.subTitle}>Sự kiện ngày {this.state.currentDate}</Text>
 
                                 <ScrollView style={styles.list}>
@@ -283,7 +372,14 @@ class CalendarScreen extends React.Component {
                                                 key={key}
                                                 index={key}
                                                 onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'CalendarScreen' } }) }}
-                                                onPressCancel={this.onPressCancel(item._id)} />
+                                                onCancel={() => {
+                                                    this.setState({
+                                                        it : item._id
+                                                    })
+                                                    console.log(item._id);
+                                                    this.onPressCancel(item._id)
+                                                }
+                                                } />
                                         ))
                                     }
                                 </ScrollView>

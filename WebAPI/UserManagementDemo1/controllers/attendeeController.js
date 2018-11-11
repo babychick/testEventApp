@@ -22,8 +22,14 @@ findEventOfUser = (req, res) => {
     baseController.findByKeyValue(res, attendeeModel, queryString);
 }
 
+updateUserStatus = (req, res) => {
+    let obj = req.body;
+
+    baseController.updateOne(req, attendeeModel, obj);
+}
 module.exports = {
     addOneAttendee,
     findAttendees,
-    findEventOfUser
+    findEventOfUser,
+    updateUserStatus
 }

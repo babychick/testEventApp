@@ -24,7 +24,7 @@ findById = (req, res) => {
 // find key-value
 findByKeyValue = (req, res) => {
   let obj = req.body;
-
+  console.log(obj);
   baseController.findByKeyValue(res, userModel, obj);
 }
 

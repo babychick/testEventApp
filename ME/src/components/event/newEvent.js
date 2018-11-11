@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Alert, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -17,6 +17,7 @@ class NewEvent extends React.Component {
         super(props);
         let data = this.props.navigation.state.params.data;
         this.state = {
+            fileSize: null,
             showList: false,
             isSDVisible: false,
             isEDVisible: false,
@@ -26,12 +27,12 @@ class NewEvent extends React.Component {
             adminId: data.userId,
             adminName: null,
             eventName: null,
-            eventType: null,
+            eventType: 'Ẩm thực',
             location: null,
             locationX: null,
             locationY: null,
-            startDate: moment().format('YYYY-MM-DD'),
-            endDate: moment().format('YYYY-MM-DD'),
+            startDate: moment().format('DD-MM-YYYY'),
+            endDate: moment().format('DD-MM-YYYY'),
             startTime: moment().format('HH:mm'),
             endTime: moment().format('HH:mm'),
             member: null,
@@ -46,20 +47,20 @@ class NewEvent extends React.Component {
                 'Triễn lãm',
                 'Huong Nghiep',
                 'Giai tri',
-                'Van hoa, Giao duc']
+                'Van hoa, Giao duc'],
         }
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
-            startDate: moment(date).format('YYYY-MM-DD'),
+            startDate: moment(date).format('DD-MM-YYYY'),
             isSDVisible: false
         })
     }
 
     handleEndDatePicker = (date) => {
         this.setState({
-            endDate: moment(date).format('YYYY-MM-DD'),
+            endDate: moment(date).format('DD-MM-YYYY'),
             isEDVisible: false
         })
     }
@@ -103,7 +104,7 @@ class NewEvent extends React.Component {
     }
 
     onPressUpLoad = async ()=>{
-        await fetch( url +'upload', {
+        await fetch( url +'upload/', {
             method: 'POST',
             headers: {
             'Accept': 'application/json',
@@ -114,11 +115,10 @@ class NewEvent extends React.Component {
         .then( (response ) => response.json())
         .then( (responseJson) =>{
             console.log(responseJson);
-            let object = JSON.stringify(responseJson);
+            // let object = JSON.stringify(responseJson);
             this.setState({
-                linkImage: object
+                linkImage: responseJson
             })
-            // alert(JSON.stringify(this.state.linkImage))
         })
         .catch(err => {
             alert(err);
@@ -127,11 +127,20 @@ class NewEvent extends React.Component {
     
     onSave = async () => {
         let upload = await this.onPressUpLoad();
-        alert(this.state.linkImage)
+        console.log(this.state.adminId + " "
+                     + this.state.eventName + " "
+                     + this.state.eventType + " "
+                     + this.state.location + " "
+                     + this.state.locationX + " "
+                     + this.state.locationY + " "
+                     + this.state.startDate + " "
+                     + this.state.endDate + " "
+                     + this.state.linkImage);
+
         await fetch(url + 'event/addOneEvent', {
             method: 'POST',
             headers: {
-                Accept: 'application/json',
+                'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8',
             },
             body: JSON.stringify({
@@ -189,7 +198,7 @@ class NewEvent extends React.Component {
 
                         <View style={{ flexDirection: 'row', height: 56, paddingVertical: 16, borderBottomWidth: 1 }}>
                             <Icon type='MaterialIcons' name='subtitles' size={24} style={styles.icon}></Icon>
-                            <Picker style={styles.picker} selectedValue={this.state.eventType} onValueChange={(value) => this.setState({ eventType: value })} mode='dropdown' fontSize={18}>
+                            <Picker style={styles.picker} selectedValue={this.state.eventType} value={this.state.subject[0]} onValueChange={(value) => this.setState({ eventType: value })} mode='dropdown' fontSize={18}>
                                 {
                                     this.state.subject.map((item, key) => (
                                         <Picker.Item key={key} value={item} label={item} />

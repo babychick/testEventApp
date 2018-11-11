@@ -22,7 +22,7 @@ findAll = (res, model) => {
   model.find()
     .then(data => {
         res.send(data);
-        console.log(data);
+        // console.log(data);
     })
     .catch(err => {
       res.send("failed!");
@@ -36,7 +36,7 @@ findById = (res, model, id) => {
   model.findById(id)
     .then(data => {
         res.send(data);
-        console.log(data);
+        // console.log(data);
     })
     .catch(err => {
       res.send("failed!");
@@ -50,7 +50,7 @@ findByKeyValue = (res, model, object) => {
     model.find(object)
         .then(data => {
             res.send(data);
-            console.log(data);
+            // console.log(data);
         })
         .catch(err => {
             res.send("failed");
@@ -81,12 +81,14 @@ deleteOne = (res, model, id) => {
 
   model.deleteOne({_id:id})
     .then(data => {
-      res.send("User " + id + " is deleted.");
-      console.log(id + " is deleted.");
+      res.send({
+            title: 'ok'
+        });
     })
     .catch(err => {
-      res.send("failed");
-      console.log("Error: " + err);
+     res.send({
+            title: 'err'
+        });
     });
 }
 

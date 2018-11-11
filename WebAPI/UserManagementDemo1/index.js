@@ -20,7 +20,6 @@ const eventTypeRoute = require('./routes/eventTypeRoute');
 const attendeeRoute = require('./routes/attendeeRoute');
 const registrantRoute = require('./routes/registrantRoute');
 const scheduleRoute = require('./routes/scheduleRoute');
-const registerRoute = require('./routes/registerRoute');
 const upImageRouter = require('./routes/upImageRouter');
 const sendEmail = require('./routes/sendEmailRoute')
 
@@ -33,7 +32,6 @@ app.use('/EvenType', eventTypeRoute);
 app.use('/Attendee', attendeeRoute);
 app.use('/Registrant', registrantRoute);
 app.use('/Schedule', scheduleRoute);
-app.use('/register', registerRoute);
 app.use('/upload', upImageRouter);
 app.use('/sendEmail',sendEmail);
 

@@ -13,6 +13,6 @@ router.post('/findByKeyValue', eventController.findByKeyValue);
 router.put('/updateEvent', eventController.updateEvent);
 router.delete('/:eventId', eventController.deleteEvent);
 router.delete('/deleteAllEvent', eventController.deleteAllEvent);
-router.get('/findByAdmin/:findEventByAdminId', eventController.findEventByAdminId);
+router.get('/findByAdmin/:adminId', eventController.findEventByAdminId);
 
 module.exports = router;

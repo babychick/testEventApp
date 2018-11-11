@@ -49,9 +49,9 @@ export default class TimSuKienChiTietChuDe extends Component {
                 email:''
             },
             phone: '',
-            linkImage: ''
-            // lat: 10.031114,
-            // long: 105.771645
+            linkImage: '',
+            textDK: 'ĐĂNG KÝ',
+            _id: ''
         };
     }
     _getLocation = async() =>{
@@ -86,10 +86,21 @@ export default class TimSuKienChiTietChuDe extends Component {
         }
     }
 
+    _isMyEvent = async() =>{
+        if(this.state._id == this.state.data.adminId){
+            this.setState({
+                ...this.state,
+                textDK: 'SỰ KIỆN CỦA TÔI'
+            })
+            this._disableRegister()
+        }
+    }
+
     async componentWillMount(){
         await this._getStore()
-        await this._isRegistered()
         await this._getUser()
+        await this._isRegistered()
+        await this._isMyEvent()
         try {
             await fetch(url+'user/'+this.state.data.adminId)
                 .then( data => data.json())
@@ -97,7 +108,6 @@ export default class TimSuKienChiTietChuDe extends Component {
                     this.setState({
                         name: dataJson.name
                     });
-                    // alert(this.state.data.adminId)
                 })
         } catch (err) {
             alert(err)
@@ -119,7 +129,8 @@ export default class TimSuKienChiTietChuDe extends Component {
             .then( (responseJson) =>{
                 this.setState({
                     phone: responseJson[0].phone,
-                    linkImage: responseJson[0].linkImage
+                    linkImage: responseJson[0].linkImage,
+                    _id: responseJson[0]._id
                 })
             } )
 		} catch (error) {
@@ -138,13 +149,18 @@ export default class TimSuKienChiTietChuDe extends Component {
 				body: JSON.stringify({
                     adminID: this.state.data.adminId,
                     adminName: this.state.name,
-                    userId: this.state.store._id,
-                    email: this.state.store._id,
                     eventId: this.state.data._id,
+                    eventName: this.state.data.eventName,
+                    startDate: this.state.data.startDate,
+                    startTime: this.state.data.startTime,
+                    endTime: this.state.data.endTime,
+                    location: this.state.data.location,
+                    userId: this.state._id,
+                    email: this.state.store.email,
                     status: false,
                     phone: this.state.phone,
                     linkImage: this.state.linkImage
-                }),
+                })
 			})
             .then( (response ) => response.json())
             .then( (responseJson) =>{
@@ -153,7 +169,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                     alert('Đăng ký thành công')
                     this.setState({
                         ...this.state,
-                        colorDisable: '#696969'
+                        colorDisable: '#696969',
+                        textDK: 'ĐÃ ĐĂNG KÝ'
                     })
                }else{
                    alert('Đăng ký không thành công')
@@ -174,25 +191,29 @@ export default class TimSuKienChiTietChuDe extends Component {
 
     async _isRegistered(){
         try {
-            await fetch(url+'Registrant/findByKeyValue', {
+            await fetch(url+'registrant/findByKeyValue', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
 					'Content-Type': 'application/json;charset=UTF-8',
 				},
 				body: JSON.stringify({
-                    userId: this.state.store._id,
+                    userId: this.state._id,
                     eventId: this.state.data._id 
                 }),
 			})
             .then( (response ) => response.json())
             .then( (responseJson) =>{
-               if(responseJson[0].userId == this.state.store._id){
-                   this._disableRegister()
-               }
+                if(responseJson[0].userId == this.state._id){
+                    this.setState({
+                            ...this.state,
+                            textDK: 'ĐÃ ĐĂNG KÝ'
+                    })
+                    this._disableRegister()
+                }
+                console.log(responseJson)
             })
 		} catch (error) {
-            // alert(error);
 		}
     }
     render() {
@@ -237,7 +258,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                                     // alert((this.state.store._id))
                                 }}>
                                 <View>
-                                    <Text style={[styles.registerButton, {backgroundColor: this.state.colorDisable}]}>ĐĂNG KÝ</Text>
+                                    <Text style={[styles.registerButton, {backgroundColor: this.state.colorDisable}]}>{this.state.textDK}</Text>
                                 </View>
                             </TouchableOpacity>
                         </View>

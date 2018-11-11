@@ -4,11 +4,17 @@ const Schema = mongoose.Schema;
 
 let attendeeSchema = new Schema({
 
-    adminID: {type: String, require: true},
+    adminId: {type: String, require: true},
+    
+    adminName: {type: String, require: true},
 
     eventID: {type: String, require: true},
 
+    eventName: {type: String, require: true},
+    
     userID: {type: String, require: true},
+
+    userName: {type: String, require: true},
 
     status: {type: Boolean, require: true}
 });

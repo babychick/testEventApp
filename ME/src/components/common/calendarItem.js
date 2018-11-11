@@ -6,26 +6,14 @@ class CalendarItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            backgroundColor: null
-        }
-    }
 
-    componentDidMount() {
-        if (this.props.index % 2 === 0) {
-            this.setState({
-                backgroundColor: '#E0F2F1'
-            })
-        } else {
-            this.setState({
-                backgroundColor: '#fff'
-            })
         }
     }
 
     render() {
         return (
-            <TouchableOpacity style={[styles.container, {backgroundColor: this.state.backgroundColor}]}
-                                onPress={this.props.onPress}>
+            <TouchableOpacity style={[styles.container, {backgroundColor: this.props.backgroundColor}]}
+             onPress={this.props.onPress}>
                 {/* Left */}
                 <View style={styles.leftContainer}>
                     <Text style={styles.time}>{this.props.start}</Text>
@@ -34,6 +22,10 @@ class CalendarItem extends React.Component {
                 {/* Right */}
                 <View style={styles.rightContainer}>
                     <Text style={styles.mainText} numberOfLines = {1}>{this.props.eventName}</Text>
+                    {/* Cancel button */}
+                    <TouchableOpacity style={styles.cancelButton} onPress={this.props.onCancel}>
+                        <Text style={{textAlign: 'center', fontSize: 14, color: '#FFFFFF'}}>HỦY</Text>
+                    </TouchableOpacity>
                 </View>
             </TouchableOpacity>
         )
@@ -44,8 +36,6 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         paddingVertical: 8,
-        borderBottomWidth: 1,
-        borderBottomColor: Color._50
     },
     leftContainer: {
         flex: 1,
@@ -57,6 +47,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderLeftWidth: 1,
         borderColor: Color._300
+    },
+    cancelButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 3,
+        borderRadius: 5,
+        flex: 3.5,
+        position: 'absolute',
+        top: 14,
+        right: 16,
+        backgroundColor: '#EF5350'
     },
     time: {
         fontSize: 16,

@@ -6,15 +6,18 @@ class Item extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                {/* <TouchableOpacity> */}
-                    <View style={styles.image}></View>
+                <TouchableOpacity onPress={this.onPress}>
+                    <Image style={styles.image} source={{uri: this.props.linkImage}} resizeMode='stretch' />
                     <View style={styles.detail}>
-                        <Text style={styles.title}>{this.props.title}</Text>
+                        <Text style={styles.title}>{this.props.eventName}</Text>
                         <Text style={styles.caption_text}>{this.props.time}</Text>
                         <Text style={styles.caption_text}>{this.props.location}</Text>
                     </View>
-                    {/* <Text style={styles.number}></Text> */}
-                {/* </TouchableOpacity>  */}
+                    {/* Cancel button */}
+                    <TouchableOpacity style={{position: 'absolute', top: 16, right: 16, backgroundColor: '#EF5350'}} onPress={this.props.onCancel}>
+                        <Text style={{textAlign: 'center'}}>HỦY</Text>
+                    </TouchableOpacity>
+                </TouchableOpacity> 
             </View>
         );
     }
@@ -32,7 +35,6 @@ const styles = StyleSheet.create({
     image: {
         width: Dimensions.get('window').width * 0.22,
         height: Dimensions.get('window').width * 0.22,
-        backgroundColor: 'red'
     },
     detail: {
         width: Dimensions.get('window').width - (Dimensions.get('window').width * 0.22 + 48),
