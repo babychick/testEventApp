@@ -24,8 +24,27 @@ findEventOfUser = (req, res) => {
 
 updateUserStatus = (req, res) => {
     let obj = req.body;
+    let obj_1 = {
+        eventId: obj.eventId,
+        adminId: obj.adminId,
+        userId: obj.userId
+    }
 
-    baseController.updateOne(req, attendeeModel, obj);
+    attendeeModel.find(obj_1)
+    .then(data => {
+        let obj_2 = {
+            _id: data._id,
+            status: obj.status
+        }
+            baseController.updateOne(req, attendeeModel, obj_2);
+    })
+    .catch(err => {
+        res.send({
+            title: 'err',
+            data: err
+        })
+    })
+
 }
 module.exports = {
     addOneAttendee,

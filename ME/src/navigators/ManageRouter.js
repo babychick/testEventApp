@@ -5,6 +5,7 @@ import { EventManager } from '../components/event/eventManagement';
 import { DetailEvent } from '../components/event/detailEvent';
 import { MemberList } from '../components/event/MemberList';
 import { EditEvent } from '../components/event/editEvent';
+import { QRScanner } from '../components/common/QRScanner';
 
 export default ManageRouter = createStackNavigator({
     NewEventScreen: {
@@ -33,6 +34,12 @@ export default ManageRouter = createStackNavigator({
     },
     EditEventScreen: {
         screen: EditEvent,
+        navigationOptions: {
+            header: null
+        }
+    },
+    QRScannerScreen: {
+        screen: QRScanner,
         navigationOptions: {
             header: null
         }

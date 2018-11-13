@@ -5,6 +5,7 @@ import Dialog from 'react-native-popup-dialog';
 import { PopupList } from './popupList';
 import url from '../../assets/url';
 import { Color } from '../../assets/color';
+import { BarCodeScanner } from 'expo';
 
 let h = new Date().getHours();
 let m = new Date().getMinutes();
@@ -19,39 +20,64 @@ class EventManager extends React.Component {
             adminId: null,
             eventId: null,
             refreshing: false,
-            currentTime: h + ":" + m
+            currentTime: h + ":" + m,
+            store: {
+                _id: '',
+                email:''
+            }
         }
     }
 
     async componentWillMount() {
         console.log(this.state.currentTime);
-        let store = await AsyncStorage.getItem('data');
+        await this._getStore();
+        // let store = await AsyncStorage.getItem('data');
         // find user
-        await fetch(url + 'user/findUserByAccountId', {
-            method: 'POST',
-            header: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8'
-            },
-            body: JSON.stringify({
-                accountId: store._id
-            })
-        })
-            .then(data => data.json())
-            .then(dataJson => {
-                console.log(dataJson);
-                this.setState({
-                    adminId: dataJson._id
-                })
-            })
+        await this.findUser();
         // find event using adminId
         await fetch(url + "event/findByAdmin/" + this.state.adminId)
-            .then(data => data.json())
-            .then(dataJson => {
+            .then(response => response.json())
+            .then(responseJson => {
                 this.setState({
-                    eventList: dataJson
+                    eventList: responseJson
                 })
+                
+                console.log(responseJson);
             })
+    }
+
+    _getStore = async()=>{
+        try {
+            const store = await AsyncStorage.getItem('data');
+            this.setState({
+                ...this.state,
+                store : JSON.parse(store)
+            })
+        } catch (error) {
+            
+        }
+    }
+
+    async findUser(){
+        try {
+            await fetch(url+'user/findByKeyValue', {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({accountId: this.state.store._id}),
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
+                this.setState({
+                    adminId: responseJson[0]._id
+                })
+                console.log(responseJson[0]._id);
+            } )
+		} catch (error) {
+            alert(error);
+		}
     }
 
     onRefresh = () => {
@@ -72,7 +98,7 @@ class EventManager extends React.Component {
         if (time >= this.state.currentTime) {
             <TouchableOpacity
                 style={styles.button}
-                onPress={this.onOpenQRScanner}>
+                onPress={() => {this.props.navigation.navigate('QRScannerScreen', { data: { eventId: this.state.eventId, adminId: this.state.adminId } } )}}>
                 <Text style={{ color: '#FFFFFF' }}>ĐIỂM DANH</Text>
             </TouchableOpacity>
         }

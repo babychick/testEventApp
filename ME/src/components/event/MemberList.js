@@ -20,7 +20,7 @@ class MemberList extends React.Component {
         try {
             fetch(url + 'registrant/findAllRegistrant', {
                 method: 'POST',
-                header: {
+                headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8'
                 },
@@ -43,7 +43,7 @@ class MemberList extends React.Component {
     onDeny = (item) => {
         fetch( url + 'registrant/updateStatus', {
             method: 'PUT',
-            header: {
+            headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8'
             },
@@ -57,7 +57,7 @@ class MemberList extends React.Component {
     onAccept = (item) => {
         fetch( url + 'registrant/updateStatus', {
             method: 'PUT',
-            header: {
+            headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8'
             },
