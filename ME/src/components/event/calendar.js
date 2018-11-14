@@ -9,6 +9,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Switch } from 'react-native-switch';
 import { Icon } from 'native-base';
 import { Item } from '../common/item';
+import { Constants, Location, Permissions } from 'expo';
 
 let today = moment().format('DD-MM-YYYY');
 
@@ -46,8 +47,14 @@ class CalendarScreen extends React.Component {
                 email:''
             },
             it: '',
+            location:{
+                lat:'',
+                log: ''
+            },
             reloadItem: false,
-            refreshing: false
+            refreshing: false,
+            isLocation: false,
+            event: [],
         }
     }
 
@@ -55,7 +62,8 @@ class CalendarScreen extends React.Component {
         { this.showClearTextButton }
         // let store = await AsyncStorage.getItem('data');
         await this._getStore();
-        await this._getUser();        
+        await this._getUser();      
+        
         
 
         await this._refreshDate()
@@ -78,6 +86,7 @@ class CalendarScreen extends React.Component {
                 eventList: dataJson
             })
         })
+        await this._getLocationAsync();  
     }
 
      _refreshDate = async()=>{
@@ -139,6 +148,24 @@ class CalendarScreen extends React.Component {
             
         }
     }
+
+    _getLocationAsync = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+            this.setState({ isLocation : true });
+        } else {
+            this.setState({ isLocation : false });
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        this.setState({
+            location:{
+                lat: location.coords.latitude,
+                long: location.coords.longitude,
+            },
+            isLocation : true 
+        });
+        // alert(JSON.stringify(location))
+    };
 
     _getUser = async()=>{
         try {
@@ -269,6 +296,22 @@ class CalendarScreen extends React.Component {
         })
     }
 
+    _getEvent(_id){
+         try {
+            fetch(url+'event/'+_id)
+                .then( data => data.json())
+                .then( dataJson => {
+                    // this.setState({
+                    //     event: dataJson
+                    // });
+                    // console.log(this.state.event)
+                    this.props.navigation.navigate('DetailEventScreen', { location: this.state.location, data: dataJson, isLocation: this.state.isLocation})
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -371,7 +414,12 @@ class CalendarScreen extends React.Component {
                                                 eventName={item.eventName}
                                                 key={key}
                                                 index={key}
-                                                onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'CalendarScreen' } }) }}
+                                                onPress={() => { 
+                                                    this._getEvent(item.eventId);
+                                                    // console.log('asdsajdvasbjd' + this.state.event)
+                                                    
+                                                    
+                                                }}
                                                 onCancel={() => {
                                                     this.setState({
                                                         it : item._id

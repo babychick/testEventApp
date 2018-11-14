@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 // add one user
 addOne = (res, model, object) => {
 
@@ -32,8 +34,9 @@ findAll = (res, model) => {
 
 // find by id
 findById = (res, model, id) => {
-
-  model.findById(id)
+    var ObjectId = require('mongoose').Types.ObjectId;
+    var objId = new ObjectId( (id.length < 12) ? "123456789012" : id );
+  model.findById(objId)
     .then(data => {
         res.send(data);
         // console.log(data);

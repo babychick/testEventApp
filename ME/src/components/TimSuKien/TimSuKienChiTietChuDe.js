@@ -244,7 +244,6 @@ export default class TimSuKienChiTietChuDe extends Component {
                     </View>
                     <ScrollView style = {styles.duoi}>
                         <View>
-                            {/* <Image style={styles.image} source={{uri:this.state.data.linkImage}} resizeMode='cover'/> */}
                             <Swiper autoplay height={Dimensions.get('window').height * 0.35}>
                                 {cars.map((item, key) => (
                                     <Image key={key} style={styles.image} source={{uri:url + item}} resizeMode='cover'/>
@@ -296,7 +295,7 @@ export default class TimSuKienChiTietChuDe extends Component {
 
                             <View style={[styles.subContainer, { flexDirection: 'row' }]}>
                                 <Text style={styles.subHeading}>Thành viên</Text>
-                                <Text style={[styles.content, {marginTop: 5}]}>40</Text>
+                                <Text style={[styles.content, {marginTop: 5}]}>{this.state.data.member}</Text>
                             </View>
 
                             <View style={[styles.subContainer, { flexDirection: 'row' }]}>
