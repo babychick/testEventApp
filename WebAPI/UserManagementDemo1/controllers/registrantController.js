@@ -65,7 +65,6 @@ deleteOneRegistrant = (req, res) => {
     let userId = req.body.userId;
     let startDate = req.body.startDate;
     let check = false;
-    // res.send(id + '-' + userId + '-' + startDate)
     console.log(id + '-' + userId + '-' + startDate)
     // baseController.deleteOne(res, registrantModel, id);
     registrantModel.deleteOne({_id: id})
@@ -89,25 +88,6 @@ deleteOneRegistrant = (req, res) => {
         });
         check = false;
     });
-    // console.log
-    // if(check === true){
-    //     registrantModel.find({
-    //         userId: userId,
-    //         startDate: startDate
-    //     })
-    //     .then(data => {
-    //         res.send({
-    //             title: 'ok',
-    //             data: data
-    //         });
-    //         console.log(data)
-    //     })
-    //     .catch( err => {
-    //         res.send({
-    //             title: 'ERROR'
-    //         })
-    //     })
-    // }
 }
 
 module.exports = {

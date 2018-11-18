@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Dimensions, KeyboardAvoidingView, Picker, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, Picker, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -7,37 +7,37 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Color } from '../../assets/color';
-import { ImagePicker, ImageManipulator, FileSystem } from 'expo';
+import { ImagePicker } from 'expo';
 import url from '../../assets/url';
 
 var form = new FormData();
 
-class NewEvent extends React.Component {
+class EditEvent extends React.Component {
     constructor(props) {
         super(props);
         let data = this.props.navigation.state.params.data;
         this.state = {
-            fileSize: null,
             showList: false,
             isSDVisible: false,
             isEDVisible: false,
             isSTVisible: false,
             isETVisible: false,
             hostScreen: data.hostScreen,
-            adminId: data.adminId,
-            adminName: null,
-            eventName: null,
-            eventType: 'Ẩm thực',
-            location: null,
-            locationX: null,
-            locationY: null,
-            startDate: moment().format('DD-MM-YYYY'),
-            endDate: moment().format('DD-MM-YYYY'),
+            userId: data.event.adminId,
+            eventId: data.event.eventId,
+            eventName: data.event.eventName,
+            eventType: data.event.eventType,
+            location: data.event.location,
+            locationX: data.event.locationX,
+            locationY: data.event.locationX,
+            startDate: data.event.startDate,
             startTime: moment().add(1, 'hours').format('HH:mm'),
             endTime: moment().add(2, 'hours').format('HH:mm'),
-            member: null,
-            description: null,
-            linkImage: null,
+            endTime: data.event.endTime,
+            endDate: data.event.endDate,
+            member: data.event.member,
+            description: data.event.description,
+            linkImage: data.event.linkImage,
             subject: ['Ẩm thực',
                 'Lễ hội',
                 'Dân gian',
@@ -47,38 +47,27 @@ class NewEvent extends React.Component {
                 'Triễn lãm',
                 'Huong Nghiep',
                 'Giai tri',
-                'Van hoa, Giao duc'],
-            count: 0
+                'Van hoa, Giao duc']
         }
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
-            startDate: moment(date).format('DD-MM-YYYY'),
-            endDate: moment(date).format('DD-MM-YYYY'),
+            startDate: moment(date).format('YYYY-MM-DD'),
             isSDVisible: false
         })
     }
 
     handleEndDatePicker = (date) => {
-        var a = moment(date).format('DD-MM-YYYY');
-        var a1 = moment(a, 'DD-MM-YYYY', false)
-        var b = moment(this.state.startDate, 'DD-MM-YYYY', false);
-        var d = a1.diff(b, 'days');
-        if (d < 0) {
-            Alert.alert('CHÚ Ý', 'Ngày Kết thúc phải bằng hoặc lớn hơn ngày Bắt đầu');
-        } else {
-            this.setState({
-                endDate: moment(date).format('DD-MM-YYYY'),
-                isEDVisible: false
-            })
-        }
+        this.setState({
+            endDate: moment(date).format('YYYY-MM-DD'),
+            isEDVisible: false
+        })
     }
 
     handleStartTimePicker = (time) => {
         this.setState({
             startTime: moment(time).format('HH:mm'),
-            endTime: moment(time).add(1, 'hours').format('HH:mm'),
             isSTVisible: false
         })
     }
@@ -92,27 +81,19 @@ class NewEvent extends React.Component {
 
     openImagePicker = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: false
+            allowsEditing: false,
+            aspect: [4,3]
         });
 
         if(!result.cancelled) {
-            let resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ rotate: 0 }], { format: 'jpeg'});
-
-            if (resizedPhoto.width > 1000 && resizedPhoto.height > 750) {
-                resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ resize: {width: 1000, height: 750} }], { format: 'jpeg'});
-            }
-            
-            var n =  Date.now();
+            console.log(result.uri);
+            var n =  Date.now(); 
             var photo = {
-                uri: resizedPhoto.uri,
+                uri: result.uri,
                 type: 'image/jpeg',
                 name: n+'photo.jpg'
             };
             form.append("fileData", photo);
-            this.setState({
-                count: this.state.count + 1
-            })
-            alert('Đã thêm ' + this.state.count + ' ảnh.');
         }
     }
 
@@ -126,12 +107,23 @@ class NewEvent extends React.Component {
             body: form,
         })
         .then( (response ) => response.json())
-        .then( (responseJson) =>{
+        .then( (responseJson) => {
             console.log(responseJson);
             let object = JSON.stringify(responseJson);
-            this.setState({
-                linkImage: object
-            })
+            let arr = this.state.linkImage;
+            if (this.state.linkImage === null || this.state.linkImage.length === 0) {
+                this.setState({
+                    linkImage: object
+                })
+            } else {
+                object.map((item, index) => {
+                    arr.push(item)
+                });
+
+                this.setState({
+                    linkImage: arr
+                })
+            }            
         })
         .catch(err => {
             alert(err);
@@ -139,46 +131,36 @@ class NewEvent extends React.Component {
     }
     
     onSave = async () => {
-        if (this.state.eventName === null) {
-            Alert.alert('NHẮC NHỞ', 'Vui lòng điền Tên sự kiện');
-        } else if (parseInt(this.state.member) < 50) {
-            Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
-        } else {
-            let upload = await this.onPressUpLoad();
-            await fetch(url + 'event/addOneEvent', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json;charset=UTF-8',
-                },
-                body: JSON.stringify({
-                    adminId: this.state.adminId,
-                    eventName: this.state.eventName,
-                    eventType: this.state.eventType,
-                    location: this.state.location,
-                    locationX: this.state.locationX,
-                    locationY: this.state.locationY,
-                    startDate: this.state.startDate,
-                    endDate: this.state.endDate,
-                    startTime: this.state.startTime,
-                    endTime: this.state.endTime,
-                    member: this.state.member,
-                    linkImage: this.state.linkImage,
-                    description: this.state.description
-                }),
-            })
-            .then(res => res.json())
-            .then(resJson => {
-                if (resJson.title === 'ok') {
-                    Alert.alert('THÔNG BÁO', 'Tạo sự kiện thành công.',
-                        [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen, {data: {item: resJson.data}})}]);
-                    form = new FormData();
-                } else {
-                    Alert.alert('THÔNG BÁO', resJson.message,);
-                    form = new FormData();
-                }
-            });
-        }
+        let upload = await this.onPressUpLoad();
+        await fetch(url + 'event/updateEvent', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                adminId: this.state.adminId,
+                eventName: this.state.eventName,
+                eventType: this.state.eventType,
+                location: this.state.location,
+                locationX: this.state.locationX,
+                locationY: this.state.locationY,
+                startDate: this.state.startDate,
+                endDate: this.state.endDate,
+                startTime: this.state.startTime,
+                endTime: this.state.endTime,
+                member: this.state.member,
+                linkImage: this.state.linkImage,
+                description: this.state.description
+            }),
+        })
+        .then(res => res.json())
+        .then(resJson => {
+            if (resJson.title === 'ok') {
+                alert('THÔNG BÁO', 'Cập nhật thành công.',
+                    [{text: 'OK', onPress: () => this.props.navigation.navigate('DetailEventScreen')}]);
+            }
+        });
     }
 
     selectDestination = (data, details = null) => {  
@@ -194,11 +176,15 @@ class NewEvent extends React.Component {
         })
     }
 
+    componentDidMount() {
+        
+    }
+
     render() {
         return (
             <View style={styles.container}>
 
-                <AppBar title='Tạo sự kiện'
+                <AppBar title='Cập nhật thông tin'
                     type='Entypo'
                     name='check'
                     goBack={() => { this.props.navigation.navigate(this.state.hostScreen) }}
@@ -206,11 +192,11 @@ class NewEvent extends React.Component {
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
                     <KeyboardAvoidingView behavior='padding'>
-                        <TextBox type='MaterialIcons' name='home' placeholder='Tên sự kiện' onChangeText={(text) => this.setState({ eventName: text })}></TextBox>
+                        <TextBox type='MaterialIcons' name='home' placeholder='Tên sự kiện' onChangeText={(text) => this.setState({ eventName: text })} value={this.state.eventName}></TextBox>
 
                         <View style={{ flexDirection: 'row', height: 56, paddingVertical: 16, borderBottomWidth: 1 }}>
                             <Icon type='MaterialIcons' name='subtitles' size={24} style={styles.icon}></Icon>
-                            <Picker style={styles.picker} selectedValue={this.state.eventType} value={this.state.subject[0]} onValueChange={(value) => this.setState({ eventType: value })} mode='dropdown' fontSize={18}>
+                            <Picker style={styles.picker} selectedValue={this.state.eventType} onValueChange={(value) => this.setState({ eventType: value })} mode='dropdown' fontSize={18}>
                                 {
                                     this.state.subject.map((item, key) => (
                                         <Picker.Item key={key} value={item} label={item} />
@@ -245,7 +231,6 @@ class NewEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.startDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
-                                    minimumDate={new Date()}
                                     isVisible={this.state.isSDVisible}
                                     onConfirm={this.handleStartDatePicker}
                                     onCancel={() => this.setState({ isSDVisible: false })}
@@ -275,7 +260,6 @@ class NewEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.endDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
-                                    minimumDate={new Date()}
                                     isVisible={this.state.isEDVisible}
                                     onConfirm={this.handleEndDatePicker}
                                     onCancel={() => this.setState({ isEDVisible: false })}
@@ -295,12 +279,12 @@ class NewEvent extends React.Component {
                                 fetchDetails={true}
                                 onPress={this.selectDestination}
                                 getDefaultValue={() => {
-                                    return ''; // text input default value
+                                    return '';
                                 }}
                                 query={{
-                                    key: 'AIzaSyBV-uHTqX6aH5_16ZmLa9uv16Op_R4t-1Y',
+                                    key: 'AIzaSyAGF8cAOPFPIKCZYqxuibF9xx5XD4JBb84',
                                     language: 'vi',
-                                    // types: '(cities)', // default: 'geocode'
+                                    // types: '(cities)'
                                 }}
                                 styles={{
                                     predefinedPlacesDescription: {
@@ -335,7 +319,7 @@ class NewEvent extends React.Component {
                                 ]}
                             />
                         </View>
-                        <TextBox style={{ marginLeft: 4 }} type='FontAwesome' name='users' placeholder='Số lượng' value={this.state.member}
+                        <TextBox style={{ marginLeft: 4 }} type='FontAwesome' name='users' placeholder='Số lượng' value={(this.state.member).toString()}
                             onChangeText={(text) => this.setState({ member: text })}
                             keyboardType='numeric'></TextBox>
                         <TextBox type='MaterialIcons' name='description' placeholder='Ghi chú / Mô tả' value={this.state.description}
@@ -388,4 +372,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export { NewEvent };
+export { EditEvent };

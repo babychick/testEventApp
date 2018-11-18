@@ -21,7 +21,8 @@ const styles = AppStyle.StyleTimSuKien;
 import moment from 'moment';
 
 var now = (new Date().getDate()) + '-' + (new Date().getMonth() + 1) + '-' + (new Date().getFullYear());
-let today = moment().format('YYYY-MM-DD');
+let today = moment().format('DD-MM-YYYY');
+let hourday = moment().format('HH:mm');
 export default class TimSuKien extends Component {
     constructor (props) {
         super(props)
@@ -124,12 +125,25 @@ export default class TimSuKien extends Component {
                 .then( dataJson => {
                     var a = [];
                     var count = 0;
-                    for(var i = 0; i< dataJson.length; i++){
-                        let convertedDate = moment(dataJson[i].startDate, 'YYYY-MM-DD', false).format('YYYY-MM-DD');
+                    let td =  moment(today, 'DD-MM-YYYY', false);
+                    let hd =  moment(hourday, 'HH:mm', false);
+                    for(var i = dataJson.length - 1; i >= 0; i--){
+                        let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                        let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
                         // console.log(convertedDate + '')
-                        if(moment(today).isBefore(convertedDate) && count < 10){
+                        // if(moment(today).isBefore(convertedDate) && count < 10){
+                        //     a.push(dataJson[i]);
+                        //     count++;
+                        // }
+                        if(td.diff(convertedDate, 'days') < 0 && count < 10){
                             a.push(dataJson[i]);
                             count++;
+                        }
+                        if(td.diff(convertedDate, 'days') == 0 && count < 10){
+                            if (hd.diff(convertedTime, 'hours') < 0) {
+                                a.push(dataJson[i]);
+                                count++;
+                            }
                         }
                     }
                     this.setState({
@@ -191,10 +205,21 @@ export default class TimSuKien extends Component {
             .then( data => data.json())
                 .then( dataJson => {
                     var a = [];
-                    for(var i = 0; i< dataJson.length; i++){
-                        let convertedDate = moment(dataJson[i].startDate, 'YYYY-MM-DD', false).format('YYYY-MM-DD');
-                        if(moment(today).isBefore(convertedDate)){
+                    let td =  moment(today, 'DD-MM-YYYY', false);
+                    let hd =  moment(hourday, 'HH:mm', false);
+                    for(var i = dataJson.length; i > 0; i--){
+                        let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                        let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                        // if(moment(today).isBefore(convertedDate)){
+                        //     a.push(dataJson[i]);
+                        // }
+                        if(td.diff(convertedDate, 'days') < 0 ){
                             a.push(dataJson[i]);
+                        }
+                        if(td.diff(convertedDate, 'days') == 0){
+                            if (hd.diff(convertedTime, 'hours') < 0) {
+                                a.push(dataJson[i]);
+                            }
                         }
                     }
                     this.setState({

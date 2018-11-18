@@ -24,7 +24,7 @@ import url from '../../assets/url';
 import moment from 'moment';
 
 let today = moment().format('YYYY-MM-DD');
-
+let hourday = moment().format('HH:mm');
 import locations from '../../data/locations';
 var ngayht = (new Date().getDate()) + '-' + (new Date().getMonth() + 1) + '-' + (new Date().getFullYear());
 
@@ -61,7 +61,7 @@ export default class TimSuKienMap extends Component {
             // data:{...this.state.data, birthday : date }
         })
         let convertedDate = moment(date).format('DD-MM-YYYY');
-        console.log(convertedDate + '  '+date)
+        // console.log(convertedDate + '  '+date)
         this._getEventOnDate(convertedDate);
     }
 
@@ -77,9 +77,16 @@ export default class TimSuKienMap extends Component {
 			})
             .then( data => data.json())
                 .then( dataJson => {
-                    // console.log(dataJson)
+                    var a = [];
+                    let hd =  moment(hourday, 'HH:mm', false);
+                    for(var i = 0; i< dataJson.length; i++){
+                        let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                        if (hd.diff(convertedTime, 'hours') < 0) {
+                            a.push(dataJson[i]);
+                        }
+                    }
                     this.setState({
-                        event: dataJson
+                        event: a
                     });
                 })
 		} catch (error) {
@@ -93,10 +100,18 @@ export default class TimSuKienMap extends Component {
                 .then( data => data.json())
                 .then( dataJson => {
                     var a = [];
+                    let td =  moment(today, 'DD-MM-YYYY', false);
+                    let hd =  moment(hourday, 'HH:mm', false);
                     for(var i = 0; i< dataJson.length; i++){
-                        let convertedDate = moment(dataJson[i].startDate, 'YYYY-MM-DD', false).format('YYYY-MM-DD');
-                        if(moment(today).isBefore(convertedDate)){
+                        let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                        let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                        if(td.diff(convertedDate, 'days') < 0 ){
                             a.push(dataJson[i]);
+                        }
+                        if(td.diff(convertedDate, 'days') == 0){
+                            if (hd.diff(convertedTime, 'hours') > 0) {
+                                a.push(dataJson[i]);
+                            }
                         }
                     }
                     this.setState({
@@ -201,7 +216,7 @@ export default class TimSuKienMap extends Component {
                                 <Icon type='Octicons' name='calendar' style={{ color: '#009688', marginTop: 8, marginBottom: 8, fontSize: 18 }} />
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity 
+                        {/* <TouchableOpacity 
                         onPress={() => 
                             this.setState({
                                 ...this.state,
@@ -211,7 +226,7 @@ export default class TimSuKienMap extends Component {
                                 }
                             })}>
                             <Icon type='MaterialIcons' name='my-location' style={{ color: '#009688', marginTop: 8, marginBottom: 8, fontSize: 18 }} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     {this.state.isHidenView ?
                     <View hide = {this.state.isHidenView} style = {styles.viewDetail}>

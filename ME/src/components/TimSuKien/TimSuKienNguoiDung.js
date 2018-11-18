@@ -21,6 +21,7 @@ export default class TimSuKienNguoiDung extends Component {
    constructor(props){
         super(props)
         this.state = {
+            screen : this.props.navigation.state.params.screen,
             _id : this.props.navigation.state.params.data,
             name: 'nu123ll',
             birthday: null,
@@ -84,7 +85,11 @@ export default class TimSuKienNguoiDung extends Component {
                 <View style={styles.tren}>
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => {
-                            this.props.navigation.navigate('TimSuKienChiTietChuDe')
+                            if(this.state.screen == 0){
+                                this.props.navigation.navigate('TimSuKienChiTietChuDe')
+                            } else if(this.state.screen == 1){
+                                this.props.navigation.navigate('DetailEventCalendarScreen')
+                            }                        
                         }}>
                         <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
                         </TouchableOpacity>

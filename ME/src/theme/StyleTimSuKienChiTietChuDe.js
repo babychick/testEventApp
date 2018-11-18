@@ -101,7 +101,7 @@ const StyleTimSuKienChiTietChuDe = StyleSheet.create({
     }, modalButtonChiDuong:{
         width: WIDTH *0.5,
         height: HEIGHT*0.08,
-        backgroundColor:'blue',
+        backgroundColor:'#009688',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
@@ -119,7 +119,7 @@ const StyleTimSuKienChiTietChuDe = StyleSheet.create({
     }, modalButtonDong:{
         width: WIDTH *0.5,
         height: HEIGHT*0.08,
-        backgroundColor: 'red',
+        backgroundColor: '#EF5350',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'

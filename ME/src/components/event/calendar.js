@@ -55,11 +55,13 @@ class CalendarScreen extends React.Component {
             refreshing: false,
             isLocation: false,
             event: [],
+            text: '',
+            fullData: []
         }
     }
 
     async componentWillMount() {
-        { this.showClearTextButton }
+        // { this.showClearTextButton }
         // let store = await AsyncStorage.getItem('data');
         await this._getStore();
         await this._getUser();      
@@ -90,15 +92,16 @@ class CalendarScreen extends React.Component {
     }
 
      _refreshDate = async()=>{
-         console.log('refresh')
+        //  console.log('refresh')
          // find all event
         await fetch(url + 'registrant/' + this.state.userId)
         .then(data => data.json())
         .then(dataJson => {
-            console.log(dataJson);
             this.setState({
-                allEvent: dataJson
+                allEvent: dataJson,
+                fullData: dataJson
             });
+            // console.log(this.state.allEvent)
         })
          if (this.state.allEvent) {
             let arr = {};
@@ -132,6 +135,7 @@ class CalendarScreen extends React.Component {
 
             this.setState({
                 myAllDateEvent: arr,
+                refreshing: false
             })
             }
      }
@@ -213,8 +217,11 @@ class CalendarScreen extends React.Component {
 
     onSwitch = (value) => {
         this.setState({
-            renderCalendarPage: value
+            renderCalendarPage: value,
+            searchValue: this.state.text
         })
+        this._refreshDate();
+        this._getLocationAsync();  
     }
 
     handleDatePicker = (date) => {
@@ -232,29 +239,38 @@ class CalendarScreen extends React.Component {
         })
     }
 
-    showClearTextButton = (value) => {
-        if (value === '') {
-            this.setState({
-                showClearText: false
-            })
-        } else {
-            this.setState({
-                showClearText: true,
-                searchValue: value
-            })
-        }
+    showClearTextButton = (text) => {
+        // if (value === '') {
+        //     this.setState({
+        //         showClearText: falses
+        //     })
+        // } else {
+        //     this.setState({
+        //         showClearText: true,
+        //         searchValue: value
+        //     })
+        // }
 
-        if (this.state.showClearText === true) {
-            this.setState({
-                iconName: 'close'
-            })
-        }
+        // if (this.state.showClearText === true) {
+        //     this.setState({
+        //         iconName: 'close'
+        //     })
+        // }
 
-        if (this.state.showClearText === false) {
-            this.setState({
-                iconName: null
-            })
-        }
+        // if (this.state.showClearText === false) {
+        //     this.setState({
+        //         iconName: null
+        //     })
+        // }
+        const newData = this.state.fullData.filter(function(item){
+            const itemData = item.eventName.toUpperCase()
+            const textData = text.toUpperCase()
+            return itemData.indexOf(textData) > -1
+        })
+        this.setState({
+            allEvent: newData,
+            text: text
+        })
     }
 
     onPressCancel(id){
@@ -296,22 +312,29 @@ class CalendarScreen extends React.Component {
         })
     }
 
-    _getEvent(_id){
+    _getEvent(_id, adminName){
          try {
             fetch(url+'event/'+_id)
                 .then( data => data.json())
                 .then( dataJson => {
-                    // this.setState({
-                    //     event: dataJson
-                    // });
-                    // console.log(this.state.event)
-                    this.props.navigation.navigate('DetailEventScreen', { location: this.state.location, data: dataJson, isLocation: this.state.isLocation})
+                    this.setState({
+                        event: dataJson
+                    });
+                    // console.log(this.state.location)
+                    this.props.navigation.navigate('DetailEventCalendarScreen', { location: this.state.location, data: dataJson, isLocation: this.state.isLocation, adminName: adminName})
                 })
         } catch (err) {
             console.log(err)
         }
     }
 
+    onRefresh = async() =>{
+        await this.setState({
+            refreshing: true
+        })
+        await this._refreshDate();
+    }
+    
     render() {
         return (
             <View style={styles.container}>
@@ -324,7 +347,7 @@ class CalendarScreen extends React.Component {
                                     selectionColor='#fff'
                                     style={styles.searchText}
                                     placeholder='Tìm sự kiện'
-                                    onChangeText={this.showClearTextButton}
+                                    onChangeText={(text) => this.showClearTextButton(text)}
                                 >{this.state.searchValue}</TextInput>
                                 {/* <TouchableOpacity onPress={this.onClearText}>
                                     <Icon style={{ color: '#fff' }} type='Ionicons' name={this.state.iconName}></Icon>
@@ -368,24 +391,38 @@ class CalendarScreen extends React.Component {
                         <View>
                             {
                                 this.state.allEvent.map((item, key) => (
-                                    <Item linkImage={url + item.linkImage[0] }
+                                    <Item linkImage={item.linkImage }
+                                        key = {key}
                                         eventName={item.eventName}
-                                        time={item.startTime + " " + item.startDate}
+                                        time={item.startTime + "  " + item.startDate}
                                         location={item.location}
-                                        onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'DetailEventScreen' } }) }}
+                                        onPress={() => { 
+                                            this._getEvent(item.eventId, item.adminName);
+                                            // console.log(this.state.location)
+                                            // console.log(this.state.allEvent)
+                                            // this.props.navigation.navigate('DetailEventCalendarScreen', { location: this.state.location, data: item, isLocation: this.state.isLocation})
+                                             }}
                                         onCancel={() => {
                                             this.setState({
                                                 it : item._id
                                             })
-                                            
-                                            const t =  this.onPressCancel(item._id)
+                                            console.log(item._id);
+                                            this.onPressCancel(item._id)
                                         }
-                                            } />
+                                        } 
+                                            />
                                 ))
                             }
                         </View>
                     ) : (
-                            <View>
+                            <ScrollView
+                                scrollEnabled = {false}
+                                refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this.onRefresh}
+                                />}
+                            >
                                 <Calendar theme={{
                                     backgroundColor: '#ffffff',
                                     calendarBackground: '#ffffff',
@@ -415,7 +452,7 @@ class CalendarScreen extends React.Component {
                                                 key={key}
                                                 index={key}
                                                 onPress={() => { 
-                                                    this._getEvent(item.eventId);
+                                                    this._getEvent(item.eventId, item.adminName);
                                                     // console.log('asdsajdvasbjd' + this.state.event)
                                                     
                                                     
@@ -431,7 +468,7 @@ class CalendarScreen extends React.Component {
                                         ))
                                     }
                                 </ScrollView>
-                            </View>
+                            </ScrollView>
                         )
                 }
             </View>
@@ -474,7 +511,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         fontSize: 18,
         color: '#fff'
-    },
+    }
 })
 
 export { CalendarScreen };

@@ -16,7 +16,7 @@ let attendeeSchema = new Schema({
 
     userName: {type: String, require: true},
 
-    status: {type: Boolean, require: true}
+    status: {type: String, require: true}
 });
 
 let attendee = mongoose.model('attendee', attendeeSchema);

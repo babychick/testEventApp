@@ -17,7 +17,7 @@ import {Icon} from 'native-base';
 import Modal from 'react-native-modalbox';
 import EventData from '../../data/EventData';
 import AppStyle from '../../theme';
-const styles = AppStyle.StyleTimSuKienChiTietChuDe;
+const styles = AppStyle.StyleDetailEvent;
 import url from '../../assets/url'
 import { MapView, Location } from 'expo';
 import MapViewDirections from 'react-native-maps-directions';
@@ -25,17 +25,19 @@ const GOOGLE_MAPS_APIKEY = "AIzaSyD15JxPKJaGv1OOWFAz_HNgqGRyXrptams";
 import Swiper from 'react-native-swiper';
 import moment from 'moment';
 
-export default class TimSuKienChiTietChuDe extends Component {
+class DetailEventCalendar extends React.Component {
+
     constructor(props){
         super(props)
         this.state = {
             data : this.props.navigation.state.params.data,
             location: this.props.navigation.state.params.location,
             isLocation: this.props.navigation.state.params.isLocation,
-            screen: this.props.navigation.state.params.screen,
+            adminName: this.props.navigation.state.params.adminName,
+            // screen: this.props.navigation.state.params.screen,
             name: '',
             isDisable: false,
-            colorDisable: '#00796B',
+            colorDisable: '#EF5350',
             originCoords: {
                 latitude: 0,
                 longitude: 0
@@ -50,31 +52,37 @@ export default class TimSuKienChiTietChuDe extends Component {
             },
             phone: '',
             linkImage: '',
-            textDK: 'ĐĂNG KÝ',
+            textDK: 'HỦY ĐĂNG KÝ',
             _id: '',
-            name: ''
+            img: '1540716360618photo.jpg'
         };
     }
-    _getLocation = async() =>{
-        navigator.geolocation.getCurrentPosition(
-        (position) => {
-            this.setState({
-                lat: position.coords.latitude,
-                long: position.coords.longitude,
-            });
-        });
+
+    async componentWillMount() {
+        // await this._getEvent();
+        await this._getStore();
+        await this._getUser();
+        // console.log(this.state.eventId)
+        
+        // console.log(this.state.data)
+        // let today = moment().format('DD-MM-YYYY');
+        // if (this.state.event.startDate < today) {
+        //     this.setState({
+        //         status: 'Chua dien ra'
+        //     })
+        // }
+        // if (this.state.event.startDate === today) {
+        //     this.setState({
+        //         status: 'Dang dien ra'
+        //     })
+        // }
+        // if (this.state.event.startDate > today) {
+        //     this.setState({
+        //         status: 'Da ket thuc'
+        //     })
+        // }
     }
-
-    // _getLocationAsync = async () => {
-    //     let location = await Location.getCurrentPositionAsync({});
-    //     this.setState(
-    //         {
-    //             lat: location.coords.latitude,
-    //             long: location.coords.longitude,
-    //         }
-    //     );
-    // };
-
+    
     _getStore = async()=>{
         try {
             const store = await AsyncStorage.getItem('data');
@@ -85,35 +93,6 @@ export default class TimSuKienChiTietChuDe extends Component {
         } catch (error) {
             
         }
-    }
-
-    _isMyEvent = async() =>{
-        if(this.state._id == this.state.data.adminId){
-            this.setState({
-                ...this.state,
-                textDK: 'SỰ KIỆN CỦA TÔI'
-            })
-            this._disableRegister()
-        }
-    }
-
-    async componentWillMount(){
-        await this._getStore()
-        await this._getUser()
-        await this._isRegistered()
-        await this._isMyEvent()
-        try {
-            await fetch(url+'user/'+this.state.data.adminId)
-                .then( data => data.json())
-                .then( dataJson => {
-                    this.setState({
-                        name: dataJson.name
-                    });
-                })
-        } catch (err) {
-            alert(err)
-        }
-    
     }
 
     _getUser = async()=>{
@@ -130,7 +109,7 @@ export default class TimSuKienChiTietChuDe extends Component {
             .then( (responseJson) =>{
                 this.setState({
                     phone: responseJson[0].phone,
-                    name: responseJson[0].name,
+                    linkImage: responseJson[0].linkImage,
                     _id: responseJson[0]._id
                 })
             } )
@@ -139,105 +118,67 @@ export default class TimSuKienChiTietChuDe extends Component {
 		}
     }
 
-    async _onPressRegister(){
-        try {
-            await fetch(url+'Registrant/addOneRegistrant', {
-				method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json;charset=UTF-8',
-				},
-				body: JSON.stringify({
-                    adminId: this.state.data.adminId,
-                    adminName: this.state.name,
-                    eventId: this.state.data._id,
-                    eventName: this.state.data.eventName,
-                    startDate: this.state.data.startDate,
-                    startTime: this.state.data.startTime,
-                    endTime: this.state.data.endTime,
-                    location: this.state.data.location,
-                    userId: this.state._id,
-                    email: this.state.store.email,
-                    status: false,
-                    userName: this.state.name,
-                    phone: this.state.phone,
-                    linkImage: this.state.data.linkImage
-                })
-			})
-            .then( (response ) => response.json())
-            .then( (responseJson) =>{
-               if(responseJson.title == 'ok'){
-                    this._disableRegister()
-                    alert('Đăng ký thành công')
-                    this.setState({
-                        ...this.state,
-                        colorDisable: '#696969',
-                        textDK: 'ĐÃ ĐĂNG KÝ'
-                    })
-                     this.props.navigation.navigate('TimSuKien')
-               }else{
-                   alert('Đăng ký không thành công')
-               }
+    onPressCancel(id){
+        console.log("vo day");
+        fetch(url + 'registrant/deleteOneRegistrant', {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                id:id,
+                userId: this.state.userId,
+                startDate: this.state.currentDate
             })
-		} catch (error) {
-            alert(error);
-		}
-    }
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            if (dataJson.title === 'ok') {
+                Alert.alert('THÔNG BÁO', 'Hủy thành công.',
+                    [{ text: 'OK', onPress: () => {
+                        this.setState({
+                            eventList : dataJson.data
+                        })
+                        // this._refreshDate()
+                    }
+                    }]);
+            }
 
-    _disableRegister(){
-        this.setState({
-            ...this.state,
-            isDisable: true,
-            colorDisable: '#696969'
+            if (dataJson.title === 'ERROR') {
+                Alert.alert('THÔNG BÁO', 'Hủy éo thành công.',
+                    [{ text: 'OK' }]);
+            }
+
         })
     }
 
-    async _isRegistered(){
-        try {
-            await fetch(url+'registrant/findByKeyValue', {
-				method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json;charset=UTF-8',
-				},
-				body: JSON.stringify({
-                    userId: this.state._id,
-                    eventId: this.state.data._id 
-                }),
-			})
-            .then( (response ) => response.json())
-            .then( (responseJson) =>{
-                if(responseJson[0].userId == this.state._id){
-                    this.setState({
-                            ...this.state,
-                            textDK: 'ĐÃ ĐĂNG KÝ'
-                    })
-                    this._disableRegister()
-                }
-                console.log(responseJson)
-            })
-		} catch (error) {
-		}
-    }
     render() {
-        if(this.state.isLocation == true){
-            // var cars = ["1540716360618photo.jpg","1540716356606photo.jpg"];
+        // var cars = this.state.img;
+        // cars = (this.state.data.linkImage);
+        // console.log('sadasd' + cars)
+        // var lat = this.state.location.lat;
+        // var long = this.state.location.long;
+        // // var X = Number.parseFloat(this.state.data.locationX, 10);
+        // // var Y = Number.parseFloat(this.state.data.locationY, 10);
+        // var X = 65.9667;
+        // var Y =-18.5333;
             var cars = [];
             cars = (JSON.parse(this.state.data.linkImage));
             var lat = this.state.location.lat;
             var long = this.state.location.long;
             var X = Number.parseFloat(this.state.data.locationX, 10);
             var Y = Number.parseFloat(this.state.data.locationY, 10);
-            return (
-                <View style={styles.container}>
+        return (
+            <View style={styles.container}>
                     <View style={styles.tren}>
                         <View style={styles.header}>
                             <TouchableOpacity onPress={() => {
-                                if( this.state.screen == 0){
-                                    this.props.navigation.navigate('TimSuKien')
-                                } else {
-                                    this.props.navigation.navigate('TimSuKienMap', {location: this.state.location, isLocation: this.state.isLocation})
-                                }
+                                // if( this.state.screen == 0){
+                                    this.props.navigation.navigate('CalendarScreen')
+                                // } else {
+                                //     this.props.navigation.navigate('TimSuKienMap', {location: this.state.location, isLocation: this.state.isLocation})
+                                // }
                                     
                             }}>
                             <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
@@ -252,29 +193,28 @@ export default class TimSuKienChiTietChuDe extends Component {
                                     <Image key={key} style={styles.image} source={{uri:url + item}} resizeMode='cover'/>
                                 ))}
                             </Swiper>
-                            <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
+                            {/* <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
                                 disabled={this.state.isDisable}
                                 onPress={() => {
                                     // this._disableDemo()
-                                    this._onPressRegister()
                                     // alert((this.state.store._id))
                                 }}>
                                 <View>
                                     <Text style={[styles.registerButton, {backgroundColor: this.state.colorDisable}]}>{this.state.textDK}</Text>
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </View>
                         <View style={{paddingHorizontal: 16}}>
                             <Text style={styles.heading}>{this.state.data.eventName}</Text>
 
-                            <Text style={styles.caption}>{this.state.data.status}</Text>
+                            {/* <Text style={styles.caption}>{this.state.data.status}</Text> */}
 
                             <View style={[styles.subContainer, { flexDirection: 'row' }]}>
                                 <Text style={styles.subHeading}>Được tổ chức bởi</Text>
                                 <TouchableOpacity onPress={() => {
-                                    this.props.navigation.navigate('TimSuKienNguoiDung', {data: this.state.data.adminId, screen: 0})
+                                    this.props.navigation.navigate('TimSuKienNguoiDung', {data: this.state.data.adminId, screen: 1})
                                 }}>
-                                    <Text style={[styles.content, {marginTop: 5}]}>{this.state.name}</Text>
+                                    <Text style={[styles.content, {marginTop: 5}]}>{this.state.adminName}</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -348,7 +288,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                         onClosingState={this.onClosingState}
                     >
                         <View style={styles.modalMap}>
-                            <MapView showsUserLocation={true}
+                            {/* <MapView showsUserLocation={true}
                                 showsCompass = {true}
                                 showsMyLocationButton={true}
                                 // toolbarEnabled = {true}
@@ -366,8 +306,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                                         latitude: X,
                                         longitude: Y,
                                     }}
-                                    title={this.state.data.eventName}
-                                    description={this.state.data.location}
+                                    title='{this.state.data.eventName}'
+                                    description='{this.state.data.location}'
                                     // onPress={() => {
                                     //     this.props.navigation.navigate('TimSuKienChiTietChuDe');
                                     // }}
@@ -384,7 +324,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                                     strokeColor="#009688"
                                 />
 
-                            </MapView>
+                            </MapView> */}
                         </View>
                         <View style={styles.modalButton}>
                             <TouchableOpacity style={styles.modalButtonChiDuong} onPress={() => {
@@ -411,30 +351,9 @@ export default class TimSuKienChiTietChuDe extends Component {
                         </View>
                     </Modal>
                 </View>
-            )
-        } else {
-            return(
-                <View style={styles.container}>
-                    <View style={styles.tren}>
-                        <View style={styles.header}>
-                            <TouchableOpacity onPress={() => {
-                                if( this.state.screen == 0){
-                                    this.props.navigation.navigate('TimSuKien')
-                                } else {
-                                    this.props.navigation.navigate('TimSuKienMap', {location: this.state.location, isLocation: this.state.isLocation})
-                                }
-                                    
-                            }}>
-                            <Icon type='Ionicons' name='ios-arrow-round-back' style={styles.iconheader1}/>
-                            </TouchableOpacity>
-                            <Text style={styles.textheader}>Chi tiết sự kiện</Text>
-                        </View>
-                    </View>
-                    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={{fontSize: 16, color: 'red'}}>Bạn chưa bật GPS</Text>
-                    </View>
-                </View>
-            );
-        }
+        );
     }
 }
+
+
+export { DetailEventCalendar };
