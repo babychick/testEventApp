@@ -140,9 +140,11 @@ class NewEvent extends React.Component {
     
     onSave = async () => {
         if (this.state.eventName === null) {
-            Alert.alert('NHẮC NHỞ', 'Vui lòng điền Tên sự kiện');
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Tên sự kiện');
         } else if (parseInt(this.state.member) < 50) {
             Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
+        } else if (this.state.location) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
         } else {
             let upload = await this.onPressUpLoad();
             await fetch(url + 'event/addOneEvent', {

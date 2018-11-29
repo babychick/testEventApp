@@ -60,7 +60,8 @@ class DetailEvent extends React.Component {
         return (
             <View style={styles.container}>
                 <AppBar title='Thông tin sự kiện'
-                    name={'home'}
+                    type={'MaterialIcons'}
+                    name={'edit'}
                     goBack={() => this.props.navigation.navigate(this.state.hostScreen)}
                     click={() => { this.props.navigation.navigate('EditEventScreen', { data: { hostScreen: 'DetailEventScreen', event: this.state.event } }) }} 
                 ></AppBar>

@@ -183,7 +183,7 @@ class EventManager extends React.Component {
                         this.state.eventList.map((item, key) => (
                             <Swipeout right={[
                                 {
-                                    text: 'DELETE',
+                                    text: 'XÓA',
                                     backgroundColor: 'red',
                                     onPress: () => {
                                         this.onDeleteEvent(item._id);

@@ -42,7 +42,7 @@ findByKeyValue = (req, res) => {
 updateStatus = (req, res) => {
     let obj = req.body;
 
-    baseController.updateOne(res, registrantModel, obj);
+    baseController.updateOne(res, registrantModel,  bj);
 
     if (obj.status === 'Chấp nhận') {
         let obj_1 = {
@@ -56,6 +56,25 @@ updateStatus = (req, res) => {
         }
 
         baseController.addOne(res, attendeeModel, obj_1);
+
+        var obj_2 = {
+            nameEvent: obj_1.eventName,
+            yourEmail: null,
+            name: obj.userName,
+            address: obj.location,
+            status: obj.status
+        };
+        var accountId = null;
+        userModel.findById(obj_1.userId)
+            .then(data => {
+                accountId = data.accountId
+            })
+        accountModel.findById(accountId)
+            .then(data => {
+                obj_2.yourEmail = data.email
+            })
+        
+        sendEmailController.pheDuyet_1(res, obj_2);
     }
 }
 

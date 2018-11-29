@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, Picker, TouchableOpacity } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, Picker, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -131,36 +131,48 @@ class EditEvent extends React.Component {
     }
     
     onSave = async () => {
-        let upload = await this.onPressUpLoad();
-        await fetch(url + 'event/updateEvent', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8',
-            },
-            body: JSON.stringify({
-                adminId: this.state.adminId,
-                eventName: this.state.eventName,
-                eventType: this.state.eventType,
-                location: this.state.location,
-                locationX: this.state.locationX,
-                locationY: this.state.locationY,
-                startDate: this.state.startDate,
-                endDate: this.state.endDate,
-                startTime: this.state.startTime,
-                endTime: this.state.endTime,
-                member: this.state.member,
-                linkImage: this.state.linkImage,
-                description: this.state.description
-            }),
-        })
-        .then(res => res.json())
-        .then(resJson => {
-            if (resJson.title === 'ok') {
-                alert('THÔNG BÁO', 'Cập nhật thành công.',
-                    [{text: 'OK', onPress: () => this.props.navigation.navigate('DetailEventScreen')}]);
-            }
-        });
+        if (this.state.eventName === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Tên sự kiện');
+        } else if (parseInt(this.state.member) < 50) {
+            Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
+        } else if (this.state.location === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
+        } else {
+            let upload = await this.onPressUpLoad();
+            await fetch(url + 'event/updateEvent', {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    adminId: this.state.adminId,
+                    eventName: this.state.eventName,
+                    eventType: this.state.eventType,
+                    location: this.state.location,
+                    locationX: this.state.locationX,
+                    locationY: this.state.locationY,
+                    startDate: this.state.startDate,
+                    endDate: this.state.endDate,
+                    startTime: this.state.startTime,
+                    endTime: this.state.endTime,
+                    member: this.state.member,
+                    linkImage: this.state.linkImage,
+                    description: this.state.description
+                }),
+            })
+            .then(res => res.json())
+            .then(resJson => {
+                if (resJson.title === 'ok') {
+                    Alert.alert('THÔNG BÁO', 'Cập nhật thành công.',
+                        [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen, {data: {item: resJson.data}})}]);
+                    form = new FormData();
+                } else {
+                    Alert.alert('THÔNG BÁO', resJson.message,);
+                    form = new FormData();
+                }
+            });
+        }
     }
 
     selectDestination = (data, details = null) => {  
@@ -271,6 +283,7 @@ class EditEvent extends React.Component {
                         <View style={styles.location}>
                             <Icon type='Entypo' name='location-pin' size={24} style={{ color: 'teal' }}></Icon>
                             <GooglePlacesAutocomplete
+                                
                                 placeholder="Địa điểm"
                                 minLength={2}
                                 autoFocus={false}
@@ -279,7 +292,7 @@ class EditEvent extends React.Component {
                                 fetchDetails={true}
                                 onPress={this.selectDestination}
                                 getDefaultValue={() => {
-                                    return '';
+                                    return this.state.location;
                                 }}
                                 query={{
                                     key: 'AIzaSyAGF8cAOPFPIKCZYqxuibF9xx5XD4JBb84',

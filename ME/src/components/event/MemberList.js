@@ -50,6 +50,13 @@ class MemberList extends React.Component {
             },
             body: JSON.stringify({
                 _id: item._id,
+                adminId: item.adminId,
+                adminName: item.adminName,
+                eventId: item.eventId,
+                eventName: item.eventName,
+                userId: item.userId,
+                userName: item.userName,
+                location: item.location,
                 status: 'Từ chối'
             })
         })
@@ -64,6 +71,13 @@ class MemberList extends React.Component {
             },
             body: JSON.stringify({
                 _id: item._id,
+                adminId: item.adminId,
+                adminName: item.adminName,
+                eventId: item.eventId,
+                eventName: item.eventName,
+                userId: item.userId,
+                userName: item.userName,
+                location: item.location,
                 status: 'Chấp nhận'
             })
         })
