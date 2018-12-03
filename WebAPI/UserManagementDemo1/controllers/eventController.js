@@ -49,7 +49,7 @@ findByKeyValue = (req, res) => {
 // update event info
 updateEvent = (req, res) => {
     let obj = req.body;
-
+    console.log(obj);
     baseController.updateOne(res, eventModel, obj);
 }
 

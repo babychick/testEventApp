@@ -118,6 +118,29 @@ class EventManager extends React.Component {
         }
     }
 
+    renderStatus = (item) => {
+        let today = moment().format('DD-MM-YYYY');
+        let ctime = moment().format('HH:mm');
+
+        var a = moment(item.endDate, 'DD-MM-YYYY', false);
+        var b = moment(item.startDate, 'DD-MM-YYYY', false);
+        var c = moment(item.endTime, 'hh:mm', false);
+        var d = moment(item.startTime, 'hh:mm', false)
+
+        let td =  moment(today, 'DD-MM-YYYY', false);
+        let ct = moment(ctime, 'hh:mm', false);
+
+        if (b.diff(td, 'days') > 0) {
+            return(<Text>Chưa diễn ra</Text>)
+        }
+        if (b.diff(td, 'days') === 0 && d.diff(ct, 'hours') <= 0 && c.diff(ct, 'hours') >= 0) {
+            return(<Text style = {{color: 'green'}}>Đang diễn ra</Text>)
+        }
+        if (a.diff(td, 'days') < 0) {
+            return(<Text style = {{color: 'red'}}>Đã kết thúc</Text>)
+        }
+    }
+
     onFilter = (value) => {
         let today = moment().format('DD-MM-YYYY');
         let ctime = moment().format('HH:mm');
@@ -199,7 +222,8 @@ class EventManager extends React.Component {
                                         </View>
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={styles.bottomContainer}>
-                                                {this.renderCheckIn(item.startTime)}
+                                                {this.renderStatus(item)}
+                                                {/* {this.renderCheckIn(item.startTime)} */}
                                                 <TouchableOpacity
                                                     style={styles.button}
                                                     onPress={() =>

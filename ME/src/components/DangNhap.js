@@ -164,7 +164,6 @@ export default class DangNhap extends Component {
                                 email: dataJson[0].email
                             }
                         });
-                       console.log('old ' +dataJson[0]._id )
                     this.saveData();
                     this.props.navigation.navigate('RouterTimSuKien');
                     // alert('Có r')

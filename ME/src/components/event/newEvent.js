@@ -143,7 +143,7 @@ class NewEvent extends React.Component {
             Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Tên sự kiện');
         } else if (parseInt(this.state.member) < 50) {
             Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
-        } else if (this.state.location) {
+        } else if (this.state.location === null) {
             Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
         } else {
             let upload = await this.onPressUpLoad();

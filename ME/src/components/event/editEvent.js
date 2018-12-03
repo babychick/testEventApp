@@ -17,11 +17,13 @@ class EditEvent extends React.Component {
         super(props);
         let data = this.props.navigation.state.params.data;
         this.state = {
+            checkUpI: false,
             showList: false,
             isSDVisible: false,
             isEDVisible: false,
             isSTVisible: false,
             isETVisible: false,
+            _id: data.event._id,
             hostScreen: data.hostScreen,
             userId: data.event.adminId,
             eventId: data.event.eventId,
@@ -31,10 +33,9 @@ class EditEvent extends React.Component {
             locationX: data.event.locationX,
             locationY: data.event.locationX,
             startDate: data.event.startDate,
-            startTime: moment().add(1, 'hours').format('HH:mm'),
-            endTime: moment().add(2, 'hours').format('HH:mm'),
-            endTime: data.event.endTime,
+            startTime: data.event.startTime,
             endDate: data.event.endDate,
+            endTime: data.event.endTime,
             member: data.event.member,
             description: data.event.description,
             linkImage: data.event.linkImage,
@@ -45,29 +46,40 @@ class EditEvent extends React.Component {
                 'Nhạc hội',
                 'Thời trang',
                 'Triễn lãm',
-                'Huong Nghiep',
-                'Giai tri',
-                'Van hoa, Giao duc']
+                'Hướng nghiệp',
+                'Giải trí',
+                'Văn hóa, Giáo dục']
         }
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
-            startDate: moment(date).format('YYYY-MM-DD'),
+            startDate: moment(date).format('DD-MM-YYYY'),
+            endDate: moment(date).format('DD-MM-YYYY'),
             isSDVisible: false
         })
+        console.log('....: ' + this.state.startDate);
     }
 
     handleEndDatePicker = (date) => {
-        this.setState({
-            endDate: moment(date).format('YYYY-MM-DD'),
-            isEDVisible: false
-        })
+        var a = moment(date).format('DD-MM-YYYY');
+        var a1 = moment(a, 'DD-MM-YYYY', false)
+        var b = moment(this.state.startDate, 'DD-MM-YYYY', false);
+        var d = a1.diff(b, 'days');
+        if (d < 0) {
+            Alert.alert('CHÚ Ý', 'Ngày Kết thúc phải bằng hoặc lớn hơn ngày Bắt đầu');
+        } else {
+            this.setState({
+                endDate: moment(date).format('DD-MM-YYYY'),
+                isEDVisible: false
+            })
+        }
     }
 
     handleStartTimePicker = (time) => {
         this.setState({
             startTime: moment(time).format('HH:mm'),
+            endTime: moment(time).add(1, 'hours').format('HH:mm'),
             isSTVisible: false
         })
     }
@@ -95,6 +107,9 @@ class EditEvent extends React.Component {
             };
             form.append("fileData", photo);
         }
+        this.setState({
+            checkUpI: true
+        });
     }
 
     onPressUpLoad = async ()=>{
@@ -108,22 +123,20 @@ class EditEvent extends React.Component {
         })
         .then( (response ) => response.json())
         .then( (responseJson) => {
-            console.log(responseJson);
-            let object = JSON.stringify(responseJson);
-            let arr = this.state.linkImage;
-            if (this.state.linkImage === null || this.state.linkImage.length === 0) {
-                this.setState({
-                    linkImage: object
-                })
-            } else {
-                object.map((item, index) => {
-                    arr.push(item)
-                });
-
-                this.setState({
-                    linkImage: arr
-                })
-            }            
+            var cars;  
+            cars = (JSON.parse(this.state.linkImage));
+            console.log('cars: ' + cars);
+            let arr = []; 
+            cars.map((item, key)=>(
+                arr.push(item)
+            ))
+            responseJson.map((item, key)=>(
+                arr.push(item)
+            ))
+            console.log('arr1: ' + JSON.stringify(arr));
+            this.setState({
+                linkImage: JSON.stringify(arr)
+            })       
         })
         .catch(err => {
             alert(err);
@@ -138,7 +151,9 @@ class EditEvent extends React.Component {
         } else if (this.state.location === null) {
             Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
         } else {
-            let upload = await this.onPressUpLoad();
+            if (this.state.checkUpI){
+                let upload = await this.onPressUpLoad();
+            }
             await fetch(url + 'event/updateEvent', {
                 method: 'PUT',
                 headers: {
@@ -146,6 +161,7 @@ class EditEvent extends React.Component {
                     'Content-Type': 'application/json;charset=UTF-8',
                 },
                 body: JSON.stringify({
+                    _id: this.state._id,
                     adminId: this.state.adminId,
                     eventName: this.state.eventName,
                     eventType: this.state.eventType,
@@ -243,6 +259,7 @@ class EditEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.startDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
+                                    minimumDate={new Date()}
                                     isVisible={this.state.isSDVisible}
                                     onConfirm={this.handleStartDatePicker}
                                     onCancel={() => this.setState({ isSDVisible: false })}
@@ -272,6 +289,7 @@ class EditEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.endDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
+                                    minimumDate={new Date()}
                                     isVisible={this.state.isEDVisible}
                                     onConfirm={this.handleEndDatePicker}
                                     onCancel={() => this.setState({ isEDVisible: false })}

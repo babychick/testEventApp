@@ -14,24 +14,45 @@ class DetailEvent extends React.Component {
         this.state = {
             status: null,
             hostScreen: data.hostScreen,
-            event: data.item,
+            _id: data.item._id,
+            event: data.item, 
             iconName: null
         }
-    }
+    }    
 
-    componentDidMount() {
+    async componentDidMount() {
+
+        await fetch(url + "event/" + this.state._id)
+            .then(response => response.json())
+            .then(responseJson => {
+                    this.setState({
+                        event: responseJson
+                    })
+        })
+
         let today = moment().format('DD-MM-YYYY');
-        if (this.state.event.startDate < today) {
+        let ctime = moment().format('HH:mm');
+
+        var a = moment(this.state.event.endDate, 'DD-MM-YYYY', false);
+        var b = moment(this.state.event.startDate, 'DD-MM-YYYY', false);
+        var c = moment(this.state.event.endTime, 'hh:mm', false);
+        var d = moment(this.state.event.startTime, 'hh:mm', false);
+
+        let td =  moment(today, 'DD-MM-YYYY', false);
+        let ct = moment(ctime, 'hh:mm', false);
+
+        if (b.diff(td, 'days') > 0) {
             this.setState({
-                status: 'Chua dien ra'
+                status: 'Chua dien ra',
+                iconName: 'edit'
             })
         }
-        if (this.state.event.startDate === today) {
+        if (b.diff(td, 'days') === 0 && d.diff(ct, 'hours') <= 0 && c.diff(ct, 'hours') >= 0) {
             this.setState({
-                status: 'Dang dien ra'
+                status: 'Dang dien ra',
             })
         }
-        if (this.state.event.startDate > today) {
+        if (a.diff(td, 'days') < 0) {
             this.setState({
                 status: 'Da ket thuc'
             })
@@ -61,9 +82,11 @@ class DetailEvent extends React.Component {
             <View style={styles.container}>
                 <AppBar title='Thông tin sự kiện'
                     type={'MaterialIcons'}
-                    name={'edit'}
+                    name={this.state.iconName}
                     goBack={() => this.props.navigation.navigate(this.state.hostScreen)}
-                    click={() => { this.props.navigation.navigate('EditEventScreen', { data: { hostScreen: 'DetailEventScreen', event: this.state.event } }) }} 
+                    click={() => { 
+                        // this.props.navigation.navigate(this.state.hostScreen)
+                        this.props.navigation.navigate('EditEventScreen', { data: { hostScreen: 'EventManagerScreen', event: this.state.event } }) }} 
                 ></AppBar>
 
                 <ScrollView style={{ backgroundColor: '#FFFFFF' }}>

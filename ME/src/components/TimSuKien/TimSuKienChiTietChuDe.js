@@ -184,6 +184,31 @@ export default class TimSuKienChiTietChuDe extends Component {
 		}
     }
 
+    async _checkDateRegis(){
+        try {
+            await fetch(url+'Registrant/findByKeyValue', {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({
+                    userId: this.state._id
+                    }),
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
+                console.log(responseJson)
+                // this.setState({
+                //     phone: responseJson[0].phone,
+                //     name: responseJson[0].name,
+                //     _id: responseJson[0]._id
+                // })
+            } )
+		} catch (error) {
+            alert(error);
+		}
+    }
     _disableRegister(){
         this.setState({
             ...this.state,
@@ -255,7 +280,7 @@ export default class TimSuKienChiTietChuDe extends Component {
                             <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
                                 disabled={this.state.isDisable}
                                 onPress={() => {
-                                    // this._disableDemo()
+                                    // this._checkDateRegiss()
                                     this._onPressRegister()
                                     // alert((this.state.store._id))
                                 }}>

@@ -320,7 +320,6 @@ class CalendarScreen extends React.Component {
                     this.setState({
                         event: dataJson
                     });
-                    // console.log(this.state.location)
                     this.props.navigation.navigate('DetailEventCalendarScreen', { location: this.state.location, data: dataJson, isLocation: this.state.isLocation, adminName: adminName})
                 })
         } catch (err) {

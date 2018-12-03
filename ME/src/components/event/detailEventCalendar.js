@@ -146,7 +146,7 @@ class DetailEventCalendar extends React.Component {
             }
 
             if (dataJson.title === 'ERROR') {
-                Alert.alert('THÔNG BÁO', 'Hủy éo thành công.',
+                Alert.alert('THÔNG BÁO', 'Hủy không thành công.',
                     [{ text: 'OK' }]);
             }
 
@@ -154,15 +154,6 @@ class DetailEventCalendar extends React.Component {
     }
 
     render() {
-        // var cars = this.state.img;
-        // cars = (this.state.data.linkImage);
-        // console.log('sadasd' + cars)
-        // var lat = this.state.location.lat;
-        // var long = this.state.location.long;
-        // // var X = Number.parseFloat(this.state.data.locationX, 10);
-        // // var Y = Number.parseFloat(this.state.data.locationY, 10);
-        // var X = 65.9667;
-        // var Y =-18.5333;
             var cars = [];
             cars = (JSON.parse(this.state.data.linkImage));
             var lat = this.state.location.lat;
@@ -288,7 +279,7 @@ class DetailEventCalendar extends React.Component {
                         onClosingState={this.onClosingState}
                     >
                         <View style={styles.modalMap}>
-                            {/* <MapView showsUserLocation={true}
+                            <MapView showsUserLocation={true}
                                 showsCompass = {true}
                                 showsMyLocationButton={true}
                                 // toolbarEnabled = {true}
@@ -306,8 +297,8 @@ class DetailEventCalendar extends React.Component {
                                         latitude: X,
                                         longitude: Y,
                                     }}
-                                    title='{this.state.data.eventName}'
-                                    description='{this.state.data.location}'
+                                    title={this.state.data.eventName}
+                                    description={this.state.data.location}
                                     // onPress={() => {
                                     //     this.props.navigation.navigate('TimSuKienChiTietChuDe');
                                     // }}
@@ -324,7 +315,7 @@ class DetailEventCalendar extends React.Component {
                                     strokeColor="#009688"
                                 />
 
-                            </MapView> */}
+                            </MapView>
                         </View>
                         <View style={styles.modalButton}>
                             <TouchableOpacity style={styles.modalButtonChiDuong} onPress={() => {
