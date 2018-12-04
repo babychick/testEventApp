@@ -4,6 +4,7 @@ import { NewEvent } from '../components/event/newEvent';
 import { EventManager } from '../components/event/eventManagement';
 import { DetailEvent } from '../components/event/detailEvent';
 import { MemberList } from '../components/event/MemberList';
+import { AttendeeList } from '../components/event/AttendeeList';
 import { EditEvent } from '../components/event/editEvent';
 import { QRScanner } from '../components/common/QRScanner';
 
@@ -28,6 +29,12 @@ export default ManageRouter = createStackNavigator({
     },
     MemberListScreen: {
         screen: MemberList,
+        navigationOptions: {
+            header: null
+        }
+    },
+    AttendeeListScreen: {
+        screen: AttendeeList,
         navigationOptions: {
             header: null
         }
