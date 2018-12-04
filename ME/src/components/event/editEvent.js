@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, Picker, TouchableOpacity } from 'react-native';
 import { Icon } from 'native-base';
 import { TextBox } from '../common/textBox';
 import { AppBar } from '../common/appBar';
@@ -17,11 +17,13 @@ class EditEvent extends React.Component {
         super(props);
         let data = this.props.navigation.state.params.data;
         this.state = {
+            checkUpI: false,
             showList: false,
             isSDVisible: false,
             isEDVisible: false,
             isSTVisible: false,
             isETVisible: false,
+            _id: data.event._id,
             hostScreen: data.hostScreen,
             userId: data.event.adminId,
             eventId: data.event.eventId,
@@ -31,8 +33,8 @@ class EditEvent extends React.Component {
             locationX: data.event.locationX,
             locationY: data.event.locationX,
             startDate: data.event.startDate,
-            endDate: data.event.endDate,
             startTime: data.event.startTime,
+            endDate: data.event.endDate,
             endTime: data.event.endTime,
             member: data.event.member,
             description: data.event.description,
@@ -44,29 +46,40 @@ class EditEvent extends React.Component {
                 'Nhạc hội',
                 'Thời trang',
                 'Triễn lãm',
-                'Huong Nghiep',
-                'Giai tri',
-                'Van hoa, Giao duc']
+                'Hướng nghiệp',
+                'Giải trí',
+                'Văn hóa, Giáo dục']
         }
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
-            startDate: moment(date).format('YYYY-MM-DD'),
+            startDate: moment(date).format('DD-MM-YYYY'),
+            endDate: moment(date).format('DD-MM-YYYY'),
             isSDVisible: false
         })
+        console.log('....: ' + this.state.startDate);
     }
 
     handleEndDatePicker = (date) => {
-        this.setState({
-            endDate: moment(date).format('YYYY-MM-DD'),
-            isEDVisible: false
-        })
+        var a = moment(date).format('DD-MM-YYYY');
+        var a1 = moment(a, 'DD-MM-YYYY', false)
+        var b = moment(this.state.startDate, 'DD-MM-YYYY', false);
+        var d = a1.diff(b, 'days');
+        if (d < 0) {
+            Alert.alert('CHÚ Ý', 'Ngày Kết thúc phải bằng hoặc lớn hơn ngày Bắt đầu');
+        } else {
+            this.setState({
+                endDate: moment(date).format('DD-MM-YYYY'),
+                isEDVisible: false
+            })
+        }
     }
 
     handleStartTimePicker = (time) => {
         this.setState({
             startTime: moment(time).format('HH:mm'),
+            endTime: moment(time).add(1, 'hours').format('HH:mm'),
             isSTVisible: false
         })
     }
@@ -94,6 +107,9 @@ class EditEvent extends React.Component {
             };
             form.append("fileData", photo);
         }
+        this.setState({
+            checkUpI: true
+        });
     }
 
     onPressUpLoad = async ()=>{
@@ -107,22 +123,20 @@ class EditEvent extends React.Component {
         })
         .then( (response ) => response.json())
         .then( (responseJson) => {
-            console.log(responseJson);
-            let object = JSON.stringify(responseJson);
-            let arr = this.state.linkImage;
-            if (this.state.linkImage === null || this.state.linkImage.length === 0) {
-                this.setState({
-                    linkImage: object
-                })
-            } else {
-                object.map((item, index) => {
-                    arr.push(item)
-                });
-
-                this.setState({
-                    linkImage: arr
-                })
-            }            
+            var cars;  
+            cars = (JSON.parse(this.state.linkImage));
+            console.log('cars: ' + cars);
+            let arr = []; 
+            cars.map((item, key)=>(
+                arr.push(item)
+            ))
+            responseJson.map((item, key)=>(
+                arr.push(item)
+            ))
+            console.log('arr1: ' + JSON.stringify(arr));
+            this.setState({
+                linkImage: JSON.stringify(arr)
+            })       
         })
         .catch(err => {
             alert(err);
@@ -130,36 +144,51 @@ class EditEvent extends React.Component {
     }
     
     onSave = async () => {
-        let upload = await this.onPressUpLoad();
-        await fetch(url + 'event/updateEvent', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8',
-            },
-            body: JSON.stringify({
-                adminId: this.state.adminId,
-                eventName: this.state.eventName,
-                eventType: this.state.eventType,
-                location: this.state.location,
-                locationX: this.state.locationX,
-                locationY: this.state.locationY,
-                startDate: this.state.startDate,
-                endDate: this.state.endDate,
-                startTime: this.state.startTime,
-                endTime: this.state.endTime,
-                member: this.state.member,
-                linkImage: this.state.linkImage,
-                description: this.state.description
-            }),
-        })
-        .then(res => res.json())
-        .then(resJson => {
-            if (resJson.title === 'ok') {
-                alert('THÔNG BÁO', 'Cập nhật thành công.',
-                    [{text: 'OK', onPress: () => this.props.navigation.navigate('DetailEventScreen')}]);
+        if (this.state.eventName === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Tên sự kiện');
+        } else if (parseInt(this.state.member) < 50) {
+            Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
+        } else if (this.state.location === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
+        } else {
+            if (this.state.checkUpI){
+                let upload = await this.onPressUpLoad();
             }
-        });
+            await fetch(url + 'event/updateEvent', {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    _id: this.state._id,
+                    adminId: this.state.adminId,
+                    eventName: this.state.eventName,
+                    eventType: this.state.eventType,
+                    location: this.state.location,
+                    locationX: this.state.locationX,
+                    locationY: this.state.locationY,
+                    startDate: this.state.startDate,
+                    endDate: this.state.endDate,
+                    startTime: this.state.startTime,
+                    endTime: this.state.endTime,
+                    member: this.state.member,
+                    linkImage: this.state.linkImage,
+                    description: this.state.description
+                }),
+            })
+            .then(res => res.json())
+            .then(resJson => {
+                if (resJson.title === 'ok') {
+                    Alert.alert('THÔNG BÁO', 'Cập nhật thành công.',
+                        [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen, {data: {item: resJson.data}})}]);
+                    form = new FormData();
+                } else {
+                    Alert.alert('THÔNG BÁO', resJson.message,);
+                    form = new FormData();
+                }
+            });
+        }
     }
 
     selectDestination = (data, details = null) => {  
@@ -230,6 +259,7 @@ class EditEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.startDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
+                                    minimumDate={new Date()}
                                     isVisible={this.state.isSDVisible}
                                     onConfirm={this.handleStartDatePicker}
                                     onCancel={() => this.setState({ isSDVisible: false })}
@@ -259,6 +289,7 @@ class EditEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.endDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
+                                    minimumDate={new Date()}
                                     isVisible={this.state.isEDVisible}
                                     onConfirm={this.handleEndDatePicker}
                                     onCancel={() => this.setState({ isEDVisible: false })}
@@ -270,6 +301,7 @@ class EditEvent extends React.Component {
                         <View style={styles.location}>
                             <Icon type='Entypo' name='location-pin' size={24} style={{ color: 'teal' }}></Icon>
                             <GooglePlacesAutocomplete
+                                
                                 placeholder="Địa điểm"
                                 minLength={2}
                                 autoFocus={false}
@@ -278,7 +310,7 @@ class EditEvent extends React.Component {
                                 fetchDetails={true}
                                 onPress={this.selectDestination}
                                 getDefaultValue={() => {
-                                    return '';
+                                    return this.state.location;
                                 }}
                                 query={{
                                     key: 'AIzaSyAGF8cAOPFPIKCZYqxuibF9xx5XD4JBb84',
@@ -318,7 +350,7 @@ class EditEvent extends React.Component {
                                 ]}
                             />
                         </View>
-                        <TextBox style={{ marginLeft: 4 }} type='FontAwesome' name='users' placeholder='Số lượng' value={this.state.member}
+                        <TextBox style={{ marginLeft: 4 }} type='FontAwesome' name='users' placeholder='Số lượng' value={(this.state.member).toString()}
                             onChangeText={(text) => this.setState({ member: text })}
                             keyboardType='numeric'></TextBox>
                         <TextBox type='MaterialIcons' name='description' placeholder='Ghi chú / Mô tả' value={this.state.description}

@@ -15,8 +15,7 @@ export default RouterDangNhap = createStackNavigator(
             navigationOptions : {
                 header: null
             }
-        },
-        RouterScreen: {
+        },RouterScreen: {
             screen: RouterScreen,
             navigationOptions : {
                 header: null

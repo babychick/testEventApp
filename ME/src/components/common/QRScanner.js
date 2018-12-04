@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, StyleSheet, View } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { BarCodeScanner } from 'expo';
 
 class QRScanner extends React.Component {
@@ -104,3 +104,5 @@ const styles = StyleSheet.create({
     backgroundColor: opacity
   },
 });
+
+export { QRScanner };

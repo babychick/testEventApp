@@ -1,11 +1,17 @@
 import React, {Component} from 'react';
-import { 
+import { StyleSheet, 
     Text, 
     View, 
+    ImageBackground, 
+    KeyboardAvoidingView, 
+    TextInput, 
     TouchableOpacity,
+    Keyboard,
+    Image,
     AsyncStorage,
     ScrollView  } from 'react-native';
 import {Icon} from 'native-base';
+
 import AppStyle from '../../theme';
 const styles = AppStyle.StyleCaNhan;
     
@@ -38,6 +44,15 @@ export default class CaNhan extends Component {
             } catch (error) {
                 
             }
+        }
+
+        saveData = async() =>{
+            var data = JSON.stringify({
+                _id: '_id',
+                email: 'email'
+            });
+            AsyncStorage.setItem('data', data);
+            this.props.navigation.navigate('DangNhap');
         }
 
         
@@ -80,7 +95,7 @@ export default class CaNhan extends Component {
                     </TouchableOpacity> 
 
                     <TouchableOpacity onPress={() => {
-                        this.props.navigation.navigate('DangNhap')
+                        this.saveData();
                     }}>
                         <View style={styles.loutitem}>
                             <Icon type='Feather' name='log-out' style={styles.iconLeft}/>

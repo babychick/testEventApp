@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "jest-expo": "~27.0.0",
-    "react-native-scripts": "^2.0.1",
+    "jest-expo": "29.0.0",
+    "react-native-scripts": "1.14.0",
     "react-test-renderer": "16.3.1"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
@@ -30,8 +30,10 @@
     "react-native-maps-directions": "^1.6.0",
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-modalbox": "^1.6.0",
+    "react-native-popup-dialog": "^0.16.1",
     "react-native-popup-menu": "^0.14.0",
     "react-native-qrcode": "^0.2.7",
+    "react-native-swipeout": "^2.3.6",
     "react-native-swiper": "^1.5.13",
     "react-native-switch": "^1.5.0",
     "react-navigation": "^2.14.2",

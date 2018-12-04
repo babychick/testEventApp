@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { AsyncStorage, Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, RefreshControl } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Color } from '../../assets/color';
 import moment from 'moment';
@@ -9,6 +9,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import { Switch } from 'react-native-switch';
 import { Icon } from 'native-base';
 import { Item } from '../common/item';
+import { Constants, Location, Permissions } from 'expo';
 
 let today = moment().format('DD-MM-YYYY');
 
@@ -39,26 +40,70 @@ class CalendarScreen extends React.Component {
             searchValue: '',
             showClearText: false,
             iconName: null,
-            showPopup: false
+            showPopup: false,
+            userId: null,
+            store: {
+                _id: '',
+                email:''
+            },
+            it: '',
+            location:{
+                lat:'',
+                log: ''
+            },
+            reloadItem: false,
+            refreshing: false,
+            isLocation: false,
+            event: [],
+            text: '',
+            fullData: []
         }
     }
 
-    async componentDidMount() {
-        { this.showClearTextButton }
-        await fetch(url + 'Registrant/findEvent')
-            .then(data => data.json())
-            .then(dataJson => {
-                console.log(dataJson);
-                this.setState({
-                    allEvent: dataJson
-                });
-                console.log(this.state.allEvent);
+    async componentWillMount() {
+        // { this.showClearTextButton }
+        // let store = await AsyncStorage.getItem('data');
+        await this._getStore();
+        await this._getUser();      
+        
+        
+
+        await this._refreshDate()
+        
+
+        await fetch(url + 'registrant/findByDate', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                userId: this.state.userId,
+                startDate: this.state.currentDate
+            }),
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            this.setState({
+                eventList: dataJson
             })
-            .catch(err => {
-                alert('Fetch failed...' + err);
-                console.log(err);
-            })
-        if (this.state.allEvent) {
+        })
+        await this._getLocationAsync();  
+    }
+
+     _refreshDate = async()=>{
+        //  console.log('refresh')
+         // find all event
+        await fetch(url + 'registrant/' + this.state.userId)
+        .then(data => data.json())
+        .then(dataJson => {
+            this.setState({
+                allEvent: dataJson,
+                fullData: dataJson
+            });
+            // console.log(this.state.allEvent)
+        })
+         if (this.state.allEvent) {
             let arr = {};
             this.state.allEvent.map((item, key) => {
                 let convertedDate = moment(item.startDate, 'DD-MM-YYYY', false).format('YYYY-MM-DD');
@@ -90,50 +135,81 @@ class CalendarScreen extends React.Component {
 
             this.setState({
                 myAllDateEvent: arr,
+                refreshing: false
             })
-        }
+            }
+     }
 
-        await fetch(url + 'registrant/findByDate', {
-            method: 'POST',
-            header: {
-                'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data',
-            },
-            body: JSON.stringify({
-                startDate: this.state.currentDate
+    _getStore = async()=>{
+        try {
+            const store = await AsyncStorage.getItem('data');
+            this.setState({
+                ...this.state,
+                store : JSON.parse(store)
             })
-        })
-            .then(data => data.json())
-            .then(dataJson => {
-                this.setState({
-                    eventList: dataJson
-                })
-            })
-            .catch(err => {
-                // alert('Không tìm thấy sự kiện!')
-            })
+            // alert(store)
+        } catch (error) {
+            
+        }
     }
 
-    fetchByDate = async (date) => {
-        await fetch(url + 'registrant/findByDate', {
+    _getLocationAsync = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+        if (status !== 'granted') {
+            this.setState({ isLocation : true });
+        } else {
+            this.setState({ isLocation : false });
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        this.setState({
+            location:{
+                lat: location.coords.latitude,
+                long: location.coords.longitude,
+            },
+            isLocation : true 
+        });
+        // alert(JSON.stringify(location))
+    };
+
+    _getUser = async()=>{
+        try {
+            await fetch(url+'user/findByKeyValue', {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json;charset=UTF-8',
+				},
+				body: JSON.stringify({accountId: this.state.store._id}),
+			})
+            .then( (response ) => response.json())
+            .then( (responseJson) =>{
+                this.setState({
+                    userId : responseJson[0]._id,
+                })
+            } )
+		} catch (error) {
+            alert(error);
+		}
+    }
+
+    fetchByDate = (date) => {
+        fetch(url + 'registrant/findByDate', {
             method: 'POST',
-            header: {
+            headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json;charset=UTF-8',
             },
             body: JSON.stringify({
+                userId: this.state.userId,
                 startDate: moment(date.dateString).format('DD-MM-YYYY')
             })
         })
-            .then(data => data.json())
-            .then(dataJson => {
-                this.setState({
-                    eventList: dataJson
-                })
+        .then(data => data.json())
+        .then(dataJson => {
+            this.setState({
+                eventList: dataJson
             })
-            .catch(err => {
-                // alert('Không tìm thấy sự kiện!')
-            })
+        })
         this.setState({
             currentDate: moment(date.dateString).format('DD-MM-YYYY')
         })
@@ -141,8 +217,11 @@ class CalendarScreen extends React.Component {
 
     onSwitch = (value) => {
         this.setState({
-            renderCalendarPage: value
+            renderCalendarPage: value,
+            searchValue: this.state.text
         })
+        this._refreshDate();
+        this._getLocationAsync();  
     }
 
     handleDatePicker = (date) => {
@@ -160,44 +239,101 @@ class CalendarScreen extends React.Component {
         })
     }
 
-    showClearTextButton = (value) => {
-        if (value === '') {
-            this.setState({
-                showClearText: false
-            })
-        } else {
-            this.setState({
-                showClearText: true,
-                searchValue: value
-            })
-        }
+    showClearTextButton = (text) => {
+        // if (value === '') {
+        //     this.setState({
+        //         showClearText: falses
+        //     })
+        // } else {
+        //     this.setState({
+        //         showClearText: true,
+        //         searchValue: value
+        //     })
+        // }
 
-        if (this.state.showClearText === true) {
-            this.setState({
-                iconName: 'close'
-            })
-        }
+        // if (this.state.showClearText === true) {
+        //     this.setState({
+        //         iconName: 'close'
+        //     })
+        // }
 
-        if (this.state.showClearText === false) {
-            this.setState({
-                iconName: null
-            })
-        }
-    }
-
-    onPressCancel = (id) => {
-        fetch(url + 'registrant/' + id, {
-            method: 'DELETE'
+        // if (this.state.showClearText === false) {
+        //     this.setState({
+        //         iconName: null
+        //     })
+        // }
+        const newData = this.state.fullData.filter(function(item){
+            const itemData = item.eventName.toUpperCase()
+            const textData = text.toUpperCase()
+            return itemData.indexOf(textData) > -1
         })
-            .then(data => data.json())
-            .then(dataJson => {
-                if (dataJson.title === 'ok') {
-                    Alert.alert('THÔNG BÁO', 'Hủy thành công.',
-                        [{ text: 'OK' }]);
-                }
-            })
+        this.setState({
+            allEvent: newData,
+            text: text
+        })
     }
 
+    onPressCancel(id){
+        console.log("vo day");
+        fetch(url + 'registrant/deleteOneRegistrant', {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                id:id,
+                userId: this.state.userId,
+                startDate: this.state.currentDate
+            })
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            if (dataJson.title === 'ok') {
+                Alert.alert('THÔNG BÁO', 'Hủy thành công.',
+                    [{ text: 'OK', onPress: () => {
+                        this.setState({
+                            eventList : dataJson.data
+                        })
+                        // this.setState({refreshing: true});
+                        // fetchData().then(() => {
+                        //     this.setState({refreshing: false});
+                        // });
+                        this._refreshDate()
+                    }
+                    }]);
+            }
+
+            if (dataJson.title === 'ERROR') {
+                Alert.alert('THÔNG BÁO', 'Hủy éo thành công.',
+                    [{ text: 'OK' }]);
+            }
+
+        })
+    }
+
+    _getEvent(_id, adminName){
+         try {
+            fetch(url+'event/'+_id)
+                .then( data => data.json())
+                .then( dataJson => {
+                    this.setState({
+                        event: dataJson
+                    });
+                    this.props.navigation.navigate('DetailEventCalendarScreen', { location: this.state.location, data: dataJson, isLocation: this.state.isLocation, adminName: adminName})
+                })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    onRefresh = async() =>{
+        await this.setState({
+            refreshing: true
+        })
+        await this._refreshDate();
+    }
+    
     render() {
         return (
             <View style={styles.container}>
@@ -210,7 +346,7 @@ class CalendarScreen extends React.Component {
                                     selectionColor='#fff'
                                     style={styles.searchText}
                                     placeholder='Tìm sự kiện'
-                                    onChangeText={this.showClearTextButton}
+                                    onChangeText={(text) => this.showClearTextButton(text)}
                                 >{this.state.searchValue}</TextInput>
                                 {/* <TouchableOpacity onPress={this.onClearText}>
                                     <Icon style={{ color: '#fff' }} type='Ionicons' name={this.state.iconName}></Icon>
@@ -222,6 +358,7 @@ class CalendarScreen extends React.Component {
                                         <Text style={{ fontSize: 16, color: '#FFFFFF' }}>CHỌN NGÀY</Text>
                                     </TouchableOpacity>
                                     <DateTimePicker
+                                        header={'Chọn ngày'}
                                         isVisible={this.state.isVisible}
                                         onConfirm={this.fetchByDate}
                                         onCancel={() => this.setState({ isVisible: false })}
@@ -253,17 +390,38 @@ class CalendarScreen extends React.Component {
                         <View>
                             {
                                 this.state.allEvent.map((item, key) => (
-                                    <Item linkImage={url + item.linkImage[0]}
+                                    <Item linkImage={item.linkImage }
+                                        key = {key}
                                         eventName={item.eventName}
-                                        time={item.startTime + " " + item.startDate}
+                                        time={item.startTime + "  " + item.startDate}
                                         location={item.location}
-                                        onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'DetailEventScreen' } }) }}
-                                        onCancel={this.onPressCancel(item._id)} />
+                                        onPress={() => { 
+                                            this._getEvent(item.eventId, item.adminName);
+                                            // console.log(this.state.location)
+                                            // console.log(this.state.allEvent)
+                                            // this.props.navigation.navigate('DetailEventCalendarScreen', { location: this.state.location, data: item, isLocation: this.state.isLocation})
+                                             }}
+                                        onCancel={() => {
+                                            this.setState({
+                                                it : item._id
+                                            })
+                                            console.log(item._id);
+                                            this.onPressCancel(item._id)
+                                        }
+                                        } 
+                                            />
                                 ))
                             }
                         </View>
                     ) : (
-                            <View>
+                            <ScrollView
+                                scrollEnabled = {false}
+                                refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this.onRefresh}
+                                />}
+                            >
                                 <Calendar theme={{
                                     backgroundColor: '#ffffff',
                                     calendarBackground: '#ffffff',
@@ -281,8 +439,7 @@ class CalendarScreen extends React.Component {
                                     }}
                                     markedDates={this.state.myAllDateEvent}
                                     markingType={'custom'}
-                                    onDayPress={this.fetchByDate} />
-
+                                        onDayPress={this.fetchByDate} />
                                 <Text style={styles.subTitle}>Sự kiện ngày {this.state.currentDate}</Text>
 
                                 <ScrollView style={styles.list}>
@@ -293,12 +450,24 @@ class CalendarScreen extends React.Component {
                                                 eventName={item.eventName}
                                                 key={key}
                                                 index={key}
-                                                onPress={() => { this.props.navigation.navigate('DetailEventScreen', { data: { item: item, hostScreen: 'CalendarScreen' } }) }}
-                                                onPressCancel={this.onPressCancel(item._id)} />
+                                                onPress={() => { 
+                                                    this._getEvent(item.eventId, item.adminName);
+                                                    // console.log('asdsajdvasbjd' + this.state.event)
+                                                    
+                                                    
+                                                }}
+                                                onCancel={() => {
+                                                    this.setState({
+                                                        it : item._id
+                                                    })
+                                                    console.log(item._id);
+                                                    this.onPressCancel(item._id)
+                                                }
+                                                } />
                                         ))
                                     }
                                 </ScrollView>
-                            </View>
+                            </ScrollView>
                         )
                 }
             </View>
@@ -341,7 +510,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         fontSize: 18,
         color: '#fff'
-    },
+    }
 })
 
 export { CalendarScreen };

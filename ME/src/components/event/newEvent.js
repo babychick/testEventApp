@@ -7,7 +7,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { Color } from '../../assets/color';
-import { ImagePicker, ImageManipulator } from 'expo';
+import { ImagePicker, ImageManipulator, FileSystem } from 'expo';
 import url from '../../assets/url';
 
 var form = new FormData();
@@ -24,7 +24,7 @@ class NewEvent extends React.Component {
             isSTVisible: false,
             isETVisible: false,
             hostScreen: data.hostScreen,
-            adminId: data.userId,
+            adminId: data.adminId,
             adminName: null,
             eventName: null,
             eventType: 'Ẩm thực',
@@ -33,8 +33,8 @@ class NewEvent extends React.Component {
             locationY: null,
             startDate: moment().format('DD-MM-YYYY'),
             endDate: moment().format('DD-MM-YYYY'),
-            startTime: moment().format('HH:mm'),
-            endTime: moment().format('HH:mm'),
+            startTime: moment().add(1, 'hours').format('HH:mm'),
+            endTime: moment().add(2, 'hours').format('HH:mm'),
             member: null,
             description: null,
             linkImage: null,
@@ -48,26 +48,37 @@ class NewEvent extends React.Component {
                 'Huong Nghiep',
                 'Giai tri',
                 'Van hoa, Giao duc'],
+            count: 0
         }
     }
 
     handleStartDatePicker = (date) => {
         this.setState({
             startDate: moment(date).format('DD-MM-YYYY'),
+            endDate: moment(date).format('DD-MM-YYYY'),
             isSDVisible: false
         })
     }
 
     handleEndDatePicker = (date) => {
-        this.setState({
-            endDate: moment(date).format('DD-MM-YYYY'),
-            isEDVisible: false
-        })
+        var a = moment(date).format('DD-MM-YYYY');
+        var a1 = moment(a, 'DD-MM-YYYY', false)
+        var b = moment(this.state.startDate, 'DD-MM-YYYY', false);
+        var d = a1.diff(b, 'days');
+        if (d < 0) {
+            Alert.alert('CHÚ Ý', 'Ngày Kết thúc phải bằng hoặc lớn hơn ngày Bắt đầu');
+        } else {
+            this.setState({
+                endDate: moment(date).format('DD-MM-YYYY'),
+                isEDVisible: false
+            })
+        }
     }
 
     handleStartTimePicker = (time) => {
         this.setState({
             startTime: moment(time).format('HH:mm'),
+            endTime: moment(time).add(1, 'hours').format('HH:mm'),
             isSTVisible: false
         })
     }
@@ -85,8 +96,6 @@ class NewEvent extends React.Component {
         });
 
         if(!result.cancelled) {
-            console.log(result.uri);
-
             let resizedPhoto = await ImageManipulator.manipulate(result.uri, [{ rotate: 0 }], { format: 'jpeg'});
 
             if (resizedPhoto.width > 1000 && resizedPhoto.height > 750) {
@@ -100,6 +109,10 @@ class NewEvent extends React.Component {
                 name: n+'photo.jpg'
             };
             form.append("fileData", photo);
+            this.setState({
+                count: this.state.count + 1
+            })
+            alert('Đã thêm ' + this.state.count + ' ảnh.');
         }
     }
 
@@ -115,9 +128,9 @@ class NewEvent extends React.Component {
         .then( (response ) => response.json())
         .then( (responseJson) =>{
             console.log(responseJson);
-            // let object = JSON.stringify(responseJson);
+            let object = JSON.stringify(responseJson);
             this.setState({
-                linkImage: responseJson
+                linkImage: object
             })
         })
         .catch(err => {
@@ -126,47 +139,48 @@ class NewEvent extends React.Component {
     }
     
     onSave = async () => {
-        let upload = await this.onPressUpLoad();
-        console.log(this.state.adminId + " "
-                     + this.state.eventName + " "
-                     + this.state.eventType + " "
-                     + this.state.location + " "
-                     + this.state.locationX + " "
-                     + this.state.locationY + " "
-                     + this.state.startDate + " "
-                     + this.state.endDate + " "
-                     + this.state.linkImage);
-
-        await fetch(url + 'event/addOneEvent', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8',
-            },
-            body: JSON.stringify({
-                adminId: this.state.adminId,
-                eventName: this.state.eventName,
-                eventType: this.state.eventType,
-                location: this.state.location,
-                locationX: this.state.locationX,
-                locationY: this.state.locationY,
-                startDate: this.state.startDate,
-                endDate: this.state.endDate,
-                startTime: this.state.startTime,
-                endTime: this.state.endTime,
-                member: this.state.member,
-                linkImage: this.state.linkImage,
-                description: this.state.description
-            }),
-        })
-        .then(res => res.json())
-        .then(resJson => {
-            if (resJson.title === 'ok') {
-                Alert.alert('THÔNG BÁO', 'Tạo sự kiện thành công.',
-                    [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen)}]);
-                form = new FormData();
-            }
-        });
+        if (this.state.eventName === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Tên sự kiện');
+        } else if (parseInt(this.state.member) < 50) {
+            Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
+        } else if (this.state.location === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
+        } else {
+            let upload = await this.onPressUpLoad();
+            await fetch(url + 'event/addOneEvent', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+                body: JSON.stringify({
+                    adminId: this.state.adminId,
+                    eventName: this.state.eventName,
+                    eventType: this.state.eventType,
+                    location: this.state.location,
+                    locationX: this.state.locationX,
+                    locationY: this.state.locationY,
+                    startDate: this.state.startDate,
+                    endDate: this.state.endDate,
+                    startTime: this.state.startTime,
+                    endTime: this.state.endTime,
+                    member: this.state.member,
+                    linkImage: this.state.linkImage,
+                    description: this.state.description
+                }),
+            })
+            .then(res => res.json())
+            .then(resJson => {
+                if (resJson.title === 'ok') {
+                    Alert.alert('THÔNG BÁO', 'Tạo sự kiện thành công.',
+                        [{text: 'OK', onPress: () => this.props.navigation.navigate(this.state.hostScreen, {data: {item: resJson.data}})}]);
+                    form = new FormData();
+                } else {
+                    Alert.alert('THÔNG BÁO', resJson.message,);
+                    form = new FormData();
+                }
+            });
+        }
     }
 
     selectDestination = (data, details = null) => {  
@@ -233,6 +247,7 @@ class NewEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.startDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
+                                    minimumDate={new Date()}
                                     isVisible={this.state.isSDVisible}
                                     onConfirm={this.handleStartDatePicker}
                                     onCancel={() => this.setState({ isSDVisible: false })}
@@ -262,6 +277,7 @@ class NewEvent extends React.Component {
                                     <Text style={styles.date}>{this.state.endDate}</Text>
                                 </TouchableOpacity>
                                 <DateTimePicker
+                                    minimumDate={new Date()}
                                     isVisible={this.state.isEDVisible}
                                     onConfirm={this.handleEndDatePicker}
                                     onCancel={() => this.setState({ isEDVisible: false })}
@@ -284,7 +300,7 @@ class NewEvent extends React.Component {
                                     return ''; // text input default value
                                 }}
                                 query={{
-                                    key: 'AIzaSyAGF8cAOPFPIKCZYqxuibF9xx5XD4JBb84',
+                                    key: 'AIzaSyBV-uHTqX6aH5_16ZmLa9uv16Op_R4t-1Y',
                                     language: 'vi',
                                     // types: '(cities)', // default: 'geocode'
                                 }}

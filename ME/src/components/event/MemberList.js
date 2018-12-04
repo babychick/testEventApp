@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text, View, TouachableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import url from '../../assets/url';
 import { Color } from '../../assets/color';
 import { AppBar } from '../common/appBar';
@@ -34,6 +34,7 @@ class MemberList extends React.Component {
                     this.setState({
                         memberList: dataJson
                     })
+                    console.log(this.state.adminId + ' ' + this.state.eventId)
                 })
         } catch (err) {
             console.log(err)
@@ -49,6 +50,13 @@ class MemberList extends React.Component {
             },
             body: JSON.stringify({
                 _id: item._id,
+                adminId: item.adminId,
+                adminName: item.adminName,
+                eventId: item.eventId,
+                eventName: item.eventName,
+                userId: item.userId,
+                userName: item.userName,
+                location: item.location,
                 status: 'Từ chối'
             })
         })
@@ -63,6 +71,13 @@ class MemberList extends React.Component {
             },
             body: JSON.stringify({
                 _id: item._id,
+                adminId: item.adminId,
+                adminName: item.adminName,
+                eventId: item.eventId,
+                eventName: item.eventName,
+                userId: item.userId,
+                userName: item.userName,
+                location: item.location,
                 status: 'Chấp nhận'
             })
         })
@@ -81,16 +96,16 @@ class MemberList extends React.Component {
                         this.state.memberList.map((member, index) => (
                             <View style={{ flexDirection: 'column', flex: 1, height: 72, borderBottomWidth: 1, borderBottomColor: Color._100 }} key={index}>
                                 <View style={styles.topContainer}>
-                                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{member.userName}</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 16 }}>{member.userName}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                     <View style={styles.bottomContainer}>
                                         <TouchableOpacity style={[styles.button, {backgroundColor: '#EF5350'}]}
-                                                            onPress={this.onDeny(item)}>
+                                                            onPress={this.onDeny(member)}>
                                             <Text style={{ color: '#FFFFFF' }}>TỪ CHỐI</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={[styles.button, {backgroundColor: Color._500}]}
-                                                            onPress={this.onAccept(item)}>
+                                                            onPress={this.onAccept(member)}>
                                             <Text style={{ color: '#FFFFFF' }}>CHẤP NHẬN</Text>
                                         </TouchableOpacity>
                                     </View>

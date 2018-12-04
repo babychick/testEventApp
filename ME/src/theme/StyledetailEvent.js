@@ -5,7 +5,7 @@ import {
 
 const {width : WIDTH} = Dimensions.get('window');
 const {height : HEIGHT} = Dimensions.get('window');
-const StyleTimSuKienChiTietChuDe = StyleSheet.create({
+const StyledetailEvent = StyleSheet.create({
     container:{
         flex: 1,
         // alignItems: 'center',
@@ -145,4 +145,4 @@ const StyleTimSuKienChiTietChuDe = StyleSheet.create({
         textAlignVertical: 'center'
     }
 });
-export default StyleTimSuKienChiTietChuDe;
+export default StyledetailEvent;

@@ -61,14 +61,7 @@ export default class CaNhanTT extends Component {
                     nation: responseJson[0].nation,
                     linkImage: responseJson[0].linkImage
                 })
-                // alert(JSON.stringify(responseJson))
             } )
-			// let responseJson = await response.json();
-			// return responseJson;
-            // alert(responseJson)
-            // this.setState({
-            //     name : 'responseJson.name'
-            // })
 		} catch (error) {
             alert(error);
 		}
@@ -105,7 +98,7 @@ export default class CaNhanTT extends Component {
                     </View>
                     <View style={styles.khung}>
                         <View>
-                            <Image source = {{uri: this.state.linkImage}}
+                            <Image source = {{uri: url + this.state.linkImage}}
                                 style={styles.anhdaidien}
                             ></Image>
                         </View>
@@ -154,7 +147,7 @@ export default class CaNhanTT extends Component {
                                     <View style={styles.canhchu}>
                                         <Text style={styles.tt}>{this.state.address}</Text>
                                     </View>
-                                        <Icon type='MaterialIcons' name='navigate-next' style={styles.iconNext}/>
+                                        {/* <Icon type='MaterialIcons' name='navigate-next' style={styles.iconNext}/> */}
                                 </View>
                             </TouchableOpacity>
                         </View>
