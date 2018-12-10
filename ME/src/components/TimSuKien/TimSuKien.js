@@ -27,17 +27,12 @@ export default class TimSuKien extends Component {
     constructor (props) {
         super(props)
         chude = ['Ẩm thực',
-                    'Lễ hội',
-                    'Dân gian',
-                    'Âm nhạc',
-                    'Nhạc hội',
-                    'Biểu diễn',
-                    'Sách',
-                    'Thời trang',
-                    'Triễn lãm',
-                    'Huong Nghiep',
-                    'Giai tri',
-                    'Van hoa, Giao duc'];
+                'Hướng nghiệp',
+                'Lễ hội dân gian',
+                'Nhạc hội',
+                'Thể thao',
+                'Triễn lãm',
+                'Văn hóa - giáo dục'];
         this.state = {
             selected: 'Ẩm thực',
             isVisible: false,
@@ -130,17 +125,12 @@ export default class TimSuKien extends Component {
                     for(var i = dataJson.length - 1; i >= 0; i--){
                         let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
                         let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
-                        // console.log(convertedDate + '')
-                        // if(moment(today).isBefore(convertedDate) && count < 10){
-                        //     a.push(dataJson[i]);
-                        //     count++;
-                        // }
                         if(td.diff(convertedDate, 'days') < 0 && count < 10){
                             a.push(dataJson[i]);
                             count++;
                         }
                         if(td.diff(convertedDate, 'days') == 0 && count < 10){
-                            if (hd.diff(convertedTime, 'hours') < 0) {
+                            if (hd.diff(convertedTime, 'minutes') < 0) {
                                 a.push(dataJson[i]);
                                 count++;
                             }
@@ -207,24 +197,24 @@ export default class TimSuKien extends Component {
                     var a = [];
                     let td =  moment(today, 'DD-MM-YYYY', false);
                     let hd =  moment(hourday, 'HH:mm', false);
-                    for(var i = dataJson.length; i > 0; i--){
+                    for(var i = dataJson.length -1; i > 0; i--){
                         let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
                         let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
-                        // if(moment(today).isBefore(convertedDate)){
-                        //     a.push(dataJson[i]);
-                        // }
                         if(td.diff(convertedDate, 'days') < 0 ){
                             a.push(dataJson[i]);
+                            console.log('tim2 ' + JSON.stringify(dataJson[i]))
                         }
                         if(td.diff(convertedDate, 'days') == 0){
-                            if (hd.diff(convertedTime, 'hours') < 0) {
+                            if (hd.diff(convertedTime, 'minutes') < 0) {
                                 a.push(dataJson[i]);
                             }
+                            console.log('tim1 ' + JSON.stringify(dataJson[i]))
                         }
                     }
                     this.setState({
                         eventList: a
                     });
+                    // console.log(dataJson)
                 })
 		} catch (error) {
             alert(error);
@@ -246,7 +236,7 @@ export default class TimSuKien extends Component {
                     });
                     if(dataJson[0].addInfo == true){
                          this._getEvent()
-                    }else{
+                    } else{
                         this.props.navigation.navigate('CaNhan')
                     }
                    

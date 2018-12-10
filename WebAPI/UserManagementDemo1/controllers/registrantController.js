@@ -1,7 +1,9 @@
 let registrantModel = require('../models/registrantModel');
 let attendeeModel = require('../models/attendeeModel');
 let baseController = require('./baseController');
-
+let userModel = require('../models/userModel');
+let accountModel = require('../models/accountModel');
+let sendEmailController = require('./sendEmailController');
 // ADD REGISTRANT
 addOneRegistrant = (req, res) => {
     let obj = req.body;
@@ -13,7 +15,8 @@ addOneRegistrant = (req, res) => {
 findAllRegistrant = (req, res) => {
     let obj = { 
             eventId: req.body.eventId,
-            adminId: req.body.adminId };
+            adminId: req.body.adminId,
+            status: req.body.status };
 
     baseController.findByKeyValue(res, registrantModel, obj);
 }
@@ -42,7 +45,7 @@ findByKeyValue = (req, res) => {
 updateStatus = (req, res) => {
     let obj = req.body;
 
-    baseController.updateOne(res, registrantModel,  bj);
+    baseController.updateOne(res, registrantModel,  obj);
 
     if (obj.status === 'Chấp nhận') {
         let obj_1 = {
@@ -56,25 +59,17 @@ updateStatus = (req, res) => {
         }
 
         baseController.addOne(res, attendeeModel, obj_1);
-
-        var obj_2 = {
-            nameEvent: obj_1.eventName,
-            yourEmail: null,
-            name: obj.userName,
-            address: obj.location,
-            status: obj.status
-        };
-        var accountId = null;
-        userModel.findById(obj_1.userId)
-            .then(data => {
-                accountId = data.accountId
-            })
-        accountModel.findById(accountId)
-            .then(data => {
-                obj_2.yourEmail = data.email
-            })
-        
-        sendEmailController.pheDuyet_1(res, obj_2);
+        //  console.log('obj '+JSON.stringify(obj_1))
+        // var obj_2 = {
+        //     nameEvent: obj_1.eventName,
+        //     yourEmail: obj.email,
+        //     name: obj.userName,
+        //     address: obj.location,
+        //     status: obj.status
+        // };
+        // res.setHeader('Content-Type', 'text/plain');
+            
+        // sendEmailController.pheDuyet(res, obj_2);
     }
 }
 

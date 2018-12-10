@@ -22,7 +22,7 @@ class EventManager extends React.Component {
                 email:''
             },
             filterValue: 'Tất cả',
-            filterList: ['Tất cả', 'Hôm nay', 'Đã kết thúc']
+            filterList: ['Tất cả', 'Hôm nay', 'Đã kết thúc']       
         }
     }
 
@@ -130,13 +130,13 @@ class EventManager extends React.Component {
         let td =  moment(today, 'DD-MM-YYYY', false);
         let ct = moment(ctime, 'hh:mm', false);
 
-        if (b.diff(td, 'days') > 0) {
+        if (b.diff(td, 'days') > 0 || (b.diff(td, 'days') === 0 && d.diff(ct, 'minutes') > 0)) {
             return(<Text>Chưa diễn ra</Text>)
         }
-        if (b.diff(td, 'days') === 0 && d.diff(ct, 'hours') <= 0 && c.diff(ct, 'hours') >= 0) {
+        if (b.diff(td, 'days') === 0 && d.diff(ct, 'minutes') <= 0 && c.diff(ct, 'minutes') >= 0) {
             return(<Text style = {{color: 'green'}}>Đang diễn ra</Text>)
         }
-        if (a.diff(td, 'days') < 0) {
+        if (a.diff(td, 'days') < 0 || (b.diff(td, 'days') === 0 && c.diff(ct, 'minutes') < 0)) {
             return(<Text style = {{color: 'red'}}>Đã kết thúc</Text>)
         }
     }
@@ -223,13 +223,28 @@ class EventManager extends React.Component {
                                         <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                             <View style={styles.bottomContainer}>
                                                 {this.renderStatus(item)}
-                                                {/* {this.renderCheckIn(item.startTime)} */}
+                                                {this.renderCheckIn(item.startTime)}
                                                 <TouchableOpacity
                                                     style={styles.button}
                                                     onPress={() =>
-                                                        // console.log(item)
-                                                    this.props.navigation.navigate('MemberListScreen', { data: { hostScreen: 'EventManagerScreen', eventId: item._id, adminId: item.adminId } })
-                                                    }>
+                                                    {
+                                                        let today = moment().format('DD-MM-YYYY');
+                                                        let ctime = moment().format('HH:mm');
+
+                                                        var a = moment(item.endDate, 'DD-MM-YYYY', false);
+                                                        var b = moment(item.startDate, 'DD-MM-YYYY', false);
+                                                        var c = moment(item.endTime, 'hh:mm', false);
+                                                        var d = moment(item.startTime, 'hh:mm', false)
+
+                                                        let td =  moment(today, 'DD-MM-YYYY', false);
+                                                        let ct = moment(ctime, 'hh:mm', false);
+                                                        if (a.diff(td, 'days') < 0 || (b.diff(td, 'days') === 0 && c.diff(ct, 'minutes') < 0)) {
+                                                            this.props.navigation.navigate('AttendeeListScreen', { data: { hostScreen: 'EventManagerScreen', eventId: item._id, adminId: item.adminId } })
+                                                        }
+                                                        else {
+                                                            this.props.navigation.navigate('MemberListScreen', { data: { hostScreen: 'EventManagerScreen', eventId: item._id, adminId: item.adminId } })
+                                                        }
+                                                    }}>
                                                     <Text style={{ color: '#FFFFFF' }}>DÁNH SÁCH</Text>
                                                 </TouchableOpacity>
                                             </View>

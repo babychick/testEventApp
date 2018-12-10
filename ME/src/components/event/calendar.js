@@ -12,6 +12,7 @@ import { Item } from '../common/item';
 import { Constants, Location, Permissions } from 'expo';
 
 let today = moment().format('DD-MM-YYYY');
+let hourday = moment().format('HH:mm');
 
 LocaleConfig.locales['vi'] = {
     monthNames: ['Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'],
@@ -84,8 +85,23 @@ class CalendarScreen extends React.Component {
         })
         .then(data => data.json())
         .then(dataJson => {
+            var a = [];
+            let td =  moment(today, 'DD-MM-YYYY', false);
+            let hd =  moment(hourday, 'HH:mm', false);
+            for(var i = dataJson.length - 1; i >= 0; i--){
+                let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                if(td.diff(convertedDate, 'days') < 0){
+                    a.push(dataJson[i]);
+                }
+                if(td.diff(convertedDate, 'days') == 0){
+                    if (hd.diff(convertedTime, 'minutes') < 0) {
+                        a.push(dataJson[i]);
+                    }
+                }
+            }
             this.setState({
-                eventList: dataJson
+                eventList: a
             })
         })
         await this._getLocationAsync();  
@@ -97,9 +113,24 @@ class CalendarScreen extends React.Component {
         await fetch(url + 'registrant/' + this.state.userId)
         .then(data => data.json())
         .then(dataJson => {
+            var a = [];
+            let td =  moment(today, 'DD-MM-YYYY', false);
+            let hd =  moment(hourday, 'HH:mm', false);
+            for(var i = dataJson.length - 1; i >= 0; i--){
+                let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                if(td.diff(convertedDate, 'days') < 0){
+                    a.push(dataJson[i]);
+                }
+                if(td.diff(convertedDate, 'days') == 0){
+                    if (hd.diff(convertedTime, 'minutes') < 0) {
+                        a.push(dataJson[i]);
+                    }
+                }
+            }
             this.setState({
-                allEvent: dataJson,
-                fullData: dataJson
+                allEvent: a,
+                fullData: a
             });
             // console.log(this.state.allEvent)
         })
@@ -206,12 +237,69 @@ class CalendarScreen extends React.Component {
         })
         .then(data => data.json())
         .then(dataJson => {
+            var a = [];
+            let td =  moment(today, 'DD-MM-YYYY', false);
+            let hd =  moment(hourday, 'HH:mm', false);
+            for(var i = dataJson.length - 1; i >= 0; i--){
+                let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                if(td.diff(convertedDate, 'days') < 0){
+                    a.push(dataJson[i]);
+                }
+                if(td.diff(convertedDate, 'days') == 0){
+                    if (hd.diff(convertedTime, 'minutes') < 0) {
+                        a.push(dataJson[i]);
+                    }
+                }
+            }
             this.setState({
-                eventList: dataJson
+                eventList: a
             })
+            // console.log(dataJson)
         })
         this.setState({
-            currentDate: moment(date.dateString).format('DD-MM-YYYY')
+            currentDate: moment(date.dateString).format('DD-MM-YYYY'),
+            isVisible: false
+        })
+    }
+
+    fetchByDate1 = (date) => {
+        fetch(url + 'registrant/findByDate', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            body: JSON.stringify({
+                userId: this.state.userId,
+                startDate: moment(date).format('DD-MM-YYYY')
+            })
+        })
+        .then(data => data.json())
+        .then(dataJson => {
+            var a = [];
+            let td =  moment(today, 'DD-MM-YYYY', false);
+            let hd =  moment(hourday, 'HH:mm', false);
+            for(var i = dataJson.length - 1; i >= 0; i--){
+                let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
+                let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
+                if(td.diff(convertedDate, 'days') < 0){
+                    a.push(dataJson[i]);
+                }
+                if(td.diff(convertedDate, 'days') == 0){
+                    if (hd.diff(convertedTime, 'minutes') < 0) {
+                        a.push(dataJson[i]);
+                    }
+                }
+            }
+            this.setState({
+                eventList: a
+            })
+            // console.log(dataJson)
+        })
+        this.setState({
+            currentDate: moment(date).format('DD-MM-YYYY'),
+            isVisible: false
         })
     }
 
@@ -358,13 +446,15 @@ class CalendarScreen extends React.Component {
                                         <Text style={{ fontSize: 16, color: '#FFFFFF' }}>CHỌN NGÀY</Text>
                                     </TouchableOpacity>
                                     <DateTimePicker
+                                        minimumDate={new Date()}
                                         header={'Chọn ngày'}
                                         isVisible={this.state.isVisible}
-                                        onConfirm={this.fetchByDate}
+                                        onConfirm={this.fetchByDate1}
                                         onCancel={() => this.setState({ isVisible: false })}
                                         mode={'date'}
                                         datePickerModeAndroid={'spinner'}
-                                        locale={'vi'}
+                                        // locale={'vi'}
+                                        locale={'af-NA'}
                                         format={'DD-MM-YYYY'}
                                     />
                                 </View>
@@ -435,9 +525,10 @@ class CalendarScreen extends React.Component {
                                     textMonthFontWeight: 'bold'
                                 }}
                                     style={{
-                                        height: 300,
+                                        height: 310,
                                     }}
                                     markedDates={this.state.myAllDateEvent}
+                                    minDate={new Date()}
                                     markingType={'custom'}
                                         onDayPress={this.fetchByDate} />
                                 <Text style={styles.subTitle}>Sự kiện ngày {this.state.currentDate}</Text>

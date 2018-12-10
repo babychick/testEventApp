@@ -52,7 +52,7 @@ export default class TimSuKienChiTietChuDe extends Component {
             linkImage: '',
             textDK: 'ĐĂNG KÝ',
             _id: '',
-            name: ''
+            adminName: ''
         };
     }
     _getLocation = async() =>{
@@ -107,13 +107,12 @@ export default class TimSuKienChiTietChuDe extends Component {
                 .then( data => data.json())
                 .then( dataJson => {
                     this.setState({
-                        name: dataJson.name
+                        adminName: dataJson.name
                     });
                 })
         } catch (err) {
             alert(err)
         }
-    
     }
 
     _getUser = async()=>{
@@ -149,11 +148,12 @@ export default class TimSuKienChiTietChuDe extends Component {
 				},
 				body: JSON.stringify({
                     adminId: this.state.data.adminId,
-                    adminName: this.state.name,
+                    adminName: this.state.adminName,
                     eventId: this.state.data._id,
                     eventName: this.state.data.eventName,
                     startDate: this.state.data.startDate,
                     startTime: this.state.data.startTime,
+                    endDate: this.state.data.endDate,
                     endTime: this.state.data.endTime,
                     location: this.state.data.location,
                     userId: this.state._id,
@@ -193,17 +193,114 @@ export default class TimSuKienChiTietChuDe extends Component {
 					'Content-Type': 'application/json;charset=UTF-8',
 				},
 				body: JSON.stringify({
-                    userId: this.state._id
+                    userId: this.state._id,
+                    startDate: this.state.data.startDate
                     }),
 			})
             .then( (response ) => response.json())
             .then( (responseJson) =>{
-                console.log(responseJson)
-                // this.setState({
-                //     phone: responseJson[0].phone,
-                //     name: responseJson[0].name,
-                //     _id: responseJson[0]._id
-                // })
+                var check = false;
+                var ca = 0;
+                var count = 0;
+                let std = moment(this.state.data.startDate, 'DD-MM-YYYY', false);
+                let shd = moment(this.state.data.startTime, 'HH:mm', false);
+                let etd = moment(this.state.data.endDate, 'DD-MM-YYYY', false);
+                let ehd = moment(this.state.data.endTime, 'HH:mm', false);
+                
+                // let std = moment('25-12-2018', 'DD-MM-YYYY', false);
+                // let shd = moment('02:18', 'HH:mm', false);
+                // let etd = moment('25-12-2018', 'DD-MM-YYYY', false);
+                // let ehd = moment('11:30', 'HH:mm', false);
+                if(responseJson[0] == null){
+                    console.log('k co sk')
+                    // this._onPressRegister()
+                    check = true;
+                    ca = 1;
+                } else {
+                    for (var i = 0; i< responseJson.length; i++) {
+                        let sconvertedDate = moment(responseJson[i].startDate, 'DD-MM-YYYY', false);
+                        let sconvertedTime = moment(responseJson[i].startTime, 'HH:mm', false);
+                        let econvertedDate = moment(responseJson[i].endDate, 'DD-MM-YYYY', false);
+                        let econvertedTime = moment(responseJson[i].endTime, 'HH:mm', false);
+                        
+                        // let sconvertedDate = moment('25-12-2018', 'DD-MM-YYYY', false);
+                        // let sconvertedTime = moment('02:08', 'HH:mm', false);
+                        // let econvertedDate = moment('25-12-2018', 'DD-MM-YYYY', false);
+                        // let econvertedTime = moment('18:08', 'HH:mm', false);
+                        if (econvertedDate.diff(etd, 'days') > 0 && sconvertedDate.diff(etd, 'days') < 0){
+                            check = false;
+                            ca =2
+                            count++;
+                        } else if (econvertedDate.diff(std, 'days') > 0 && sconvertedDate.diff(std, 'days') < 0) {
+                            check = false;
+                            ca =3;
+                            count++;
+                        } else if (etd.diff(sconvertedDate, 'days') > 0 && std.diff(sconvertedDate, 'days') < 0 ||
+                                   etd.diff(econvertedDate, 'days') > 0 && std.diff(econvertedDate, 'days') < 0
+                        ) {
+                            check = false;
+                            ca =4;
+                            count++;
+                        } else if (sconvertedDate.diff(std, 'days') == 0 && econvertedDate.diff(etd, 'days') == 0) {
+                            if(econvertedTime.diff(ehd, 'minutes') > 0 && sconvertedTime.diff(ehd, 'minutes') < 0) {
+                                check = false;
+                                ca =51;
+                                count++;
+                            } else if (econvertedTime.diff(shd, 'minutes') > 0 && sconvertedTime.diff(shd, 'minutes') < 0){
+                                check = false;
+                                ca =52;
+                                count++;
+                            } else if (ehd.diff(sconvertedTime, 'minutes') > 0 && shd.diff(sconvertedTime, 'minutes') < 0 ||
+                                        ehd.diff(econvertedTime, 'minutes') > 0 && shd.diff(econvertedTime, 'minutes') < 0
+                            ) {
+                                check = false;
+                                ca =53;
+                                count++;
+                            } else if (sconvertedTime.diff(shd, 'minutes') == 0 && econvertedTime.diff(ehd, 'minutes') == 0){
+                                check = false;
+                                ca =54;
+                                count++;
+                            } else if (sconvertedTime.diff(shd, 'minutes') > 0 && sconvertedTime.diff(ehd, 'minutes') == 0){
+                                check = false;
+                                ca =55;
+                                count++;
+                            } else if (ehd.diff(econvertedTime, 'minutes') > 0 && shd.diff(econvertedTime, 'minutes') == 0) {
+                                check = false;
+                                ca =56;
+                                count++;
+                            } else {
+                                check = true;
+                                ca =57;
+                            }
+                        } else if (sconvertedDate.diff(std, 'days') > 0 && sconvertedDate.diff(etd, 'days') == 0) {
+                            if (sconvertedTime.diff(ehd, 'minutes') < 0){
+                                check = false;
+                                count++;
+                            } else {
+                                check = true;
+                            }
+                            ca = 6;
+                        } else if (etd.diff(econvertedDate, 'days') > 0 && std.diff(econvertedDate, 'days') == 0) {
+                            if (shd.diff(econvertedTime, 'minutes') < 0){
+                                check = false;
+                                count++;
+                            } else {
+                                check = true;
+                            }
+                            ca = 7;
+                        } else {
+                            check = true;
+                            ca = 8;
+                        }
+                        // console.log(std+ ' ' + shd + '    '+sconvertedDate + ' '+sconvertedTime)
+                    }
+                }
+                console.log('check ' + check+ ' ca ' + ca)
+                if (count == 0) {
+                    this._onPressRegister();
+                } else {
+                    alert('Đã đăng ký sự kiện khác trong thời gian này');
+                }
             } )
 		} catch (error) {
             alert(error);
@@ -280,8 +377,8 @@ export default class TimSuKienChiTietChuDe extends Component {
                             <TouchableOpacity style={[{position: 'absolute', right: 16, bottom: 16}]}
                                 disabled={this.state.isDisable}
                                 onPress={() => {
-                                    // this._checkDateRegiss()
-                                    this._onPressRegister()
+                                    this._checkDateRegis()
+                                    // this._onPressRegister()
                                     // alert((this.state.store._id))
                                 }}>
                                 <View>

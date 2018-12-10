@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         width: 'auto',
         height: 56,
         flexDirection: 'row',
-        backgroundColor: Color._600,
+        backgroundColor: Color._500,
     },
     navigationIcon: {
         width: 56,

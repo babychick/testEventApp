@@ -78,16 +78,23 @@ export default class TimSuKienMap extends Component {
             .then( data => data.json())
                 .then( dataJson => {
                     var a = [];
+                    let td =  moment(today, 'DD-MM-YYYY', false);
                     let hd =  moment(hourday, 'HH:mm', false);
                     for(var i = 0; i< dataJson.length; i++){
+                        let convertedDate = moment(dataJson[i].startDate, 'DD-MM-YYYY', false);
                         let convertedTime = moment(dataJson[i].startTime, 'HH:mm', false);
-                        if (hd.diff(convertedTime, 'hours') < 0) {
-                            a.push(dataJson[i]);
+                        if(td.diff(convertedDate, 'days') == 0){
+                            if (hd.diff(convertedTime, 'minutes') > 0) {
+                                a.push(dataJson[i]);
+                            }
+                        } else {
+                            a = dataJson;
                         }
                     }
                     this.setState({
                         event: a
                     });
+                    console.log(this.state.event)
                 })
 		} catch (error) {
             alert(error);
@@ -109,7 +116,7 @@ export default class TimSuKienMap extends Component {
                             a.push(dataJson[i]);
                         }
                         if(td.diff(convertedDate, 'days') == 0){
-                            if (hd.diff(convertedTime, 'hours') > 0) {
+                            if (hd.diff(convertedTime, 'minutes') < 0) {
                                 a.push(dataJson[i]);
                             }
                         }

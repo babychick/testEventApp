@@ -30,7 +30,7 @@ export default class CaNhanCapNhat extends Component {
         gioitinh = ['Nam', 'Nữ'];
         this.state = {
             selected: 'nam',
-            nselected: 'Afghanistan',
+            nselected: 'Việt Nam',
             isVisible: false,
             isSelectI: false,
             chonngay: moment(this.props.navigation.state.params.data.birthday).format('DD-MM-YYYY'),

@@ -39,15 +39,12 @@ class NewEvent extends React.Component {
             description: null,
             linkImage: null,
             subject: ['Ẩm thực',
-                'Lễ hội',
-                'Dân gian',
-                'Âm nhạc',
+                'Hướng nghiệp',
+                'Lễ hội dân gian',
                 'Nhạc hội',
-                'Thời trang',
+                'Thể thao',
                 'Triễn lãm',
-                'Huong Nghiep',
-                'Giai tri',
-                'Van hoa, Giao duc'],
+                'Văn hóa - giáo dục'],
             count: 0
         }
     }
@@ -145,6 +142,8 @@ class NewEvent extends React.Component {
             Alert.alert('NHẮC NHỞ', 'Sự kiện phải có ít nhất 50 người');
         } else if (this.state.location === null) {
             Alert.alert('NHẮC NHỞ', 'Vui lòng nhập Địa điểm');
+        } else if (form === null) {
+            Alert.alert('NHẮC NHỞ', 'Vui lòng chọn ảnh');
         } else {
             let upload = await this.onPressUpLoad();
             await fetch(url + 'event/addOneEvent', {

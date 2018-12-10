@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, ScrollView, Text, View, TouchableOpacity } from 'react-native';
 import url from '../../assets/url';
 import { Color } from '../../assets/color';
 import { AppBar } from '../common/appBar';
@@ -12,7 +12,8 @@ class MemberList extends React.Component {
             memberList: [],
             eventId: data.eventId,
             adminId: data.adminId,
-            hostScreen: data.hostScreen
+            hostScreen: data.hostScreen,
+            reload: false
         }
     }
 
@@ -26,7 +27,8 @@ class MemberList extends React.Component {
                 },
                 body: JSON.stringify({
                     adminId: this.state.adminId,
-                    eventId: this.state.eventId
+                    eventId: this.state.eventId,
+                    status: 'Chưa duyệt'
                 })
             })
                 .then(data => data.json())
@@ -34,15 +36,14 @@ class MemberList extends React.Component {
                     this.setState({
                         memberList: dataJson
                     })
-                    console.log(this.state.adminId + ' ' + this.state.eventId)
                 })
         } catch (err) {
             console.log(err)
         }
     }
 
-    onDeny = (item) => {
-        fetch( url + 'registrant/updateStatus', {
+    onDeny =async  (item) => {
+        await fetch( url + 'registrant/updateStatus', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -57,13 +58,15 @@ class MemberList extends React.Component {
                 userId: item.userId,
                 userName: item.userName,
                 location: item.location,
+                email: item.email,
                 status: 'Từ chối'
             })
         })
+        await this._sendEmail(item,'Từ chối');
     }
 
-    onAccept = (item) => {
-        fetch( url + 'registrant/updateStatus', {
+    onAccept = async (item) => {
+        await fetch( url + 'registrant/updateStatus', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -78,7 +81,28 @@ class MemberList extends React.Component {
                 userId: item.userId,
                 userName: item.userName,
                 location: item.location,
+                email: item.email,
                 status: 'Chấp nhận'
+            })
+        })
+
+        await this._sendEmail(item,'Chấp nhận')
+    }
+
+    _sendEmail= async (item, stt) =>{
+        await fetch( url + 'sendEmail/pheDuyet', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            body: JSON.stringify({
+                adminName: item.adminName,
+                eventName: item.eventName,
+                userName: item.userName,
+                location: item.location,
+                email: item.email,
+                status: stt
             })
         })
     }
@@ -101,11 +125,29 @@ class MemberList extends React.Component {
                                 <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
                                     <View style={styles.bottomContainer}>
                                         <TouchableOpacity style={[styles.button, {backgroundColor: '#EF5350'}]}
-                                                            onPress={this.onDeny(member)}>
+                                            onPress={() => {
+                                                this.onDeny(member);
+                                                Alert.alert('THÔNG BÁO', 'Phê duyệt thành công.',
+                                                    [{ text: 'OK', onPress: () => {
+                                                        this.state.memberList.splice(index, 1);
+                                                        this.setState({
+                                                            reload: true
+                                                        })
+                                                    }}])
+                                            }}>
                                             <Text style={{ color: '#FFFFFF' }}>TỪ CHỐI</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={[styles.button, {backgroundColor: Color._500}]}
-                                                            onPress={this.onAccept(member)}>
+                                            onPress={() => {
+                                                    this.onAccept(member);
+                                                    Alert.alert('THÔNG BÁO', 'Phê duyệt thành công.',
+                                                        [{ text: 'OK', onPress: () => {
+                                                            this.state.memberList.splice(index, 1);
+                                                            this.setState({
+                                                                reload: true
+                                                            })
+                                                        }}])
+                                            }}>
                                             <Text style={{ color: '#FFFFFF' }}>CHẤP NHẬN</Text>
                                         </TouchableOpacity>
                                     </View>

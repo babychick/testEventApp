@@ -147,7 +147,7 @@ export default class DangNhap extends Component {
         console.log('cancelled')
         }
       } catch(e) {
-        console.log('err')
+        console.log(e)
       }
     }
 
@@ -166,12 +166,10 @@ export default class DangNhap extends Component {
                         });
                     this.saveData();
                     this.props.navigation.navigate('RouterTimSuKien');
-                    // alert('Có r')
                     } else {
                         this.addAccount();
                         // alert('chưa có')
                     }
-                    // console.log(dataJson)
                 })
         } catch (err) {
             console.log(err)
@@ -259,6 +257,7 @@ export default class DangNhap extends Component {
                 </View>
                 <TouchableOpacity  onPress={() => {
                     this.SignInGG()
+                    // this.props.navigation.navigate('RouterTimSuKien');
                     }}>
                     <View style={styles.viewdangnhap2}>
                         <Text style={styles.textdangnhap}>Đăng nhập với Google</Text>
